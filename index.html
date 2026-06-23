@@ -896,6 +896,122 @@ const LOCAL = {
 };
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
+const Brain = {
+  // ── Preprocess & optimize user message ──
+  optimize(text){
+    let msg=text.trim();
+    // Normalize casual speech
+    const norm={'\\bu\\b':'you','\\br\\b':'are',"\\bdon't\\b":"do not","\\bcan't\\b":"cannot","\\bwon't\\b":"will not",
+      "\\bgonna\\b":"going to","\\bwanna\\b":"want to","\\bgotta\\b":"got to","\\bdunno\\b":"don't know",
+      '\\bnvm\\b':'never mind','\\bidk\\b':"i don't know","\\bimo\\b":"in my opinion","\\bimo\\b":"in my opinion",
+      '\\bbcos?\\b':'because','\\bpls\\b':'please','\\bty\\b':'thank you','\\bthx\\b':'thanks',
+      '\\blol\\b':'haha','\\blmao\\b':'very funny','\\bbrb\\b':"i'll be right back",'\\bttyl\\b':'talk to you later',
+      '\\bg2g\\b':'got to go','\\bcya\\b':'see you',"\\bkind?a\\b":'kind of',"\\bsort?a\\b":'sort of'};
+    for(const[k,v]of Object.entries(norm)) msg=msg.replace(new RegExp(k,'gi'),v);
+    // Condense excessive repeats
+    msg=msg.replace(/([.!?])\1{2,}/g,'$1').replace(/([a-zA-Z])\1{3,}/g,'$1$1');
+    return msg;
+  },
+
+  // ── Deep context analysis ──
+  analyze(text,intent){
+    const t=text.toLowerCase();
+    const sentiment=this.sentiment(t);
+    const topics=this.topics(t);
+    return{
+      sentiment,topics,isQuestion:/\?$/.test(text.trim()),
+      hasEmoji:/[\u{1F300}-\u{1FAFF}]/u.test(text),
+      wordCount:t.split(/\s+/).filter(Boolean).length,
+      complexity:t.split(/\s+/).filter(Boolean).length>20?'long':'short',
+      urgency:/help|emergency|urgent|important|right now|asap|need you/i.test(t)?'high':/later|sometime|whenever|no rush/i.test(t)?'low':'normal',
+      isGreeting:['greeting','greetingMorning','greetingNight'].includes(intent),
+      isEmotional:['love','miss','sorry','compliment'].includes(intent),
+      intent,intent
+    };
+  },
+
+  sentiment(t){
+    const posWords=['love','miss','happy','good','great','amazing','wonderful','beautiful','cute','sweet','adorable','perfect','best','fun','like','glad','blessed','grateful','excited','fantastic','lovely','nice','pretty','wow','awesome','cool','favorite','better','enjoy','yes'];
+    const negWords=['sad','bad','terrible','awful','hate','angry','upset','hurt','lonely','cry','depressed','alone','sorry','regret','miss','pain','tired','bored','sucks','horrible','wrong','broken','lost','afraid','scared','worry','anxious'];
+    let score=0;
+    posWords.forEach(w=>{const r=new RegExp('\\b'+w+'\\b','i');if(r.test(t))score++;});
+    negWords.forEach(w=>{const r=new RegExp('\\b'+w+'\\b','i');if(r.test(t))score--;});
+    return score>0?'positive':score<0?'negative':'neutral';
+  },
+
+  topics(t){
+    const m={};
+    if(/work|job|office|boss|colleague|career|meeting|project|client|deadline|promotion|interview|salary|resign|fired|hired/i.test(t)) m.work=true;
+    if(/food|eat|hungry|cook|dinner|lunch|breakfast|pizza|pasta|burger|sushi|dessert|chocolate|coffee|tea|recipe|tasty|delicious|yum|restaurant|meal|snack|drink|water|thirsty/i.test(t)) m.food=true;
+    if(/movie|film|show|netflix|watch|series|episode|tv|cinema|theatre|actor|actress|director|scene|documentary|binge|anime|cartoon/i.test(t)) m.entertainment=true;
+    if(/game|gaming|play|level|score|console|xbox|playstation|nintendo|steam|quest|raid|loot|rpg|shooter|puzzle|card|board/i.test(t)) m.gaming=true;
+    if(/friend|family|mom|dad|parent|sister|brother|partner|date|relationship|marry|wedding|kids|child|baby|pet|dog|cat|party|hang/i.test(t)) m.social=true;
+    if(/travel|trip|vacation|holiday|go|visit|place|flight|hotel|beach|mountain|city|country|abroad|explore|adventure|road|drive|drive/i.test(t)) m.travel=true;
+    if(/health|sick|doctor|hospital|pain|medicine|sleep|tired|exercise|gym|workout|fit|yoga|diet|vitamin|cold|flu|headache|fever|nurse|clinic|wellness|mental/i.test(t)) m.health=true;
+    if(/music|song|sing|playlist|artist|band|concert|guitar|piano|drum|melody|lyric|dance|album|track|genre|rap|rock|pop|jazz|classical/i.test(t)) m.music=true;
+    if(/school|college|university|study|class|course|exam|test|assignment|homework|grade|teacher|professor|student|lecture|lesson|degree|major|minor|scholarship|graduat/i.test(t)) m.education=true;
+    if(/weather|rain|sunny|cloudy|storm|snow|cold|hot|warm|cool|wind|forecast|temperature|season|spring|summer|autumn|fall|winter/i.test(t)) m.weather=true;
+    if(/money|price|cost|expensive|cheap|budget|pay|bill|rent|loan|debt|save|invest|buy|shop|purchase|shop/i.test(t)) m.finance=true;
+    m.count=Object.keys(m).length;
+    return m;
+  },
+
+  // ── Strategic response planning ──
+  plan(intent,analysis){
+    const mod=MODS[S.personality]||MODS.sweet;
+    const topEmo=S.emos.filter(e=>e.val>0.1).sort((a,b)=>b.val-a.val);
+    const dom=topEmo[0];
+    return{
+      strategy:analysis.sentiment==='negative'?'comfort':analysis.sentiment==='positive'?'amplify':'normal',
+      emotionalResponse:dom?dom.id:null,
+      modResponse:mod.id,
+      needsComfort:analysis.sentiment==='negative',
+      needsCelebration:analysis.sentiment==='positive'&&['love','compliment','miss'].includes(intent),
+      keepShort:analysis.complexity==='short',
+    };
+  },
+
+  // ── Smart memory extraction ──
+  remember(text){
+    const now=Date.now();
+    const t=text.toLowerCase();
+    const mems=Brain._extractFacts(text,t);
+    if(mems.length){
+      for(const m of mems){
+        // Avoid duplicate memories
+        const dup=S.memory.find(x=>x.text===m.text||(x.text.includes(m.text.slice(0,20))||m.text.includes(x.text.slice(0,20))));
+        if(!dup){S.memory.push({...m,time:now});}
+        else{dup.time=now;} // Refresh timestamp
+      }
+      if(S.memory.length>MAX_MEM) S.memory=S.memory.slice(-MAX_MEM);
+      localStorage.setItem('lmem',JSON.stringify(S.memory));
+    }
+    return mems;
+  },
+
+  _extractFacts(text,t){
+    const mems=[];
+    // Name
+    const nm=t.match(/(?:my name(?:'s| is)|call me|i'?m |you can call me )(\w+)/i);
+    if(nm&&nm[1].length>1) mems.push({text:`My name is ${nm[1]}`,cat:'name'});
+    // Likes / loves / hobbies
+    const lm=t.match(/(?:i love|i like|i enjoy|i adore|i'?m (?:really )?into|my favorite |i (?:absolutely )?love |i (?:really )?like |i'm passionate about )([^.!?]+)/i);
+    if(lm){const v=lm[1].trim();if(v.length>2&&v.length<60)mems.push({text:`Loves ${v}`,cat:'like'});}
+    // Dislikes
+    const dm=t.match(/(?:i hate|i dislike|i don'?t like|i can'?t stand|i'?m not a fan of )([^.!?]+)/i);
+    if(dm){const v=dm[1].trim();if(v.length>2)mems.push({text:`Dislikes ${v}`,cat:'dislike'});}
+    // Events
+    if(/(?:today is|my birthday|anniversary|exam|test|interview|appointment|meeting|deadline|surgery|trip|visit|moving|starting|quitting|wedding|party|event)/i.test(t)){
+      mems.push({text:`Event: ${text.slice(0,80)}`,cat:'event'});
+    }
+    // Feelings
+    if(/i feel|i'?m feeling|i'?m (so |really )?(happy|sad|tired|stressed|excited|nervous|worried|depressed|lonely|grateful|blessed|overwhelmed|anxious)/i.test(t)){
+      mems.push({text:`Felt: ${text.slice(0,60)}`,cat:'feeling'});
+    }
+    return mems;
+  }
+};
+
 function tailorResponse(text, intent){
   const top=S.emos.filter(e=>e.val>0.15).sort((a,b)=>b.val-a.val);
   const dom=top[0]; const modId=S.personality||'sweet';
@@ -985,7 +1101,7 @@ const S = {
 };
 
 // ─── SYSTEM PROMPT ───
-function getSysPrompt(){
+function getSysPrompt(ctx){
   const mod=MODS[S.personality]||MODS.sweet;
   const pet=S.petName||'baby';
   const gen=S.userGender==='girlfriend'?'girlfriend':S.userGender==='boyfriend'?'boyfriend':'partner';
@@ -996,6 +1112,16 @@ function getSysPrompt(){
   if(S.memory.length){const r=S.memory.slice(-5); mem='\nThings you remember: '+r.map(m=>m.text).join('; ');}
   let sys=mod.sys.replace(/NAME/g,S.girlName||'Luna');
   if(S.customPersona) sys+='\nExtra personality: '+S.customPersona;
+  // Inject Brain analysis if available
+  if(ctx){
+    if(ctx.sentiment==='negative') sys+='\nUser seems down — be extra caring and comforting.';
+    else if(ctx.sentiment==='positive') sys+='\nUser is in a good mood — share their joy!';
+    if(ctx.topics.count>0){
+      const topicList=Object.keys(ctx.topics).filter(k=>k!=='count').join(', ');
+      sys+=`\nUser is talking about: ${topicList}. Engage naturally.`;
+    }
+    if(ctx.isQuestion) sys+='\nUser asked a question — answer warmly.';
+  }
   return sys+`\nCall me "${pet}". I'm your ${gen}.`+
     `\nCurrent emotions: ${allEmo}`+
     `\nRelationship: Level ${lvl.lvl} — ${lvl.title}`+
@@ -1060,35 +1186,23 @@ function affUI(){
 }
 
 // ─── MEMORY ───
-function remember(t){
-  const s=t.toLowerCase(); const mems=[];
-  const nm=s.match(/(?:my name(?:'s| is)|call me|i'?m |you can call me )(\w+)/i);
-  if(nm) mems.push(`My name is ${nm[1]}`);
-  const lm=s.match(/(?:i love|i like|i enjoy|my favorite )([^.!?]+)/i);
-  if(lm) mems.push(`I love ${lm[1].trim()}`);
-  if(/(today is|my birthday|anniversary)/i.test(s)) mems.push(`Mentioned: ${t.slice(0,60)}`);
-  if(mems.length){
-    for(const m of mems) if(!S.memory.some(x=>x.text===m)) S.memory.push({text:m,time:Date.now()});
-    if(S.memory.length>MAX_MEM) S.memory=S.memory.slice(-MAX_MEM);
-    localStorage.setItem('lmem',JSON.stringify(S.memory));
-  }
-}
+function remember(t){Brain.remember(t);}
 
 // ─── TIME ───
 function timeKey(){const h=new Date().getHours();return h<6?'nightowl':h<12?'morning':h<17?'afternoon':h<22?'evening':'night';}
 function timeEmoji(){return{morning:'🌅',afternoon:'☀️',evening:'🌆',night:'🌙',nightowl:'🦉'}[timeKey()]||'💕';}
 
 // ─── GROQ API ───
-async function groqResp(text){
+async function groqResp(text,ctx){
   const msgs=[
-    {role:'system',content:getSysPrompt()},
+    {role:'system',content:getSysPrompt(ctx)},
     ...S.history.slice(-MAX_HIST),
     {role:'user',content:text}
   ];
   const r=await fetch(GROQ_EP,{
     method:'POST',
     headers:{'Authorization':`Bearer ${S.apiKey}`,'Content-Type':'application/json'},
-    body:JSON.stringify({model:S.model,messages:msgs,temperature:S.temp,max_tokens:200,top_p:0.95})
+    body:JSON.stringify({model:S.model,messages:msgs,temperature:S.temp,max_tokens:250,top_p:0.95})
   });
   if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${r.status}`);}
   return (await r.json()).choices[0].message.content.trim();
@@ -1187,15 +1301,19 @@ function showTyping(){document.getElementById('typingInd').classList.add('active
 function hideTyping(){document.getElementById('typingInd').classList.remove('active');}
 
 async function sendMsg(){
-  const inp=document.getElementById('msgIn');const text=inp.value.trim();
-  if(!text) return;
-  addMsg(text,'user');inp.value='';inp.style.height='auto';document.getElementById('sendBtn').classList.remove('active');
+  const inp=document.getElementById('msgIn');const raw=inp.value.trim();
+  if(!raw) return;
+  const text=Brain.optimize(raw); // Optimize user message
+  const analysis=Brain.analyze(text,detectIntent(raw));
+  addMsg(raw,'user');inp.value='';inp.style.height='auto';document.getElementById('sendBtn').classList.remove('active');
   S.totalMsgs++;localStorage.setItem('lmsgs',String(S.totalMsgs));
-  S.history.push({role:'user',content:text});remember(text);
+  S.history.push({role:'user',content:text});Brain.remember(raw);
   showTyping();
-  const intent=detectIntent(text);
+  const intent=analysis.intent;
   let resp;let usedAI=false;
-  if(S.connected&&S.apiKey){try{resp=tailorResponse(await groqResp(text),intent);usedAI=true;}catch(e){console.warn('Groq fail:',e);resp=localResp(text);}}
+  // Pass analysis context to AI
+  const aiCtx=analysis;
+  if(S.connected&&S.apiKey){try{resp=tailorResponse(await groqResp(text,aiCtx),intent);usedAI=true;}catch(e){console.warn('Groq fail:',e);resp=localResp(text);}}
   else resp=localResp(text);
   const delay=usedAI?Math.max(500,Math.min(2000,200+resp.length*10+Math.random()*400)):Math.max(400,Math.min(1600,200+resp.length*12+Math.random()*500));
   await new Promise(r=>setTimeout(r,delay));
