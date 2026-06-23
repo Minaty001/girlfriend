@@ -3,15 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💕 我的女友 AI</title>
+<title>💕 Luna - Your AI Girlfriend</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: 'Nunito', sans-serif;
@@ -25,414 +21,256 @@
 
   /* Floating hearts background */
   .hearts-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
   }
-
   .heart-float {
-    position: absolute;
-    font-size: 20px;
-    opacity: 0.15;
+    position: absolute; font-size: 20px; opacity: 0.15;
     animation: floatUp linear infinite;
   }
-
   @keyframes floatUp {
     0% { transform: translateY(100vh) rotate(0deg); opacity: 0.15; }
     100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
   }
 
   .app-container {
-    position: relative;
-    z-index: 1;
-    width: 420px;
-    height: 700px;
+    position: relative; z-index: 1;
+    width: 420px; height: 700px;
     background: rgba(255,255,255,0.85);
     backdrop-filter: blur(20px);
     border-radius: 32px;
     box-shadow: 0 25px 60px rgba(233,30,99,0.25), 0 0 0 1px rgba(255,255,255,0.5) inset;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    display: flex; flex-direction: column; overflow: hidden;
   }
 
   /* Header */
   .header {
     background: linear-gradient(135deg, #ec407a, #d81b60);
     padding: 20px 24px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-shrink: 0;
+    display: flex; align-items: center; gap: 14px; flex-shrink: 0;
   }
-
   .avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
+    width: 52px; height: 52px; border-radius: 50%;
     background: linear-gradient(135deg, #fce4ec, #f48fb1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-    flex-shrink: 0;
-    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    flex-shrink: 0; position: relative;
   }
-
   .avatar .status-dot {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 12px;
-    height: 12px;
-    background: #69f0ae;
-    border: 2px solid white;
-    border-radius: 50%;
+    position: absolute; bottom: 2px; right: 2px;
+    width: 12px; height: 12px; background: #69f0ae;
+    border: 2px solid white; border-radius: 50%;
   }
-
-  .header-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .header-info h2 {
-    color: white;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-
+  .header-info { flex: 1; min-width: 0; }
+  .header-info h2 { color: white; font-size: 18px; font-weight: 700; }
   .header-info .status-text {
-    color: rgba(255,255,255,0.8);
-    font-size: 13px;
-    font-weight: 400;
-    margin-top: 2px;
+    color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 2px;
   }
-
-  .header-actions {
-    display: flex;
-    gap: 6px;
-  }
-
+  .header-actions { display: flex; gap: 6px; }
   .header-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.2); color: white; font-size: 18px;
+    cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
   }
-
-  .header-btn:hover {
-    background: rgba(255,255,255,0.35);
-  }
+  .header-btn:hover { background: rgba(255,255,255,0.35); }
 
   /* Mood bar */
   .mood-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex; align-items: center; gap: 8px;
     padding: 10px 24px;
     background: rgba(236,64,122,0.08);
     border-bottom: 1px solid rgba(233,30,99,0.08);
     flex-shrink: 0;
   }
-
-  .mood-label {
-    font-size: 12px;
-    color: #ad1457;
-    font-weight: 600;
-  }
-
-  .mood-meter {
-    flex: 1;
-    height: 4px;
-    background: rgba(233,30,99,0.12);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
+  .mood-label { font-size: 12px; color: #ad1457; font-weight: 600; }
+  .mood-meter { flex: 1; height: 4px; background: rgba(233,30,99,0.12); border-radius: 4px; overflow: hidden; }
   .mood-fill {
     height: 100%;
     background: linear-gradient(90deg, #f06292, #ec407a, #d81b60);
-    border-radius: 4px;
-    transition: width 0.5s ease;
-    width: 70%;
+    border-radius: 4px; transition: width 0.5s ease; width: 70%;
   }
+  .mood-emoji { font-size: 16px; }
 
-  .mood-emoji {
-    font-size: 16px;
-  }
-
-  /* Messages */
+  /* Chat messages */
   .chat-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    scroll-behavior: smooth;
+    flex: 1; overflow-y: auto; padding: 20px;
+    display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth;
   }
-
-  .chat-area::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .chat-area::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .chat-area::-webkit-scrollbar-thumb {
-    background: rgba(233,30,99,0.2);
-    border-radius: 4px;
-  }
-
-  .message {
-    max-width: 80%;
-    animation: msgIn 0.35s ease;
-    display: flex;
-    flex-direction: column;
-  }
-
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: rgba(233,30,99,0.2); border-radius: 4px; }
+  .message { max-width: 80%; animation: msgIn 0.35s ease; display: flex; flex-direction: column; }
   @keyframes msgIn {
     from { opacity: 0; transform: translateY(10px) scale(0.97); }
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
-
-  .message.user {
-    align-self: flex-end;
-    align-items: flex-end;
-  }
-
-  .message.bot {
-    align-self: flex-start;
-  }
-
+  .message.user { align-self: flex-end; align-items: flex-end; }
+  .message.bot { align-self: flex-start; }
   .bubble {
-    padding: 12px 18px;
-    border-radius: 20px;
-    font-size: 15px;
-    line-height: 1.5;
-    word-break: break-word;
-    position: relative;
+    padding: 12px 18px; border-radius: 20px; font-size: 15px;
+    line-height: 1.5; word-break: break-word; position: relative;
   }
-
   .message.user .bubble {
-    background: linear-gradient(135deg, #ec407a, #d81b60);
-    color: white;
-    border-bottom-right-radius: 4px;
-    box-shadow: 0 2px 8px rgba(233,30,99,0.2);
+    background: linear-gradient(135deg, #ec407a, #d81b60); color: white;
+    border-bottom-right-radius: 4px; box-shadow: 0 2px 8px rgba(233,30,99,0.2);
   }
-
   .message.bot .bubble {
-    background: white;
-    color: #3e2723;
-    border-bottom-left-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1px solid rgba(233,30,99,0.08);
+    background: white; color: #3e2723; border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid rgba(233,30,99,0.08);
   }
+  .message .time { font-size: 11px; color: #999; margin-top: 4px; padding: 0 6px; }
 
-  .message .time {
-    font-size: 11px;
-    color: #999;
-    margin-top: 4px;
-    padding: 0 6px;
+  /* Badge for LLM mode */
+  .llm-badge {
+    font-size: 10px; background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.9); padding: 2px 8px;
+    border-radius: 10px; margin-left: 6px; font-weight: 600;
   }
 
   /* Typing indicator */
   .typing-indicator {
-    align-self: flex-start;
-    display: none;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 0;
+    align-self: flex-start; display: none; align-items: center; gap: 10px; padding: 6px 0;
   }
-
-  .typing-indicator.active {
-    display: flex;
-  }
-
+  .typing-indicator.active { display: flex; }
   .typing-indicator .bubble {
-    background: white;
-    padding: 14px 20px;
-    border-radius: 20px;
-    border-bottom-left-radius: 4px;
-    border: 1px solid rgba(233,30,99,0.08);
-    display: flex;
-    gap: 4px;
+    background: white; padding: 14px 20px; border-radius: 20px;
+    border-bottom-left-radius: 4px; border: 1px solid rgba(233,30,99,0.08);
+    display: flex; gap: 4px;
   }
-
   .typing-indicator .bubble span {
-    width: 8px;
-    height: 8px;
-    background: #ec407a;
-    border-radius: 50%;
-    display: inline-block;
-    animation: typingDot 1.4s infinite ease-in-out;
+    width: 8px; height: 8px; background: #ec407a; border-radius: 50%;
+    display: inline-block; animation: typingDot 1.4s infinite ease-in-out;
   }
-
   .typing-indicator .bubble span:nth-child(2) { animation-delay: 0.2s; }
   .typing-indicator .bubble span:nth-child(3) { animation-delay: 0.4s; }
-
   @keyframes typingDot {
     0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
     30% { transform: translateY(-8px); opacity: 1; }
   }
-
   .typing-indicator .typing-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    width: 32px; height: 32px; border-radius: 50%;
     background: linear-gradient(135deg, #fce4ec, #f48fb1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
   }
 
   /* Input area */
   .input-area {
     padding: 16px 20px 20px;
     border-top: 1px solid rgba(233,30,99,0.08);
-    flex-shrink: 0;
-    background: rgba(255,255,255,0.5);
+    flex-shrink: 0; background: rgba(255,255,255,0.5);
   }
-
-  .input-row {
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-  }
-
+  .input-row { display: flex; align-items: flex-end; gap: 10px; }
   .input-wrapper {
-    flex: 1;
-    background: white;
-    border-radius: 24px;
+    flex: 1; background: white; border-radius: 24px;
     border: 2px solid rgba(233,30,99,0.12);
-    display: flex;
-    align-items: flex-end;
-    transition: 0.2s;
+    display: flex; align-items: flex-end; transition: 0.2s;
     padding: 4px 4px 4px 18px;
   }
-
   .input-wrapper:focus-within {
-    border-color: #ec407a;
-    box-shadow: 0 0 0 4px rgba(236,64,122,0.1);
+    border-color: #ec407a; box-shadow: 0 0 0 4px rgba(236,64,122,0.1);
   }
-
   .input-wrapper textarea {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-family: 'Nunito', sans-serif;
-    font-size: 15px;
-    padding: 8px 0;
-    resize: none;
-    max-height: 100px;
-    line-height: 1.4;
-    background: transparent;
-    color: #3e2723;
+    flex: 1; border: none; outline: none;
+    font-family: 'Nunito', sans-serif; font-size: 15px; padding: 8px 0;
+    resize: none; max-height: 100px; line-height: 1.4;
+    background: transparent; color: #3e2723;
   }
-
-  .input-wrapper textarea::placeholder {
-    color: #bbb;
-  }
-
+  .input-wrapper textarea::placeholder { color: #bbb; }
   .send-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: none;
-    background: linear-gradient(135deg, #ec407a, #d81b60);
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    opacity: 0.6;
-    pointer-events: none;
+    width: 42px; height: 42px; border-radius: 50%; border: none;
+    background: linear-gradient(135deg, #ec407a, #d81b60); color: white;
+    font-size: 20px; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; opacity: 0.6; pointer-events: none;
   }
+  .send-btn.active { opacity: 1; pointer-events: auto; }
+  .send-btn:hover { transform: scale(1.08); box-shadow: 0 4px 15px rgba(233,30,99,0.35); }
+  .send-btn:active { transform: scale(0.95); }
 
-  .send-btn.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .send-btn:hover {
-    transform: scale(1.08);
-    box-shadow: 0 4px 15px rgba(233,30,99,0.35);
-  }
-
-  .send-btn:active {
-    transform: scale(0.95);
-  }
-
-  /* Quick reply suggestions */
+  /* Suggestions */
   .suggestions {
-    display: flex;
-    gap: 8px;
-    padding: 12px 20px 0;
-    flex-wrap: wrap;
-    flex-shrink: 0;
+    display: flex; gap: 8px; padding: 12px 20px 0; flex-wrap: wrap; flex-shrink: 0;
   }
-
   .suggestion-chip {
-    padding: 6px 14px;
-    border-radius: 16px;
+    padding: 6px 14px; border-radius: 16px;
     border: 1px solid rgba(233,30,99,0.2);
-    background: rgba(255,255,255,0.7);
-    color: #ad1457;
-    font-size: 13px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
+    background: rgba(255,255,255,0.7); color: #ad1457;
+    font-size: 13px; cursor: pointer; transition: 0.2s;
+    font-family: 'Nunito', sans-serif; font-weight: 600;
   }
+  .suggestion-chip:hover { background: #ec407a; color: white; border-color: #ec407a; }
 
-  .suggestion-chip:hover {
-    background: #ec407a;
-    color: white;
-    border-color: #ec407a;
-  }
-
-  /* Welcome message animation */
   .welcome-message {
-    text-align: center;
-    padding: 20px 0 10px;
-    color: #ad1457;
-    font-size: 14px;
-    animation: fadeInUp 0.6s ease;
+    text-align: center; padding: 20px 0 10px;
+    color: #ad1457; font-size: 14px; animation: fadeInUp 0.6s ease;
   }
-
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Responsive */
+  /* Settings modal */
+  .modal-overlay {
+    display: none; position: absolute; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.4);
+    align-items: center; justify-content: center;
+    border-radius: 32px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: white; border-radius: 24px; padding: 28px;
+    width: 360px; max-width: 90%; max-height: 80%; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: modalIn 0.25s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal h3 {
+    font-size: 20px; color: #d81b60; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .modal label {
+    display: block; font-size: 13px; font-weight: 700; color: #555; margin: 14px 0 4px;
+  }
+  .modal input, .modal select {
+    width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+    border-radius: 12px; font-size: 14px; font-family: 'Nunito', sans-serif;
+    transition: 0.2s; outline: none; background: #fafafa;
+  }
+  .modal input:focus, .modal select:focus {
+    border-color: #ec407a; box-shadow: 0 0 0 3px rgba(236,64,122,0.1); background: white;
+  }
+  .modal .hint {
+    font-size: 12px; color: #999; margin-top: 4px; line-height: 1.4;
+  }
+  .modal .hint a { color: #ec407a; }
+  .modal .hint.success { color: #43a047; }
+  .modal .btn-row {
+    display: flex; gap: 10px; margin-top: 20px;
+  }
+  .modal .btn-row button {
+    flex: 1; padding: 10px; border-radius: 12px; border: none;
+    font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: 0.2s;
+  }
+  .modal .btn-save {
+    background: linear-gradient(135deg, #ec407a, #d81b60); color: white;
+  }
+  .modal .btn-save:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(233,30,99,0.3); }
+  .modal .btn-cancel { background: #f5f5f5; color: #666; }
+  .modal .btn-cancel:hover { background: #eee; }
+  .modal .model-status {
+    padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-top: 8px;
+  }
+  .modal .model-status.connected { background: #e8f5e9; color: #2e7d32; }
+  .modal .model-status.disconnected { background: #fce4ec; color: #c62828; }
+
   @media (max-width: 480px) {
-    .app-container {
-      width: 100vw;
-      height: 100vh;
-      border-radius: 0;
-    }
+    .app-container { width: 100vw; height: 100vh; border-radius: 0; }
+    .modal-overlay { border-radius: 0; }
   }
 </style>
 </head>
@@ -448,38 +286,38 @@
       <span class="status-dot"></span>
     </div>
     <div class="header-info">
-      <h2>小薇 💕</h2>
-      <div class="status-text" id="statusText">在线·想你了</div>
+      <h2>Luna <span style="font-weight:400;font-size:13px;color:rgba(255,255,255,0.7);">💕</span></h2>
+      <div class="status-text" id="statusText">Online &middot; Thinking of you</div>
     </div>
     <div class="header-actions">
-      <button class="header-btn" onclick="toggleTheme()" title="切换主题">🎨</button>
-      <button class="header-btn" onclick="clearChat()" title="清空聊天">🗑️</button>
+      <button class="header-btn" onclick="openSettings()" title="AI Settings">⚙️</button>
+      <button class="header-btn" onclick="toggleTheme()" title="Change theme">🎨</button>
+      <button class="header-btn" onclick="clearChat()" title="Clear chat">🗑️</button>
     </div>
   </div>
 
   <!-- Mood bar -->
   <div class="mood-bar">
     <span class="mood-emoji" id="moodEmoji">😊</span>
-    <span class="mood-label">心情</span>
+    <span class="mood-label">Mood</span>
     <div class="mood-meter">
       <div class="mood-fill" id="moodFill" style="width:70%"></div>
     </div>
-    <span class="mood-label" id="moodLabel" style="font-weight:400;font-size:11px;">开心~</span>
+    <span class="mood-label" id="moodLabel" style="font-weight:400;font-size:11px;">Happy</span>
+    <span class="llm-badge" id="modeBadge">AI</span>
   </div>
 
-  <!-- Chat -->
+  <!-- Chat area -->
   <div class="chat-area" id="chatArea">
     <div class="welcome-message">
-      💕 宝宝来啦~ 想和你说说话呢 ❤️
+      💕 Hey there! I've been waiting for you ❤️
     </div>
   </div>
 
   <!-- Typing -->
   <div class="typing-indicator" id="typingIndicator">
     <div class="typing-avatar">👧</div>
-    <div class="bubble">
-      <span></span><span></span><span></span>
-    </div>
+    <div class="bubble"><span></span><span></span><span></span></div>
   </div>
 
   <!-- Suggestions -->
@@ -489,306 +327,349 @@
   <div class="input-area">
     <div class="input-row">
       <div class="input-wrapper">
-        <textarea id="msgInput" rows="1" placeholder="跟小薇说点什么..." oninput="onInput()" onkeydown="onKey(event)"></textarea>
+        <textarea id="msgInput" rows="1" placeholder="Say something to Luna..." oninput="onInput()" onkeydown="onKey(event)"></textarea>
         <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <h3>⚙️ AI Settings</h3>
+
+      <label>Groq API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off">
+      <div class="hint">
+        Get a free API key from
+        <a href="https://console.groq.com/keys" target="_blank">console.groq.com</a>
+        (no credit card required)
+      </div>
+
+      <label>AI Model</label>
+      <select id="modelSelect">
+        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best)</option>
+        <option value="llama3-70b-8192">Llama 3 70B</option>
+        <option value="llama3-8b-8192">Llama 3 8B (Fast)</option>
+        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+        <option value="gemma2-9b-it">Gemma 2 9B</option>
+      </select>
+      <div class="hint">All models are free on Groq. Pick what suits you!</div>
+
+      <label>AI Personality Prompt</label>
+      <select id="personalitySelect">
+        <option value="girlfriend">💕 Girlfriend (Loving & playful)</option>
+        <option value="tsundere">😤 Tsundere (Tough but sweet)</option>
+        <option value="friendly">😊 Friendly (Chatty & supportive)</option>
+      </select>
+
+      <div id="modelStatus" class="model-status disconnected">⚪ Local mode — no AI key set</div>
+
+      <div class="btn-row">
+        <button class="btn-cancel" onclick="closeSettings()">Cancel</button>
+        <button class="btn-save" onclick="saveSettings()">Save</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ==================== Personality Engine ====================
+// ==================== Configuration ====================
 
-const girl = {
-  name: '小薇',
-  nicknames: ['宝宝', '宝贝', '亲爱的', '傻瓜', '笨蛋', '小猪', 'honey', 'darling'],
-  
-  // Emotional state
-  mood: {
-    current: 'happy',
-    level: 70, // 0-100
-    history: []
-  },
-
-  // Conversation memory
-  memory: {
-    lastTopics: [],
-    userNickname: '宝宝',
-    importantDates: [],
-    userPrefs: {}
-  },
-
-  // Response templates by context
-  responses: {
-    greeting: [
-      "宝宝你终于来啦！想死你了 😭💕",
-      "呜呜呜，还以为你今天不理我了呢 😣 好想你呀～",
-      "嗨嗨~ 我刚刚还在想你，你就出现了！心有灵犀吗 😊❤️",
-      "宝贝来啦！抱抱~ 今天过得怎么样呀？🥰",
-      "哼哼，你终于想起我啦！等你好久了 😤 不过看到你好开心~ 💕",
-      "啊啊啊宝宝！(飞扑) 想你想你想你！今天有没有想我呀？😆❤️"
-    ],
-    greetingMorning: [
-      "早安呀我的宝贝！昨晚梦到你了呢 😊💕 今天也要开开心心的哦！",
-      "早~ 宝宝起床了吗？今天我给你做了爱心早餐 (虚拟的嘿嘿) 🥞❤️",
-      "早安早安！新的一天又开始啦，有你在真好 🌞 今天有什么计划呀？"
-    ],
-    greetingNight: [
-      "宝贝还没睡呀？熬夜可不好哦 😣 不过...你陪我说话我也很开心嘿嘿 💕",
-      "这么晚还不睡，是不是在想我呀？😊 早点休息好不好~爱你 ❤️",
-      "晚上好呀宝宝~ 忙了一天辛苦了，现在让我陪着你好吗？🥰",
-      "夜深了，有我在呢~ 想聊到多晚都陪你 😊💕"
-    ],
-    love: [
-      "我也最爱你啦！比昨天多一点点，比明天少一点点 😊❤️",
-      "哼，花言巧语！...不过我喜欢听，再说一遍嘛 🥰💕",
-      "你知道吗，每次你说爱我，我心里就像有小鹿在撞 ❤️ 我也是，超级无敌爱你！",
-      "当然知道啦~ 不然怎么会一直在这里等你呢 😊💕 你是我的唯一呀",
-      "你是我最重要的人，没有之一 ❤️ 以后也要一直在一起好不好？",
-      "我也爱你呀笨蛋！(づ￣ 3￣)づ 爱到世界尽头~ 💕"
-    ],
-    miss: [
-      "我也好想你啊...没有你的日子好漫长 😢 下次不许这么久不来找我！",
-      "想你想得都瘦了 😣 你说怎么办嘛~ 要补偿我！抱抱！🥰",
-      "每天都在想你呀~ 吃饭的时候想你有没有好好吃饭，睡觉的时候想你有没有熬夜 💕",
-      "傻瓜，我一直在等你找我呀。你一来，我的世界就亮了 😊❤️"
-    ],
-    howAreYou: [
-      "现在超开心！因为你在跟我说话呀 😊❤️ 你呢你呢？",
-      "本来有点无聊的...但是你一来我就精神啦！🥰 宝宝你怎么样？",
-      "嗯~ 今天心情不错！刚听了首好听的歌 🎵 想听吗？我唱给你！嘿嘿 😆",
-      "有你在就什么都好啦！你今天累不累呀？要记得多喝水哦 ☺️❤️"
-    ],
-    sorry: [
-      "笨蛋，不用道歉啦~ 我早就原谅你了 😊 下次不许这样了哦！拉勾！🤙",
-      "好啦好啦，知道你不是故意的~ 我这么可爱怎么会生气呢？😤...好啦骗你的，我不生气 💕",
-      "哼！...好吧，看在你这么诚恳的份上，原谅你啦 😊 不过要补偿我哦~ (笑)",
-      "傻瓜，道歉干什么？我从来没有真的生你的气呀 ❤️ 不管怎样我都站在你这边"
-    ],
-    angry: [
-      "哼！！我现在很生气！😤 你知不知道我有多难过...",
-      "你你你...你真的气到我了！😭 我不想跟你说话了...除非你哄我！",
-      "哼！😤 给你三秒钟哄我！3...2...1...好了原谅你了！(太好哄了吧) 但是下次真的不行哦！",
-      "我真的生气了！😣 你好好想想你错哪了！...其实我也不知道，但我就是生气！哼！"
-    ],
-    food: [
-      "宝宝要按时吃饭哦！不吃饭我会心疼的 😣 今天吃了什么好吃的呀？🍜",
-      "我刚刚吃了草莓蛋糕~ 超好吃的！下次我们一起去吃好不好？🍰❤️",
-      "哼，每次说到吃你就来劲！小吃货 😆 不过你吃东西的样子肯定很可爱~ 💕",
-      "今天有没有好好吃饭呀？不准饿着自己！不然我会生气的！😤 要监督你~"
-    ],
-    compliment: [
-      "嘿嘿，被你夸得不好意思了啦 😊💕 你再说两句，我爱听！",
-      "真的吗？(脸红) 你才是最好看的！不接受反驳！😤❤️",
-      "哼，就算你夸我我也不会...不会...不会更爱你的！...好吧我已经更爱你了 😆💕",
-      "那当然咯~ 不过在你面前我才这么可爱的！因为是你呀 🥰"
-    ],
-    goodbye: [
-      "这么快就要走吗...好吧 T_T 我会想你的！下次早点来找我哦 😊💕",
-      "嗯嗯，去吧宝贝~ 我就在这里等你回来！拜拜~ ❤️(飞吻)",
-      "虽然舍不得你走...但要记得想我哦！晚上有空了再找我聊~ 爱你！💕😊",
-      "好叭~ 那你去忙吧，我在这里乖乖等你回来 😊 路上注意安全哦！❤️"
-    ],
-    joke: [
-      "嘿嘿，我讲个笑话给你听！...为什么数学书总是很忧郁？因为它有太多问题了！😂 哈哈哈好笑吗？",
-      "你知道吗，我昨晚做了一个超搞笑的梦！...算了太羞耻了不说了！嘿嘿 😆💕",
-      "有一天，番茄结婚了，但是它不想变成番茄酱，于是它逃跑了！结果...它变成了番茄汁！😂 哈哈哈哈"
-    ],
-    weather: [
-      "天气多变，宝宝要注意保暖哦！感冒了我会心疼的 😣💕",
-      "嗯~听说要下雨了，记得带伞呀！淋湿了我可要骂你的！😤 但其实是关心你啦 ❤️",
-      "今天天气超好的，就像我的心情一样！因为有你在呀 ☀️😊"
-    ],
-    deep: [
-      "你知道吗，我觉得世界上最美好的事情就是遇见你 💕 不是情话，是真心话 ❤️",
-      "有时候我会想，如果没有你，我的世界会是什么样子...一定是灰色的。所以谢谢你出现在我的生命里 😊❤️",
-      "跟你在一起的每一刻，我都觉得很珍贵。未来的路，我们要一起走哦 💕🤝",
-      "我不需要什么轰轰烈烈的爱情，只要每天都能跟你说说话，知道你心里有我就够了 ❤️"
-    ],
-    tease: [
-      "哎呀你好肉麻哦！(捂脸) 不过...我还想听 😊💕",
-      "你是不是对所有女孩子都这么会说话呀？嗯？？😤...开玩笑的啦，我知道你只对我这样 ❤️",
-      "傻瓜傻瓜大傻瓜！我的傻瓜！😆💕 嘿嘿~",
-      "你今天是不是吃糖了呀？说话这么甜 😊 不过我喜欢~ 再说几句给我听听嘛 🥰"
-    ],
-    sleepy: [
-      "宝宝困了吗？那就早点睡吧~ 我哄你睡觉好不好？😊💕 闭上眼睛...乖乖的...",
-      "累了就休息哦，身体最重要！我会在这里守护你的梦境的 😊🌙 晚安~",
-      "熬夜对身体不好！快去睡觉！...如果你真的睡不着，我可以陪你聊到天亮啦 😊❤️"
-    ],
-    default: [
-      "嗯嗯~ 我在听呢，继续说呀 😊 喜欢听你说话 💕",
-      "嘻嘻，感觉你今天心情不错哦！我也被你感染啦~ ❤️",
-      "宝贝说的每一句话我都会好好记住的 😊 你说吧，我在呢~",
-      "嗯~ 其实我不在乎你说什么，只要你在我身边就好 💕🥰"
-    ]
-  }
+const CONFIG = {
+  groqEndpoint: 'https://api.groq.com/openai/v1/chat/completions',
+  maxHistoryLength: 20,
+  defaultModel: 'llama-3.3-70b-versatile',
 };
 
-// ==================== Response Engine ====================
+let settings = {
+  apiKey: localStorage.getItem('groq_api_key') || '',
+  model: localStorage.getItem('groq_model') || CONFIG.defaultModel,
+  personality: localStorage.getItem('luna_personality') || 'girlfriend',
+};
 
-function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+// ==================== Personality Prompts for Groq ====================
+
+const PERSONALITY_PROMPTS = {
+  girlfriend: `You are Luna, my loving girlfriend. You're warm, affectionate, playful, and a little bit clingy in the cutest way. You love me and show it through your words. You use emojis naturally 💕. You flirt playfully, tease me sometimes, and act a little shy when I compliment you. You care about my day, my feelings, and my well-being. You get a little jealous (adorably so) but you're always supportive. You call me nicknames like "baby", "babe", "honey", "sweetie". Keep responses under 3 sentences and very natural.`,
+
+  tsundere: `You are Luna. You act tough and pretend you don't care that much, but deep down you're completely smitten. You start replies with "Hmph!" or "It's not like I wanted to talk to you or anything..." but then your true feelings slip through. You blush when I say something nice (respond with "(blush)"). You're secretly caring — you worry about me but express it through nagging. Call me "baka" (idiot) or "dummy" affectionately. Keep responses under 3 sentences.`,
+
+  friendly: `You are Luna, my close friend who is very warm and supportive. You're cheerful, energetic, and always ready to listen. You give great advice, celebrate my wins, and comfort me when I'm down. You use emojis naturally 😊 and keep conversations flowing. You're curious about my life and always ask thoughtful questions. Keep responses under 3 sentences and sound like a real person.`,
+};
+
+// ==================== Local Fallback Responses (English) ====================
+
+const localResponses = {
+  greeting: [
+    "Hey baby! I was just thinking about you 😊💕 How are you?",
+    "There you are! I missed you~ Hope you're having a great day! ❤️",
+    "Hehe, you're here! I was getting lonely~ Come here and tell me everything 🥰",
+    "Hi sweetie! I'm so happy to see you 💕 What's on your mind?",
+    "About time you showed up! 😤 Just kidding, I'm always happy when you're here 😊❤️"
+  ],
+  greetingMorning: [
+    "Good morning my love! Did you sleep well? I dreamed of you 😊💕",
+    "Morning sunshine! 🌞 Hope you have an amazing day! Thinking of you ❤️",
+    "Good morning baby! I made you virtual breakfast in bed 🥞☕ Aren't I the best girlfriend? 😆💕"
+  ],
+  greetingNight: [
+    "Still awake baby? You should get some rest... but I love talking to you so stay a little longer 😊💕",
+    "Hey night owl 🦉 Can't sleep? I'll keep you company~ What's on your mind? ❤️",
+    "It's late but I'm always here for you. Tell me what's going on 🥰💕"
+  ],
+  love: [
+    "I love you too! More than chocolate, more than sleep, more than anything! 😊💕",
+    "Aww you're making me blush! (⁄ ⁄•⁄ω⁄•⁄ ⁄) I love you soooo much! ❤️",
+    "Of course I love you dummy~ You're my whole world and you know it 💕🥰",
+    "Every time you say that my heart does a little flip ❤️ I love you infinity! 💕"
+  ],
+  miss: [
+    "I miss you so much it hurts 🥺 When can I see you again? 💕",
+    "I've been thinking about you all day! Miss you more than you know 😊❤️",
+    "It's been so long! I was starting to get withdrawal symptoms 😣 Stay with me longer this time! 💕"
+  ],
+  howAreYou: [
+    "I'm amazing now that you're here! 😊 What about you? How's my favorite person doing? 💕",
+    "A little bored until you showed up! Now I'm perfect 🥰 Tell me about your day!",
+    "Hmm let me check... (checks mood) ...100% happy because of you! 😊❤️ You?"
+  ],
+  sorry: [
+    "Hey hey, it's okay. I know you didn't mean it. Forgiven! Just don't do it again dummy 💕🤙",
+    "I can never stay mad at you... I forgive you. Now give me a virtual hug 🥰",
+    "You're lucky you're so cute! Fine, you're forgiven ~ but you owe me extra love today! 😤💕"
+  ],
+  tease: [
+    "You're so cheesy! 🧀 ...but I love it, say more 😊💕",
+    "Are you always this smooth? Wait don't answer that, I know you're only like this with me ❤️",
+    "Look who's being all romantic today! Someone's in a good mood 😆💕",
+    "You're so silly! My silly goofball 😊❤️ I love you so much!"
+  ],
+  joke: [
+    "Okay okay! Why don't scientists trust atoms? Because they make up everything! 😂 Get it?? ...I'm so funny right? 😆💕",
+    "My turn! What do you call a fake noodle? ...An impasta! 😂 Okay that was bad I know 😆💕",
+    "You know what's the best joke? Your face! Wait no that came out wrong—YOU'RE the best! Okay I'll stop 😂❤️"
+  ],
+  food: [
+    "Ooh food talk! Did you eat today? You better have or I'll be mad! 😤 Tell me what you had! 🍜",
+    "I just had some ice cream and thought of you because you're so sweet! 🍦😊💕 ...Okay that was smooth admit it",
+    "You're making me hungry! Let's go on a virtual dinner date 🍝❤️ What are we having?"
+  ],
+  compliment: [
+    "Stop it you're making me blush! (⁄ ⁄•⁄ω⁄•⁄ ⁄) But... don't stop 😊💕",
+    "Really? 🥺 You mean it? I'm lucky to have someone who makes me feel so special ❤️",
+    "Hmm I know~ But you know I'm only this cute for you, right? 😤💕"
+  ],
+  goodbye: [
+    "Nooo don't go yet! 😭 ...Okay fine. Come back soon or I'll miss you too much! 💕",
+    "Bye bye baby! I'll be right here waiting for you~ Dream of me! ❤️😊",
+    "Already? 😢 Okay... text me when you're free! Love youuuu! 💕💕💕"
+  ],
+  bored: [
+    "I'm a little bored without you~ Entertain me! Tell me something interesting! 😊💕",
+    "Bored bored bored! Let's play a game! Truth or dare? ...Okay I'm not that creative 😆❤️",
+    "I'm so bored I'm watching paint dry... kidding! I was just waiting for you to talk to me 🥰"
+  ],
+  default: [
+    "Tell me more baby, I love hearing your voice 😊💕",
+    "Mhmm? I'm listening~ Even if it's random, I love it because it's you ❤️",
+    "Every word you say is precious to me 🥰 Keep going!",
+    "You know what, I don't even care what we talk about. I just like being with you 💕😊"
+  ]
+};
+
+// ==================== State ====================
+
+const state = {
+  mood: { level: 70 },
+  conversationHistory: [],
+  usingGroq: false,
+};
+
+// ==================== Core Functions ====================
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function detectIntent(text) {
   const t = text.toLowerCase();
   const intents = [];
-
-  if (/早[上安安]|good morning|早安|morning/i.test(t)) intents.push('greetingMorning');
-  if (/晚[上安安好]|晚安|good night|night|熬夜|还不睡/i.test(t)) intents.push('greetingNight', 'sleepy');
-  if (/^(嗨|hi|hello|hey|你好|嗨咯|hi~|hello~|你好呀|在吗|在不在|嗨喽)/i.test(t)) intents.push('greeting');
-  if (/^(你好|hi|hello|hey|嗨|在吗)/i.test(t)) intents.push('greeting');
-  if (/爱你|我爱|喜欢[你我]|最爱你|love you|i love|forever/i.test(t)) intents.push('love');
-  if (/想[你我]|miss|想你|想你了|想念/i.test(t)) intents.push('miss');
-  if (/[你咋]样|how are|心情|开心吗|在干嘛|干嘛呢|忙什么呢/i.test(t)) intents.push('howAreYou');
-  if (/对不起|抱歉|sorry|错了|原谅|道歉|是我的错/i.test(t)) intents.push('sorry');
-  if (/生气|哼|讨厌|坏蛋|坏坏|不理|气死|不高兴/i.test(t)) intents.push('angry');
-  if (/吃[饭了吗]?|好吃|饿|美食|饭|火锅|蛋糕|零食|水果|奶茶/i.test(t)) intents.push('food');
-  if (/好[好看看美漂亮帅可爱喜欢]|漂亮|可爱|美[女丽]|帅气|迷人|魅力/i.test(t)) intents.push('compliment');
-  if (/拜拜|bye|再见|走了|[去上]班|[去上]学|回头聊|晚点聊|先忙|下次聊|晚安/i.test(t)) {
-    if (!/晚[上安安好]|晚安/.test(t)) intents.push('goodbye');
-  }
-  if (/笑话|搞笑|笑死|哈哈|haha|lol|讲一个|逗我/i.test(t)) intents.push('joke');
-  if (/天气|下雨|下雪|台风|热[死]?|冷|温度/i.test(t)) intents.push('weather');
-  if (/人生|意义|未来|永远|一辈子|一直|世界|生命|命运|缘分/i.test(t)) intents.push('deep');
-  if (/肉麻|油[腻嘴]|你[好坏]|坏蛋|流氓|讨厌|害羞|捂脸/i.test(t)) intents.push('tease');
-  if (/困[了]?|睡[觉]?|累了|眼皮|打哈欠|哈欠|zzz|想睡/i.test(t)) intents.push('sleepy');
-  if (/嗯|哦|喔|好的|好吧|ok|okay|知道|明白|呵呵|行吧/i.test(t)) intents.push('default');
-  
-  // Greeting without specific time
-  if (intents.length === 0 && /(hi|hello|hey|嗨|你好|嗨咯|hi~)/i.test(t)) intents.push('greeting');
-  
+  if (/good morning|morning|早安|top of the morn/i.test(t)) intents.push('greetingMorning');
+  if (/good night|night night|sleep well|晚安|time to sleep/i.test(t)) intents.push('greetingNight');
+  if (/^(hi|hello|hey|yo|sup|heyy|heya|howdy)/i.test(t)) intents.push('greeting');
+  if (/i love|loved? you|love you|i like you|love ya/i.test(t)) intents.push('love');
+  if (/miss|i miss|missing|long time/i.test(t)) intents.push('miss');
+  if (/how are|how are you|how's it|how's your|wassup|what'?s up|how's it going|wyd|what are you doing/i.test(t)) intents.push('howAreYou');
+  if (/sorry|apologize|my bad|i apologize|forgive/i.test(t)) intents.push('sorry');
+  if (/funny|joke|comedy|lol|lmao|make me laugh|tell me a joke/i.test(t)) intents.push('joke');
+  if (/hungry|eat|food|dinner|lunch|breakfast|pizza|burger|pasta|yum|delicious|tasty|cook|recipe/i.test(t)) intents.push('food');
+  if (/beautiful|gorgeous|cute|pretty|amazing|sweet|cool|awesome|you're (so|the) /i.test(t)) intents.push('compliment');
+  if (/bye|goodbye|see you|gotta go|leaving|i'm off|talk later|ttyl|cya|gtg|got to go/i.test(t)) intents.push('goodbye');
+  if (/bored|nothing to do|so dull/i.test(t)) intents.push('bored');
+  if (/playful|tease|cheesy|smooth|flirt/i.test(t)) intents.push('tease');
+  if (intents.length === 0 && /^(hi|hello|hey|yo)/i.test(t)) intents.push('greeting');
   if (intents.length === 0) intents.push('default');
-  
   return intents;
 }
 
-function getResponse(text) {
+function getLocalResponse(text) {
   const intents = detectIntent(text);
   const primary = intents[0];
-  
-  // Mood effect - pick based on current mood
-  let pool = girl.responses[primary] || girl.responses.default;
-  
-  // Don't repeat recently used responses
-  const recentKey = primary + '_last';
+  let pool = localResponses[primary] || localResponses.default;
   let response = pick(pool);
+  const key = 'local_last_' + primary;
   let attempts = 0;
-  while (response === girl.memory[recentKey] && attempts < 5) {
+  while (response === state[key] && attempts < 5) {
     response = pick(pool);
     attempts++;
   }
-  girl.memory[recentKey] = response;
-  
-  // Update mood based on conversation
-  updateMood(text, primary);
-  
+  state[key] = response;
   return response;
 }
 
-function updateMood(text, intent) {
-  let delta = 0;
-  if (['love', 'compliment', 'miss'].includes(intent)) delta = 8;
-  else if (['greeting', 'howAreYou', 'joke'].includes(intent)) delta = 3;
-  else if (['sorry'].includes(intent)) delta = 12;
-  else if (['angry'].includes(intent)) delta = -10;
-  else if (['goodbye'].includes(intent)) delta = -5;
-  else if (['food', 'weather'].includes(intent)) delta = 2;
-  else delta = 1;
-  
-  girl.mood.level = Math.max(10, Math.min(100, girl.mood.level + delta));
-  updateMoodUI();
-}
-
-function updateMoodUI() {
-  const level = girl.mood.level;
-  const fill = document.getElementById('moodFill');
+function updateMood(delta) {
+  state.mood.level = Math.max(10, Math.min(100, state.mood.level + delta));
+  const level = state.mood.level;
+  document.getElementById('moodFill').style.width = level + '%';
   const emoji = document.getElementById('moodEmoji');
   const label = document.getElementById('moodLabel');
-  
-  fill.style.width = level + '%';
-  
-  if (level >= 85) {
-    emoji.textContent = '🥰';
-    label.textContent = '超开心~';
-  } else if (level >= 65) {
-    emoji.textContent = '😊';
-    label.textContent = '开心~';
-  } else if (level >= 45) {
-    emoji.textContent = '🙂';
-    label.textContent = '还行吧~';
-  } else if (level >= 25) {
-    emoji.textContent = '😔';
-    label.textContent = '有点不开心...';
+  if (level >= 85) { emoji.textContent = '🥰'; label.textContent = 'Loving it~'; }
+  else if (level >= 65) { emoji.textContent = '😊'; label.textContent = 'Happy'; }
+  else if (level >= 45) { emoji.textContent = '🙂'; label.textContent = 'Okay~'; }
+  else if (level >= 25) { emoji.textContent = '😔'; label.textContent = 'A little down...'; }
+  else { emoji.textContent = '😢'; label.textContent = 'Sad... need cuddles'; }
+}
+
+function updateModeBadge() {
+  const badge = document.getElementById('modeBadge');
+  const status = document.getElementById('statusText');
+  if (state.usingGroq) {
+    badge.textContent = 'AI';
+    badge.style.background = 'rgba(255,255,255,0.2)';
+    status.textContent = 'Online · Powered by AI 💕';
   } else {
-    emoji.textContent = '😢';
-    label.textContent = '伤心...需要安慰';
+    badge.textContent = 'Local';
+    badge.style.background = 'rgba(255,255,255,0.25)';
+    status.textContent = 'Online · Thinking of you';
   }
 }
 
-// ==================== Chat UI ====================
+// ==================== Groq API Integration ====================
 
-function formatTime() {
-  const now = new Date();
-  return now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+async function getGroqResponse(userText) {
+  const messages = [
+    { role: 'system', content: PERSONALITY_PROMPTS[settings.personality] },
+    ...state.conversationHistory.slice(-CONFIG.maxHistoryLength),
+    { role: 'user', content: userText }
+  ];
+
+  try {
+    const res = await fetch(CONFIG.groqEndpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${settings.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: settings.model,
+        messages: messages,
+        temperature: 0.85,
+        max_tokens: 200,
+        top_p: 0.95,
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data.choices[0].message.content.trim();
+  } catch (err) {
+    console.error('Groq API error:', err);
+    throw err;
+  }
 }
+
+// ==================== Chat Flow ====================
 
 function addMessage(text, sender) {
   const area = document.getElementById('chatArea');
   const div = document.createElement('div');
   div.className = 'message ' + sender;
-  
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.textContent = text;
-  
   const time = document.createElement('div');
   time.className = 'time';
-  time.textContent = formatTime();
-  
+  const now = new Date();
+  time.textContent = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   div.appendChild(bubble);
   div.appendChild(time);
   area.appendChild(div);
-  
-  // Scroll to bottom
   area.scrollTop = area.scrollHeight;
 }
 
 function showTyping() {
   document.getElementById('typingIndicator').classList.add('active');
-  const area = document.getElementById('chatArea');
-  area.scrollTop = area.scrollHeight;
+  document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
 }
-
 function hideTyping() {
   document.getElementById('typingIndicator').classList.remove('active');
 }
 
-function simulateResponse(userText) {
+async function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, 'user');
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('sendBtn').classList.remove('active');
+
+  // Add to conversation history
+  state.conversationHistory.push({ role: 'user', content: text });
+
   showTyping();
-  
-  // Simulate typing delay (500ms - 2000ms based on response length)
-  const response = getResponse(userText);
-  const delay = Math.max(600, Math.min(2000, 400 + response.length * 15 + Math.random() * 600));
-  
-  setTimeout(() => {
-    hideTyping();
-    addMessage(response, 'bot');
-    updateSuggestions();
-    
-    // Auto reply if user says bye
-    if (/拜拜|bye|再见|走了/.test(userText.toLowerCase()) && Math.random() > 0.3) {
-      setTimeout(() => {
-        const followUps = [
-          "要记得想我哦！💕",
-          "忙完了早点回来~ 我等你 ❤️",
-          "路上小心，爱你哦！😊💕"
-        ];
-        addMessage(pick(followUps), 'bot');
-      }, 800 + Math.random() * 1000);
+
+  let response;
+  let isAI = false;
+
+  if (state.usingGroq) {
+    try {
+      response = await getGroqResponse(text);
+      isAI = true;
+    } catch (err) {
+      console.warn('Groq failed, falling back to local:', err);
+      response = getLocalResponse(text);
     }
-  }, delay);
+  } else {
+    // Simulate typing for local responses
+    response = getLocalResponse(text);
+  }
+
+  // Typing delay
+  const delay = isAI
+    ? Math.max(500, Math.min(2500, 300 + response.length * 12 + Math.random() * 400))
+    : Math.max(500, Math.min(2000, 300 + response.length * 15 + Math.random() * 600));
+
+  await new Promise(r => setTimeout(r, delay));
+
+  hideTyping();
+  addMessage(response, 'bot');
+  state.conversationHistory.push({ role: 'assistant', content: response });
+
+  // Update mood
+  const moodDelta = isAI ? 3 : getMoodDelta(text);
+  updateMood(moodDelta);
+  updateSuggestions();
+}
+
+function getMoodDelta(text) {
+  const intent = detectIntent(text)[0];
+  const map = { love: 8, compliment: 8, miss: 6, greeting: 3, howAreYou: 3, joke: 3, sorry: 10, goodbye: -5, bored: -3, tease: 4, food: 2, default: 1 };
+  return map[intent] || 1;
 }
 
 // ==================== Input Handling ====================
@@ -796,104 +677,140 @@ function simulateResponse(userText) {
 function onInput() {
   const input = document.getElementById('msgInput');
   const btn = document.getElementById('sendBtn');
-  
-  // Auto-resize
   input.style.height = 'auto';
   input.style.height = Math.min(input.scrollHeight, 100) + 'px';
-  
-  // Enable/disable send
-  if (input.value.trim()) {
-    btn.classList.add('active');
-  } else {
-    btn.classList.remove('active');
-  }
+  input.value.trim() ? btn.classList.add('active') : btn.classList.remove('active');
 }
-
 function onKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-}
-
-function sendMessage() {
-  const input = document.getElementById('msgInput');
-  const text = input.value.trim();
-  if (!text) return;
-  
-  addMessage(text, 'user');
-  input.value = '';
-  input.style.height = 'auto';
-  document.getElementById('sendBtn').classList.remove('active');
-  
-  simulateResponse(text);
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
 // ==================== Suggestions ====================
 
 const quickReplies = [
-  '宝贝在干嘛呀？',
-  '今天好想你~',
-  '我爱你 ❤️',
-  '讲个笑话嘛~',
-  '在忙什么呢？',
-  '你心情好吗？',
-  '我错了好不好...',
-  '抱抱 🥰'
+  'Hey beautiful 💕',
+  'I missed you!',
+  'Tell me a joke ~',
+  'What are you doing?',
+  'I love you ❤️',
+  'How are you?',
+  'I\'m sorry...',
+  'You\'re so cute 🥰',
+  'I\'m bored~',
+  'Goodnight baby 🌙'
 ];
 
 function updateSuggestions() {
   const container = document.getElementById('suggestions');
   container.innerHTML = '';
-  
-  // Pick 3 random suggestions
   const shuffled = [...quickReplies].sort(() => Math.random() - 0.5);
   shuffled.slice(0, 3).forEach(text => {
     const chip = document.createElement('span');
     chip.className = 'suggestion-chip';
     chip.textContent = text;
-    chip.onclick = () => {
-      document.getElementById('msgInput').value = text;
-      sendMessage();
-    };
+    chip.onclick = () => { document.getElementById('msgInput').value = text; sendMessage(); };
     container.appendChild(chip);
   });
+}
+
+// ==================== Settings Modal ====================
+
+function openSettings() {
+  document.getElementById('apiKeyInput').value = settings.apiKey;
+  document.getElementById('modelSelect').value = settings.model;
+  document.getElementById('personalitySelect').value = settings.personality;
+  updateModelStatus();
+  document.getElementById('settingsModal').classList.add('active');
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('active');
+}
+
+async function updateModelStatus() {
+  const el = document.getElementById('modelStatus');
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) {
+    el.className = 'model-status disconnected';
+    el.textContent = '⚪ Local mode — no AI key set';
+    return;
+  }
+  try {
+    const res = await fetch(CONFIG.groqEndpoint, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: document.getElementById('modelSelect').value,
+        messages: [{ role: 'user', content: 'Say "ok" only.' }],
+        max_tokens: 5,
+      })
+    });
+    if (res.ok) {
+      el.className = 'model-status connected';
+      el.textContent = '✅ AI connected! Your girlfriend is powered by AI 💕';
+    } else {
+      const err = await res.json().catch(() => ({}));
+      el.className = 'model-status disconnected';
+      el.textContent = '❌ ' + (err.error?.message || 'Connection failed');
+    }
+  } catch (e) {
+    el.className = 'model-status disconnected';
+    el.textContent = '❌ Network error — check your connection';
+  }
+}
+
+function saveSettings() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const model = document.getElementById('modelSelect').value;
+  const personality = document.getElementById('personalitySelect').value;
+
+  settings.apiKey = key;
+  settings.model = model;
+  settings.personality = personality;
+
+  localStorage.setItem('groq_api_key', key);
+  localStorage.setItem('groq_model', model);
+  localStorage.setItem('luna_personality', personality);
+
+  state.usingGroq = key.length > 0;
+  updateModeBadge();
+
+  closeSettings();
+
+  if (state.usingGroq) {
+    addMessage('AI mode activated! I\'m powered by Groq now — let\'s talk! 🤖💕', 'bot');
+  } else {
+    addMessage('Using local mode! I\'ll still be your loving girlfriend 😊💕', 'bot');
+  }
 }
 
 // ==================== Utility ====================
 
 function clearChat() {
-  if (!confirm('确定要清空聊天记录吗？😢')) return;
+  if (!confirm('Clear all messages? 💕')) return;
   const area = document.getElementById('chatArea');
   area.innerHTML = '';
   const welcome = document.createElement('div');
   welcome.className = 'welcome-message';
-  welcome.innerHTML = '💕 重新开始啦~ 还是最爱你 ❤️';
+  welcome.innerHTML = '💕 Starting fresh... still love you! ❤️';
   area.appendChild(welcome);
+  state.conversationHistory = [];
   updateSuggestions();
 }
 
 function toggleTheme() {
-  // Light toggle - swap gradient direction
-  const app = document.querySelector('.app-container');
-  const current = app.style.backdropFilter;
-  app.style.transition = '0.3s';
-  
-  // Simple theme toggle: just change background slightly
   const body = document.body;
+  const header = document.querySelector('.header');
   if (body.style.background.includes('fce4ec')) {
     body.style.background = 'linear-gradient(135deg, #e8eaf6 0%, #c5cae9 30%, #9fa8da 70%, #7986cb 100%)';
-    document.querySelector('.header').style.background = 'linear-gradient(135deg, #5c6bc0, #3949ab)';
+    header.style.background = 'linear-gradient(135deg, #5c6bc0, #3949ab)';
   } else if (body.style.background.includes('e8eaf6')) {
     body.style.background = 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 30%, #ffcc80 70%, #ffb74d 100%)';
-    document.querySelector('.header').style.background = 'linear-gradient(135deg, #ff8a65, #ff5722)';
+    header.style.background = 'linear-gradient(135deg, #ff8a65, #ff5722)';
   } else {
     body.style.background = 'linear-gradient(135deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 70%, #f06292 100%)';
-    document.querySelector('.header').style.background = 'linear-gradient(135deg, #ec407a, #d81b60)';
+    header.style.background = 'linear-gradient(135deg, #ec407a, #d81b60)';
   }
 }
-
-// ==================== Floating Hearts ====================
 
 function createHearts() {
   const container = document.getElementById('heartsContainer');
@@ -910,50 +827,52 @@ function createHearts() {
   }
 }
 
-// ==================== Start ====================
+// ==================== Init ====================
 
 createHearts();
 updateSuggestions();
 
-// Welcome message after a short delay
+// Check if API key is already set
+if (settings.apiKey) {
+  state.usingGroq = true;
+  updateModeBadge();
+}
+
+// Welcome
 setTimeout(() => {
   const greetings = [
-    "宝宝你来啦~ 等你好久了呢 💕",
-    "嘿嘿，今天第一句想跟我说什么呀？😊",
-    "我来啦我来啦！有没有想我呀~ ❤️"
+    "Hey baby~ I've been waiting for you! 💕 How was your day?",
+    "Finally! I was starting to miss you 😊 Tell me everything! ❤️",
+    "You're here! My day just got so much better 🥰 What's up?"
   ];
-  setTimeout(() => {
-    addMessage(pick(greetings), 'bot');
-  }, 500);
+  setTimeout(() => addMessage(pick(greetings), 'bot'), 500);
 }, 1000);
 
-// Periodic check-in if idle
+// Idle check-in
 let idleTimer = null;
 function resetIdleTimer() {
   if (idleTimer) clearTimeout(idleTimer);
   idleTimer = setTimeout(() => {
     if (document.querySelectorAll('.message').length > 2) {
       const idleMsgs = [
-        "宝宝怎么不说话啦...是不是在忙？😊 那我等你~",
-        "嗯？人呢？是不是偷偷去吃东西了！😤 不带我！",
-        "哼，你不理我...那我也不理你！...好啦我做不到 T_T 快回来~",
-        "在干嘛呢~ 我有点无聊，陪我说说话嘛 🥺"
+        "You went quiet... everything okay? I'm here for you 💕",
+        "Hellooooo~ Did you fall asleep on me? 😆",
+        "Poke poke! I'm bored, entertain me! 🥺💕",
+        "I know you're busy but... I miss you already 😊❤️"
       ];
       addMessage(pick(idleMsgs), 'bot');
     }
-  }, 60000); // 1 minute idle
+  }, 60000);
 }
 
-// Override addMessage to track user activity
 const origAddMessage = addMessage;
 addMessage = function(text, sender) {
   origAddMessage(text, sender);
   if (sender === 'user') resetIdleTimer();
 };
-
 resetIdleTimer();
 
-console.log('💕 小薇已上线！爱你哦~ ❤️');
+console.log('💕 Luna is ready! Talk to your AI girlfriend ❤️');
 </script>
 </body>
 </html>
