@@ -11,8 +11,8 @@
 body{
   font-family:'Nunito',sans-serif;
   background:linear-gradient(135deg,#fce4ec,#f8bbd0,#f48fb1,#f06292);
-  height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;
-  transition:background 0.6s ease;
+  height:100vh;height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;transition:background 0.6s ease;
 }
 
 /* ─── Particles ─── */
@@ -39,10 +39,11 @@ body{
 
 /* ─── App ─── */
 .app-container{
-  position:relative;z-index:1;width:440px;height:740px;
-  background:rgba(255,255,255,0.82);backdrop-filter:blur(24px);
+  position:relative;z-index:1;
+  width:min(440px,94vw);height:min(740px,90vh);
+  background:rgba(255,255,255,0.82);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
   border-radius:32px;box-shadow:0 25px 60px rgba(233,30,99,0.25),0 0 0 1px rgba(255,255,255,0.5) inset;
-  display:flex;flex-direction:column;overflow:hidden;transition:box-shadow 0.4s;
+  display:flex;flex-direction:column;overflow:hidden;transition:box-shadow 0.4s, border-radius 0.3s, height 0.3s, width 0.3s;
 }
 
 /* ─── Header ─── */
@@ -361,9 +362,160 @@ body{
 .theme-opt .cd span{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,0.04);}
 .theme-opt .tn{font-size:10px;color:#666;font-weight:600;}
 
+/* ════════════════════════════════════
+   RESPONSIVE — Desktop, Tablet, Phone
+   ════════════════════════════════════ */
+
+/* Tablet: 481px–900px */
+@media(min-width:481px)and(max-width:900px){
+  .app-container{width:min(440px,92vw);height:min(740px,85vh);border-radius:28px;}
+  .modal-overlay{border-radius:28px;}
+}
+
+/* Phone landscape: 481px–768px, shorter screens */
+@media(min-width:481px)and(max-height:700px){
+  .app-container{height:min(740px,94vh);}
+  .emotion-bar{padding:2px 14px;}
+  .affection-bar{padding:3px 14px;}
+  .ai-bar-header{padding:3px 14px;}
+  .header{padding:8px 14px;}
+  .avatar{width:36px;height:36px;font-size:17px;}
+  .header-info h2{font-size:14px;}
+  .header-info .status-text{font-size:10px;}
+  .hbtn{width:28px;height:28px;font-size:13px;}
+  .chat-area{padding:10px 14px;}
+  .bub{padding:8px 14px;font-size:13px;}
+  .ai-bar-body.open{max-height:100px;padding:4px 14px 8px;}
+  .ai-bar-row input{padding:5px 10px;font-size:12px;}
+  .ai-bar-row select{padding:5px 8px;font-size:11px;}
+  .ai-bar-row .ab-btn{padding:5px 12px;font-size:11px;}
+}
+
+/* Phone portrait (most common) */
 @media(max-width:480px){
-  .app-container{width:100vw;height:100vh;border-radius:0;}
+  body{height:100dvh;align-items:stretch;}
+  .app-container{
+    width:100vw;width:100dvw;height:100vh;height:100dvh;
+    border-radius:0;border:none;box-shadow:none;
+    transition:none;
+  }
   .modal-overlay{border-radius:0;}
+
+  /* ── Header ── */
+  .header{padding:10px 12px 8px;gap:8px;}
+  .avatar{width:40px;height:40px;font-size:18px;}
+  .avatar .status-dot{width:9px;height:9px;bottom:0;right:0;}
+  .header-info h2{font-size:15px;}
+  .header-info .status-text{font-size:11px;}
+  .hbtn{width:34px;height:34px;font-size:14px;}
+  .hbtn:active{background:rgba(255,255,255,0.3);transform:scale(0.93);}
+
+  /* ── Affection ── */
+  .affection-bar{padding:3px 12px;gap:4px;}
+  .affection-icon{font-size:11px;}
+  .affection-track{height:3px;}
+  .affection-label{font-size:9px;}
+
+  /* ── Emotions ── */
+  .emotion-bar{padding:2px 12px;gap:3px;}
+  .etag{font-size:9px;padding:1px 6px;border-radius:8px;}
+  .etag.active{background:rgba(236,64,122,0.1);}
+  .etag span{display:none !important;}
+
+  /* ── AI Bar ── */
+  .ai-bar-header{padding:4px 12px;gap:6px;}
+  .ai-bar-header .ab-label{font-size:10px;}
+  .ai-bar-header .ab-status{font-size:9px;padding:1px 6px;}
+  .ai-bar-body.open{max-height:150px;padding:5px 12px 9px;}
+  .ai-bar-body.open .ai-bar-row{flex-direction:column;align-items:stretch;gap:5px;}
+  .ai-bar-row input{min-width:0;padding:10px 14px;font-size:14px;}  /* bigger touch target */
+  .ai-bar-row select{padding:10px 12px;font-size:13px;}             /* bigger touch target */
+  .ai-bar-row .ab-btn{padding:10px 18px;font-size:13px;}            /* bigger touch target */
+  .ai-bar-row .ab-btn:active{transform:scale(0.97);}
+  .ai-bar-row .ab-btn.secondary{padding:8px 16px;text-align:center;}
+
+  /* ── Chat ── */
+  .chat-area{padding:10px 12px;gap:6px;}
+  .msg{max-width:88%;}
+  .bub{padding:9px 14px;font-size:14px;border-radius:16px;}
+  .msg .meta{font-size:9px;}
+  .msg .meta .rbtn{font-size:15px;padding:2px;min-width:28px;min-height:28px;display:inline-flex;align-items:center;justify-content:center;}
+
+  /* ── Typing ── */
+  .typing-ind{gap:4px;}
+  .typing-ind .bub{padding:8px 14px;}
+  .typing-ind .bub span{width:5px;height:5px;}
+  .tav{width:24px;height:24px;font-size:12px;}
+
+  /* ── Quick Replies ── */
+  .qr-bar{padding:0 12px 3px;gap:3px;}
+  .qr-chip{padding:4px 10px;font-size:10px;}
+  .qr-chip:active{background:#ec407a;color:white;transform:scale(0.96);}
+
+  /* ── Input ── */
+  .input-area{padding:6px 10px 10px;}
+  .input-w{border-radius:22px;padding:1px 1px 1px 12px;}
+  .input-w textarea{font-size:15px;padding:8px 0;max-height:100px;}  /* bigger for thumbs */
+  .send-btn{width:38px;height:38px;font-size:17px;}
+  .send-btn:active{transform:scale(0.9);}
+
+  /* ── Particles ── */
+  #particlesContainer .particle{animation-duration:20s !important;opacity:0.08 !important;}
+
+  /* ── Milestone ── */
+  .milestone-popup{width:85vw;padding:22px 20px;border-radius:18px;}
+  .milestone-popup .big-emoji{font-size:40px;}
+  .milestone-popup h3{font-size:17px;}
+  .milestone-popup button{padding:10px 24px;font-size:14px;}
+
+  /* ── Settings Modal ── */
+  .modal{width:100vw;max-width:100%;max-height:100%;border-radius:0;height:100%;}
+  .modal-body{padding:16px 18px 12px;}
+  .mpage h4{font-size:14px;}
+  .mpage input,.mpage select{padding:10px 12px;font-size:14px;}
+  .modal-footer{padding:10px 18px;}
+  .modal-footer button{padding:10px;font-size:14px;}
+  .mod-grid{grid-template-columns:1fr 1fr;gap:5px;}
+  .mod-card{padding:8px;}
+  .mod-card .mic{font-size:20px;}
+  .mod-card .mn{font-size:11px;}
+  .theme-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
+  .theme-opt{padding:6px;}
+  .theme-opt .cd span{width:12px;height:12px;}
+}
+
+/* Very small phones (<360px) */
+@media(max-width:360px){
+  .header{padding:6px 8px;gap:5px;}
+  .avatar{width:32px;height:32px;font-size:14px;}
+  .header-info h2{font-size:13px;}
+  .header-info .status-text{font-size:9px;}
+  .hbtn{width:28px;height:28px;font-size:12px;}
+  .chat-area{padding:6px 8px;}
+  .bub{padding:7px 10px;font-size:13px;}
+  .msg{max-width:92%;}
+  .emotion-bar{padding:1px 8px;}
+  .etag{font-size:8px;padding:1px 4px;}
+  .ai-bar-header{padding:2px 8px;}
+  .ai-bar-body.open{padding:3px 8px 6px;max-height:170px;}
+  .affection-bar{padding:2px 8px;}
+  .input-area{padding:4px 6px 8px;}
+  .input-w textarea{font-size:14px;padding:6px 0;}
+  .qr-chip{padding:3px 8px;font-size:9px;}
+}
+
+/* Reduced motion preference */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}
+  .particle{display:none!important;}
+}
+
+/* Disable backdrop blur on low-end devices for performance */
+@media(max-width:480px){
+  .app-container{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,0.95);}
+}
+@media(prefers-reduced-transparency:reduce){
+  .app-container{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,0.96);}
 }
 </style>
 </head>
@@ -959,11 +1111,13 @@ function closeMs(){document.getElementById('msPopup').classList.remove('active')
 function createParticles(){
   const c=document.getElementById('particlesContainer');c.innerHTML='';
   if(S.particles==='none') return;
+  const isMobile=window.innerWidth<=480;
+  const count=isMobile?8:18;
   const emojis=S.particles==='stars'?['✨','⭐','🌟','✦']:S.particles==='mixed'?['❤️','💕','✨','🌸','🌷','⭐']:['❤️','💕','💗','💖','💘','💝'];
-  for(let i=0;i<18;i++){
+  for(let i=0;i<count;i++){
     const e=document.createElement('span');e.className='particle';e.textContent=emojis[i%emojis.length];
     e.style.left=Math.random()*100+'%';e.style.fontSize=(10+Math.random()*16)+'px';
-    e.style.animationDuration=(12+Math.random()*20)+'s';e.style.animationDelay=Math.random()*25+'s';
+    e.style.animationDuration=(15+Math.random()*25)+'s';e.style.animationDelay=Math.random()*30+'s';
     c.appendChild(e);
   }
 }
@@ -1064,6 +1218,27 @@ function resetIdle(){
 
 // ─── INIT ───
 createParticles();applyTheme();affUI();renderEmos();updateQR();
+
+// Mobile keyboard handling — scroll to bottom when keyboard opens
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',()=>{
+    const area=document.getElementById('chatArea');
+    if(window.visualViewport.height<window.innerHeight*0.8){
+      setTimeout(()=>{area.scrollTop=area.scrollHeight;},100);
+    }
+  });
+}
+
+// Touch feedback for buttons on mobile
+if('ontouchstart' in window){
+  document.querySelectorAll('.hbtn,.send-btn,.ab-btn,.qr-chip,.mod-card,.theme-opt,.rbtn,.mtab,.modal-footer button,.milestone-popup button').forEach(el=>{
+    if(!el.dataset.touch){
+      el.dataset.touch='1';
+      el.addEventListener('touchstart',function(){this.style.opacity='0.7';},{passive:true});
+      el.addEventListener('touchend',function(){this.style.opacity='';},{passive:true});
+    }
+  });
+}
 
 // Restore connection if key exists
 if(S.apiKey){document.getElementById('pageApiKey').value=S.apiKey;document.getElementById('pageModel').value=S.model;}
