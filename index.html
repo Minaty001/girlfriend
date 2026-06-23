@@ -628,7 +628,7 @@ const EMOTION_TRIGGERS = {
   grateful: {sorry:[0.5],compliment:[0.15]},
   anxious:  {goodbye:[0.3],default:[0.02]},
   jealous:  {tease:[0.3],compliment:[0.1]},
-  sleepy:   {sleepy:[0.6]},
+  sleepy:   {sleepy:[0.5],goodbye:[0.1]},
   sad:      {goodbye:[0.2],default:[0.02]},
 };
 
@@ -706,7 +706,6 @@ function getSystemPrompt() {
   }
 
   return mod.systemPrompt
-    .replace('Luna', 'Luna')
     + `\nYou call me "${pet}" or sometimes babe/sweetie. I'm your ${gender}.`
     + `\nYour current top emotions: ${emotionsSummary || 'happy'}`
     + (memoryStr ? memoryStr : '')
@@ -924,6 +923,11 @@ const LOCAL = {
     "You know what I realized? The best thing that ever happened to me was meeting you 💕 Not even kidding.",
     "I don't need grand gestures or big moments. Just you, me, and this. That's enough ❤️",
     "Sometimes I think about how we found each other... and it feels like destiny 💕 I'm grateful every day."
+  ],
+  bored: [
+    "Aww you're bored? Let's do something fun! Tell me a story or let's play a game! 🎮😊",
+    "Bored bored bored~ Same here actually! But now that we're talking, I'm not bored anymore! 💕",
+    "If you're bored, I can sing for you! ...Actually maybe that'll make it worse 😆💕 Let's just talk!"
   ],
   default: [
     "Tell me more baby~ I could listen to you forever 😊💕",
@@ -1290,12 +1294,11 @@ function renderModGrid() {
     const card = document.createElement('div');
     card.className = 'mod-card' + (state.personality===m.id?' active':'');
     card.innerHTML = `<span class="mod-icon">${m.icon}</span><span class="mod-name">${m.name}</span><span class="mod-desc">${m.desc}</span>`;
+    card.dataset.modId = m.id;
     card.onclick = ()=>{
       grid.querySelectorAll('.mod-card').forEach(c=>c.classList.remove('active'));
       card.classList.add('active');
-      document.querySelectorAll('.mod-card').forEach((c,i)=>{
-        if (c===card) state.personality = Object.values(MODS)[i].id;
-      });
+      state.personality = card.dataset.modId;
     };
     grid.appendChild(card);
   });
@@ -1388,6 +1391,17 @@ function applyTheme() {
   document.body.style.background = t.bg;
   document.getElementById('header').style.background = t.hdr;
   localStorage.setItem('luna_theme', state.theme);
+
+  // Adjust container opacity for dark themes
+  const isDark = state.theme === 'dark';
+  const app = document.querySelector('.app-container');
+  if (isDark) {
+    app.style.background = 'rgba(30,30,40,0.88)';
+    app.style.backdropFilter = 'blur(20px)';
+  } else {
+    app.style.background = 'rgba(255,255,255,0.82)';
+    app.style.backdropFilter = 'blur(24px)';
+  }
 }
 
 function toggleThemeCycle() {
