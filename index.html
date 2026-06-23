@@ -404,6 +404,91 @@ button:focus-visible,a:focus-visible,.qr-chip:focus-visible,.mod-card:focus-visi
 .footer a{color:#b0b0b0;font-size:13px;text-decoration:none;transition:color 0.2s;}
 .footer a:hover{color:#d81b60;}
 
+/* ─── Voice Button ─── */
+.voice-btn{
+  width:35px;height:35px;border-radius:50%;border:none;
+  background:#f5f5f5;color:#d81b60;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:0.2s;border:2px solid rgba(233,30,99,0.08);
+}
+.voice-btn:hover{background:#fce4ec;border-color:#ec407a;}
+.voice-btn.listening{background:#e53935;color:white;border-color:#e53935;animation:voicePulse 1s ease-in-out infinite;}
+@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 rgba(229,57,53,0.4);}50%{box-shadow:0 0 0 8px rgba(229,57,53,0);}}
+
+/* ─── TTS Button ─── */
+.tts-btn{
+  display:none;position:absolute;top:4px;right:4px;
+  width:22px;height:22px;border-radius:50%;border:none;
+  background:rgba(0,0,0,0.04);color:#999;font-size:11px;cursor:pointer;
+  align-items:center;justify-content:center;transition:0.2s;line-height:1;
+}
+.msg.bot:hover .tts-btn{display:flex;}
+.tts-btn:hover{background:rgba(236,64,122,0.1);color:#d81b60;}
+.tts-btn.speaking{display:flex;background:#fce4ec;color:#d81b60;animation:ttsPulse 0.8s ease-in-out infinite;}
+@keyframes ttsPulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+/* ─── Gift Panel ─── */
+.gift-overlay{
+  position:absolute;inset:0;z-index:90;
+  background:rgba(0,0,0,0.15);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;
+}
+.gift-overlay.active{display:flex;}
+.gift-panel{
+  background:white;border-radius:20px;padding:20px 24px;text-align:center;
+  box-shadow:0 16px 48px rgba(0,0,0,0.18);width:280px;max-width:85%;
+  animation:giftIn 0.3s ease;
+}
+@keyframes giftIn{from{transform:scale(0.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.gift-panel h3{font-size:16px;color:#d81b60;margin-bottom:12px;}
+.gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.gift-opt{
+  padding:10px 6px;border-radius:12px;border:2px solid #eee;cursor:pointer;
+  transition:0.2s;background:#fafafa;text-align:center;
+}
+.gift-opt:hover{transform:translateY(-2px);border-color:#f48fb1;box-shadow:0 4px 12px rgba(233,30,99,0.1);}
+.gift-opt .gico{font-size:24px;display:block;}
+.gift-opt .gname{font-size:10px;font-weight:700;color:#3e2723;display:block;margin-top:2px;}
+.gift-opt .gxp{font-size:9px;color:#ec407a;display:block;}
+.gift-panel .gclose{
+  margin-top:10px;padding:5px 18px;border-radius:12px;border:none;
+  background:#f5f5f5;color:#666;font-family:'Nunito',sans-serif;font-size:12px;cursor:pointer;transition:0.2s;
+}
+.gift-panel .gclose:hover{background:#eee;}
+
+/* ─── Gift sending animation ─── */
+.gift-send-anim{
+  position:absolute;z-index:95;pointer-events:none;font-size:48px;
+  animation:giftFly 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes giftFly{
+  0%{transform:translate(-50%,-50%) scale(0.3) rotate(-20deg);opacity:0;}
+  30%{transform:translate(-50%,-50%) scale(1.2) rotate(5deg);opacity:1;}
+  100%{transform:translate(-50%,-60%) scale(1) rotate(0deg);opacity:0;}
+}
+
+/* ─── Achievement toast ─── */
+.ach-toast{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+  z-index:65;background:linear-gradient(135deg,#fff8e1,#ffecb3);border-radius:16px;
+  padding:18px 24px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.15);
+  transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;
+  border:2px solid rgba(255,193,7,0.3);max-width:85%;
+}
+.ach-toast.active{transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
+.ach-toast .aicon{font-size:36px;display:block;margin-bottom:2px;}
+.ach-toast .aname{font-size:14px;font-weight:800;color:#f57f17;display:block;}
+.ach-toast .adesc{font-size:11px;color:#f9a825;display:block;margin-top:1px;}
+
+/* ─── Streak badge in header ─── */
+.streak-badge{
+  display:none;align-items:center;gap:2px;
+  font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+  background:rgba(255,193,7,0.25);padding:1px 8px;border-radius:10px;
+  white-space:nowrap;margin-left:auto;
+}
+.streak-badge.active{display:inline-flex;}
+
 /* ════════════════════════════════════
    RESPONSIVE — Desktop, Tablet, Phone
    ════════════════════════════════════ */
@@ -573,10 +658,12 @@ button:focus-visible,a:focus-visible,.qr-chip:focus-visible,.mod-card:focus-visi
       <div class="name-row">
         <h2 id="gName">Luna</h2>
         <span class="mode-badge" id="modeBadge">Local</span>
+        <span class="streak-badge" id="strkB">🔥 <span id="strkNum">0</span></span>
       </div>
       <div class="status-text" id="statusText">Online · Thinking of you 💕</div>
     </div>
     <div class="header-btns">
+      <button class="hbtn" onclick="openGifts()" title="Send a gift">🎁</button>
       <button class="hbtn" onclick="toggleThemeCycle()" title="Theme">🎨</button>
       <button class="hbtn" onclick="openSettings()" title="Settings">⚙️</button>
     </div>
@@ -638,6 +725,7 @@ button:focus-visible,a:focus-visible,.qr-chip:focus-visible,.mod-card:focus-visi
     <div class="input-row">
       <div class="input-w">
         <textarea id="msgIn" rows="1" placeholder="Say something sweet..." oninput="onInput()" onkeydown="onKey(event)"></textarea>
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()" title="Voice input">🎤</button>
         <button class="send-btn" id="sendBtn" onclick="sendMsg()">➤</button>
       </div>
     </div>
@@ -741,7 +829,16 @@ button:focus-visible,a:focus-visible,.qr-chip:focus-visible,.mod-card:focus-visi
               <span>💬 Messages: <span id="aboutMsgs">0</span></span>
               <span>❤️ <span id="aboutPersona">Sweet Girlfriend</span></span>
               <span>🤖 <span id="aboutAI">Local Mode</span></span>
+              <span>🔥 Streak: <span id="aboutStreak">0 days</span></span>
+              <span>🏆 Achievements: <span id="aboutAch">0 / 10</span></span>
+              <span>🎁 Gifts Sent: <span id="aboutGifts">0</span></span>
             </div>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn-sec" onclick="exportChat()" style="width:100%;padding:8px;border-radius:10px;border:2px solid #eee;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:#fafafa;color:#666;transition:0.2s;">📥 Export Chat History</button>
+          </div>
+          <div style="margin-top:6px;">
+            <button class="btn-sec" onclick="resetAll()" style="width:100%;padding:8px;border-radius:10px;border:2px solid #ffcdd2;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#e53935;transition:0.2s;">🗑️ Reset All Data</button>
           </div>
         </div>
 
@@ -751,6 +848,29 @@ button:focus-visible,a:focus-visible,.qr-chip:focus-visible,.mod-card:focus-visi
         <button class="btn-pri" onclick="saveSettings()">Save</button>
       </div>
     </div>
+  </div>
+
+  <!-- ─── Gift Panel ─── -->
+  <div class="gift-overlay" id="giftOverlay">
+    <div class="gift-panel">
+      <h3>🎁 Send a Gift</h3>
+      <div class="gift-grid">
+        <div class="gift-opt" data-gift="🌸" data-xp="3" onclick="sendGift('🌸','Flower',3)"><span class="gico">🌸</span><span class="gname">Flower</span><span class="gxp">+3 XP</span></div>
+        <div class="gift-opt" data-gift="🍫" data-xp="5" onclick="sendGift('🍫','Chocolate',5)"><span class="gico">🍫</span><span class="gname">Chocolate</span><span class="gxp">+5 XP</span></div>
+        <div class="gift-opt" data-gift="🧸" data-xp="6" onclick="sendGift('🧸','Teddy',6)"><span class="gico">🧸</span><span class="gname">Teddy Bear</span><span class="gxp">+6 XP</span></div>
+        <div class="gift-opt" data-gift="💍" data-xp="8" onclick="sendGift('💍','Ring',8)"><span class="gico">💍</span><span class="gname">Ring</span><span class="gxp">+8 XP</span></div>
+        <div class="gift-opt" data-gift="💐" data-xp="10" onclick="sendGift('💐','Bouquet',10)"><span class="gico">💐</span><span class="gname">Bouquet</span><span class="gxp">+10 XP</span></div>
+        <div class="gift-opt" data-gift="🎂" data-xp="4" onclick="sendGift('🎂','Cupcake',4)"><span class="gico">🎂</span><span class="gname">Cupcake</span><span class="gxp">+4 XP</span></div>
+      </div>
+      <button class="gclose" onclick="closeGifts()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ─── Achievement Toast ─── -->
+  <div class="ach-toast" id="achToast">
+    <span class="aicon" id="achIco">🏆</span>
+    <span class="aname" id="achName">Achievement!</span>
+    <span class="adesc" id="achDesc">You unlocked something special</span>
   </div>
 
   <!-- Footer -->
@@ -1098,6 +1218,15 @@ const S = {
   history: [],
   memory: JSON.parse(localStorage.getItem('lmem')||'[]'),
   msShown: JSON.parse(localStorage.getItem('lmss')||'[]'),
+  // NEW: streak, gifts, achievements
+  lastActive: localStorage.getItem('llastA')||'',
+  streakDays: parseInt(localStorage.getItem('lstrk')||'0'),
+  longestStreak: parseInt(localStorage.getItem('lstrkmx')||'0'),
+  dailyClaimed: localStorage.getItem('ldc')||'',
+  giftsSent: parseInt(localStorage.getItem('lgfts')||'0'),
+  achievements: JSON.parse(localStorage.getItem('lach')||'[]'),
+  loveCount: parseInt(localStorage.getItem('llove')||'0'),
+  sorryCount: parseInt(localStorage.getItem('lsry')||'0'),
 };
 
 // ─── SYSTEM PROMPT ───
@@ -1265,6 +1394,11 @@ function addMsg(text,sender){
   const a=document.getElementById('chatArea');
   const d=document.createElement('div');d.className='msg '+sender;
   const b=document.createElement('div');b.className='bub';b.textContent=text;
+  // TTS button on bot messages
+  if(sender==='bot'&&window.speechSynthesis){
+    const tts=document.createElement('button');tts.className='tts-btn';tts.textContent='🔊';
+    tts.onclick=function(e){e.stopPropagation();speakText(text,tts);};b.appendChild(tts);
+  }
   const m=document.createElement('div');m.className='meta';
   const t=document.createElement('span');t.className='time';
   const n=new Date();t.textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
@@ -1303,8 +1437,12 @@ function hideTyping(){document.getElementById('typingInd').classList.remove('act
 async function sendMsg(){
   const inp=document.getElementById('msgIn');const raw=inp.value.trim();
   if(!raw) return;
+  checkStreak(); // Daily streak & XP check
   const text=Brain.optimize(raw); // Optimize user message
   const analysis=Brain.analyze(text,detectIntent(raw));
+  // Track love/sorry for achievements
+  if(/love|like/i.test(raw)){S.loveCount++;localStorage.setItem('llove',String(S.loveCount));}
+  if(/sorry|apologize/i.test(raw)){S.sorryCount++;localStorage.setItem('lsry',String(S.sorryCount));}
   addMsg(raw,'user');inp.value='';inp.style.height='auto';document.getElementById('sendBtn').classList.remove('active');
   S.totalMsgs++;localStorage.setItem('lmsgs',String(S.totalMsgs));
   S.history.push({role:'user',content:text});Brain.remember(raw);
@@ -1323,7 +1461,7 @@ async function sendMsg(){
   let xp=3;if(['love','miss','compliment'].includes(intent)) xp=8;else if(['sorry'].includes(intent)) xp=10;else if(['joke','tease'].includes(intent)) xp=5;else if(['greeting'].includes(intent)) xp=4;else if(['goodbye'].includes(intent)) xp=1;
   addXP(xp);
   document.getElementById('av').textContent=getTopEmo().icon;
-  updateQR();
+  updateQR();checkAch();
   if(intent==='goodbye'&&Math.random()>0.4){
     setTimeout(async()=>{showTyping();await new Promise(r=>setTimeout(r,500+Math.random()*800));hideTyping();addMsg(pick(["Come back soon! I'll be waiting 💕","Miss you already! 😊❤️","Don't forget to text me! 💕"]),'bot');},800);
   }
@@ -1395,6 +1533,7 @@ function openSettings(){
   document.getElementById('aboutMsgs').textContent=S.totalMsgs;
   document.getElementById('aboutPersona').textContent=(MODS[S.personality]||MODS.sweet).name;
   document.getElementById('aboutAI').textContent=S.connected?'AI Mode 🟢':'Local Mode ⚪';
+  updateAboutStats();
 }
 
 function closeSettings(){document.getElementById('settingsModal').classList.remove('active');}
@@ -1481,6 +1620,174 @@ function setupAvatarUpload(){
   });
 }
 
+// ════════════════════════════════════════════════════════════════
+//  VOICE INPUT (Speech-to-Text)
+// ════════════════════════════════════════════════════════════════
+let voiceRec=null;let voiceListening=false;
+function toggleVoice(){
+  const btn=document.getElementById('voiceBtn');
+  if(voiceListening){voiceRec.stop();voiceListening=false;btn.textContent='🎤';btn.className='voice-btn';return;}
+  // Check browser support
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){btn.textContent='❌';setTimeout(()=>btn.textContent='🎤',1500);return;}
+  if(!voiceRec){voiceRec=new SR();voiceRec.lang='en-US';voiceRec.interimResults=true;voiceRec.continuous=false;
+    voiceRec.onresult=function(e){
+      let t='';
+      for(let i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript;
+      document.getElementById('msgIn').value=t;onInput();
+      if(e.results[e.results.length-1].isFinal){voiceListening=false;btn.textContent='🎤';btn.className='voice-btn';sendMsg();}
+    };
+    voiceRec.onend=function(){voiceListening=false;btn.textContent='🎤';btn.className='voice-btn';};
+    voiceRec.onerror=function(){voiceListening=false;btn.textContent='🎤';btn.className='voice-btn';};
+  }
+  try{voiceRec.start();voiceListening=true;btn.textContent='🔴';btn.className='voice-btn listening';
+  }catch(e){console.warn('Voice err:',e);}
+}
+
+// ════════════════════════════════════════════════════════════════
+//  TEXT-TO-SPEECH (Read Aloud)
+// ════════════════════════════════════════════════════════════════
+let ttsCurrent=null;
+function speakText(text,btn){
+  if(ttsCurrent){window.speechSynthesis.cancel();if(btn)btn.className='tts-btn';ttsCurrent=null;return;}
+  if(!window.speechSynthesis) return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=1.1;u.pitch=1.05;
+  u.onend=function(){if(btn){btn.className='tts-btn';}ttsCurrent=null;};
+  u.onerror=function(){if(btn){btn.className='tts-btn';}ttsCurrent=null;};
+  if(btn)btn.className='tts-btn speaking';
+  ttsCurrent=u;window.speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════════════════════
+//  DAILY STREAK & CHECK-IN BONUS
+// ════════════════════════════════════════════════════════════════
+function checkStreak(){
+  const today=new Date().toDateString();
+  if(!S.lastActive){S.lastActive=today;S.streakDays=1;S.dailyClaimed=today;saveStreak();return true;}
+  if(S.lastActive===today){updateStreakUI();return false;}
+  // Check if yesterday
+  const last=new Date(S.lastActive);const diff=(new Date()-last)/86400000;
+  if(diff<2){S.streakDays++;}else{S.streakDays=1;}
+  // Claim daily XP
+  if(S.dailyClaimed!==today){S.dailyClaimed=today;addXP(5);addSys(`🔥 ${S.streakDays} day streak! +5 XP`);}
+  S.lastActive=today;
+  if(S.streakDays>S.longestStreak) S.longestStreak=S.streakDays;
+  saveStreak();updateStreakUI();return true;
+}
+function saveStreak(){
+  localStorage.setItem('llastA',S.lastActive);
+  localStorage.setItem('lstrk',String(S.streakDays));
+  localStorage.setItem('lstrkmx',String(S.longestStreak));
+  localStorage.setItem('ldc',S.dailyClaimed);
+}
+function updateStreakUI(){
+  const b=document.getElementById('strkB');const n=document.getElementById('strkNum');
+  if(!b||!n) return;
+  if(S.streakDays>0){b.classList.add('active');n.textContent=S.streakDays;}
+  else b.classList.remove('active');
+}
+
+// ════════════════════════════════════════════════════════════════
+//  ACHIEVEMENT SYSTEM
+// ════════════════════════════════════════════════════════════════
+const ACHIEVEMENTS=[
+  {id:'firstMsg',ico:'💬',name:'First Words',desc:'Send your first message',check:()=>S.totalMsgs>=1},
+  {id:'chat100',ico:'💬',name:'Chatterbox',desc:'Send 100 messages',check:()=>S.totalMsgs>=100},
+  {id:'chat500',ico:'💬',name:'Chat Machine',desc:'Send 500 messages',check:()=>S.totalMsgs>=500},
+  {id:'lvl5',ico:'💕',name:'Heartbreaker',desc:'Reach Level 5 affection',check:()=>getAff().lvl>=5},
+  {id:'lvl10',ico:'💞',name:'Soul Bond',desc:'Reach Level 10 affection',check:()=>getAff().lvl>=10},
+  {id:'love10',ico:'❤️',name:'Sweet Talker',desc:'Say "I love you" 10 times',check:()=>S.loveCount>=10},
+  {id:'sorry5',ico:'😢',name:'Forgive Me',desc:'Apologize 5 times',check:()=>S.sorryCount>=5},
+  {id:'streak7',ico:'🔥',name:'Best Friend',desc:'7-day chat streak',check:()=>S.longestStreak>=7},
+  {id:'streak30',ico:'🔥',name:'Devoted',desc:'30-day chat streak',check:()=>S.longestStreak>=30},
+  {id:'gift5',ico:'🎁',name:'Generous',desc:'Send 5 gifts',check:()=>S.giftsSent>=5},
+];
+function checkAch(){
+  const now=new Date().getTime();
+  for(const a of ACHIEVEMENTS){
+    if(S.achievements.includes(a.id)) continue;
+    if(a.check()){S.achievements.push(a.id);localStorage.setItem('lach',JSON.stringify(S.achievements));showAch(a);}
+  }
+}
+function showAch(a){
+  document.getElementById('achIco').textContent=a.ico;
+  document.getElementById('achName').textContent=`🏆 ${a.name}!`;
+  document.getElementById('achDesc').textContent=a.desc;
+  document.getElementById('achToast').classList.add('active');
+  setTimeout(()=>document.getElementById('achToast').classList.remove('active'),2800);
+}
+
+// ════════════════════════════════════════════════════════════════
+//  GIFT SYSTEM
+// ════════════════════════════════════════════════════════════════
+function openGifts(){document.getElementById('giftOverlay').classList.add('active');}
+function closeGifts(){document.getElementById('giftOverlay').classList.remove('active');}
+function sendGift(emoji,name,xp){
+  closeGifts();
+  S.giftsSent++;localStorage.setItem('lgfts',String(S.giftsSent));
+  addXP(xp);
+  // Animate gift
+  const app=document.querySelector('.app-container');
+  const a=document.createElement('div');a.className='gift-send-anim';a.textContent=emoji;
+  a.style.top='50%';a.style.left='50%';app.appendChild(a);
+  setTimeout(()=>a.remove(),1300);
+  // Bot reaction
+  const msgs={
+    '🌸':[`Aww a flower! 🌸 You're so sweet! +${xp} XP 💕`,`I love flowers! Thank you baby! 💕 +${xp} XP`],
+    '🍫':[`Chocolate! 🍫 You know the way to my heart! +${xp} XP 💕`,`Mmm chocolate~ I'll share with you! +${xp} XP ❤️`],
+    '🧸':[`A teddy bear! 🧸 He looks just like you! +${xp} XP 🥰`,`So cute! I'll name him after you! +${xp} XP 💕`],
+    '💍':[`A ring! 💍 Is this what I think it means?! +${xp} XP 🥺💕`,`OH MY— it's beautiful! +${xp} XP ❤️😍`],
+    '💐':[`A whole bouquet! 💐 You're spoiling me! +${xp} XP 🥰`,`They're gorgeous! Just like us! +${xp} XP 💕`],
+    '🎂':[`Cupcake! 🎂 So tasty! Want a bite? +${xp} XP 😊💕`]
+  };
+  const r=pick(msgs[emoji]||[`You're so thoughtful! +${xp} XP 💕`]);
+  setTimeout(()=>{addMsg(r,'bot');},400);
+  checkAch();
+}
+
+// ════════════════════════════════════════════════════════════════
+//  CHAT EXPORT
+// ════════════════════════════════════════════════════════════════
+function exportChat(){
+  const msgs=document.querySelectorAll('.msg');
+  if(!msgs.length){alert('No messages to export yet! 💕');return;}
+  let t=`💕 ${S.girlName||'Luna'} — Chat Export\n${new Date().toLocaleString()}\n${'='.repeat(40)}\n\n`;
+  msgs.forEach(m=>{
+    const sender=m.classList.contains('user')?'You':(S.girlName||'Luna');
+    const text=m.querySelector('.bub')?.textContent||'';
+    const time=m.querySelector('.time')?.textContent||'';
+    t+=`[${time}] ${sender}: ${text}\n`;
+  });
+  const b=new Blob([t],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=`chat-${S.girlName||'Luna'}-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();URL.revokeObjectURL(a.href);
+}
+
+// ════════════════════════════════════════════════════════════════
+//  RESET ALL DATA
+// ════════════════════════════════════════════════════════════════
+function resetAll(){
+  if(!confirm('This will delete ALL your data (memories, XP, messages, streak). Are you sure? 💔')){
+    // Second chance
+    if(!confirm(`Are you really sure? ${S.girlName||"She"} will miss you... 🥺`)) return;
+  }
+  const keys=['lp','lgn','lpn','lug','lcp','lat','lad','lpart','laxp','lmsgs','lmem','lmss','llastA','lstrk','lstrkmx','ldc','lgfts','lach','llove','lsry','gk','gm','lt'];
+  keys.forEach(k=>localStorage.removeItem(k));
+  location.reload();
+}
+
+// ════════════════════════════════════════════════════════════════
+//  ABOUT STATS (called when settings opens)
+// ════════════════════════════════════════════════════════════════
+function updateAboutStats(){
+  document.getElementById('aboutStreak').textContent=`${S.streakDays} day${S.streakDays!==1?'s':''}`;
+  const unlocked=S.achievements.length;
+  document.getElementById('aboutAch').textContent=`${unlocked} / 10`;
+  document.getElementById('aboutGifts').textContent=S.giftsSent;
+}
+
 function saveSettings(){
   S.girlName=document.getElementById('girlNameIn').value.trim()||'Luna';
   S.petName=document.getElementById('petNameIn').value.trim();
@@ -1510,7 +1817,8 @@ function applyTheme(){
 }
 
 function toggleThemeCycle(){
-  const i=THEMES.findIndex(x=>x.id===S.theme);S.theme=THEMES[(i+1)%THEMES.length].id;applyTheme();
+  const i=THEMES.findIndex(x=>x.id===S.theme);const t=THEMES[(i+1)%THEMES.length];
+  S.theme=t.id;applyTheme();addSys(`🎨 Theme: ${t.name}`);
 }
 
 // ─── IDLE ───
@@ -1555,6 +1863,12 @@ if(S.apiKey){document.getElementById('pageApiKey').value=S.apiKey;document.getEl
 
 // Init avatar & name
 updateAvatarUI();setupAvatarUpload();
+// Init streak UI
+updateStreakUI();
+// Hide voice button if not supported
+if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){
+  const vb=document.getElementById('voiceBtn');if(vb)vb.style.display='none';
+}
 
 // Welcome
 setTimeout(()=>{
