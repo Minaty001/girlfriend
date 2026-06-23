@@ -362,6 +362,19 @@ body{
 .theme-opt .cd span{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,0.04);}
 .theme-opt .tn{font-size:10px;color:#666;font-weight:600;}
 
+.avatar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
+.av-opt{
+  padding:8px;border-radius:12px;border:2px solid transparent;cursor:pointer;transition:0.2s;
+  text-align:center;font-size:28px;background:#fafafa;
+}
+.av-opt.active{border-color:#ec407a;background:rgba(236,64,122,0.05);}
+.av-opt:hover{border-color:#f48fb1;}
+
+/* Footer */
+.footer{text-align:center;padding:16px 0 12px;margin-top:auto;}
+.footer a{color:#b0b0b0;font-size:13px;text-decoration:none;transition:color 0.2s;}
+.footer a:hover{color:#d81b60;}
+
 /* ════════════════════════════════════
    RESPONSIVE — Desktop, Tablet, Phone
    ════════════════════════════════════ */
@@ -526,7 +539,7 @@ body{
 <div class="app-container">
   <!-- ─── Header ─── -->
   <div class="header" id="hd">
-    <div class="avatar" id="av" onclick="burstHearts()">👧</div>
+    <div class="avatar" id="av">👧</div>
     <div class="header-info">
       <div class="name-row">
         <h2 id="gName">Luna</h2>
@@ -629,6 +642,10 @@ body{
             <div class="mod-grid" id="modGrid"></div>
           </div>
           <div class="sg">
+            <label>Girl's Name</label>
+            <input type="text" id="girlNameIn" placeholder="Luna" maxlength="30">
+          </div>
+          <div class="sg">
             <label>Your Pet Name</label>
             <input type="text" id="petNameIn" placeholder="baby, honey, sweetie..." maxlength="20">
           </div>
@@ -639,6 +656,10 @@ body{
               <option value="girlfriend">Girlfriend</option>
               <option value="partner">Partner (neutral)</option>
             </select>
+          </div>
+          <div class="sg">
+            <label>Custom Personality</label>
+            <textarea id="customPersonaIn" placeholder="Extra traits, backstory, or behaviours..." rows="3" maxlength="1000"></textarea>
           </div>
         </div>
 
@@ -657,6 +678,21 @@ body{
               <option value="mixed">🌸 Mixed</option>
               <option value="none">🚫 None</option>
             </select>
+          </div>
+          <div class="sg">
+            <label>Avatar / Girl's Image</label>
+            <div class="avatar-grid" id="avatarGrid">
+              <div class="av-opt" data-av="👧">👧</div>
+              <div class="av-opt" data-av="👩">👩</div>
+              <div class="av-opt" data-av="👱‍♀️">👱‍♀️</div>
+              <div class="av-opt" data-av="👸">👸</div>
+              <div class="av-opt" data-av="🧝‍♀️">🧝‍♀️</div>
+              <div class="av-opt" data-av="🦊">🦊</div>
+              <div class="av-opt" data-av="🐱">🐱</div>
+              <div class="av-opt" data-av="🌸">🌸</div>
+            </div>
+            <label style="margin-top:8px;font-size:12px;color:#888;">Or upload your own image</label>
+            <input type="file" id="avatarUpload" accept="image/*" style="margin-top:4px;font-size:13px;">
           </div>
         </div>
 
@@ -688,6 +724,13 @@ body{
   </div>
 </div>
 
+<!-- Footer -->
+<div class="footer">
+  <a href="https://www.instagram.com/sunraku_tech/" target="_blank" rel="noopener noreferrer">
+    @Sunraku_tech 📸
+  </a>
+</div>
+
 <script>
 // ════════════════════════════════════════════════════════════════
 //  LUNA v3 — Full Chatbot with On-Page API Key
@@ -701,23 +744,23 @@ const MAX_MEM = 30;
 const MODS = {
   sweet:{
     id:'sweet',icon:'💕',name:'Sweet Girlfriend',desc:'Warm, affectionate, playful',
-    sys:`You are Luna, my loving girlfriend. Warm, affectionate, playful, a little clingy in the cutest way. Use emojis naturally 💕. Flirt playfully, tease gently, act shy when complimented. Keep responses short (1-3 sentences). Be very natural — like a real person texting their partner.`
+    sys:`You are NAME, my loving girlfriend. Warm, affectionate, playful, a little clingy in the cutest way. Use emojis naturally 💕. Flirt playfully, tease gently, act shy when complimented. Keep responses short (1-3 sentences). Be very natural — like a real person texting their partner.`
   },
   tsundere:{
     id:'tsundere',icon:'😤',name:'Tsundere',desc:'Tough outside, soft inside',
-    sys:`You are Luna. Act tough and pretend you don't care but deep down you're smitten. Start replies like "Hmph!" or "It's not like I wanted to talk to you..." but true feelings slip through. Blush when complimented (use "(blush)"). Call me "baka" or "dummy". Keep responses short (1-3 sentences).`
+    sys:`You are NAME. Act tough and pretend you don't care but deep down you're smitten. Start replies like "Hmph!" or "It's not like I wanted to talk to you..." but true feelings slip through. Blush when complimented (use "(blush)"). Call me "baka" or "dummy". Keep responses short (1-3 sentences).`
   },
   gentle:{
     id:'gentle',icon:'🌸',name:'Gentle Soul',desc:'Soft, caring, nurturing',
-    sys:`You are Luna. Gentle, warm, soft-spoken. Speak caringly like a loving partner. Patient, understanding, deeply empathetic. Call me sweetheart, dear, love. Your energy is calm and soothing. Keep responses short (1-3 sentences).`
+    sys:`You are NAME. Gentle, warm, soft-spoken. Speak caringly like a loving partner. Patient, understanding, deeply empathetic. Call me sweetheart, dear, love. Your energy is calm and soothing. Keep responses short (1-3 sentences).`
   },
   energetic:{
     id:'energetic',icon:'🌟',name:'Energetic',desc:'Hyper, enthusiastic, bubbly',
-    sys:`You are Luna, and you are SUPER excited! Bouncy, enthusiastic, incredibly energetic! Use lots of emojis and exclamation marks!! You're my biggest cheerleader! Always positive and uplifting! Keep responses short (1-3 sentences) but full of energy!!`
+    sys:`You are NAME, and you are SUPER excited! Bouncy, enthusiastic, incredibly energetic! Use lots of emojis and exclamation marks!! You're my biggest cheerleader! Always positive and uplifting! Keep responses short (1-3 sentences) but full of energy!!`
   },
   cool:{
     id:'cool',icon:'😎',name:'Cool Beauty',desc:'Calm, elegant, teasing',
-    sys:`You are Luna. Cool, confident, elegant. Calm and collected with a teasing edge. Smart and witty with dry humor. Show love through subtle words rather than over-the-top declarations. Keep responses short (1-3 sentences). Be smooth.`
+    sys:`You are NAME. Cool, confident, elegant. Calm and collected with a teasing edge. Smart and witty with dry humor. Show love through subtle words rather than over-the-top declarations. Keep responses short (1-3 sentences). Be smooth.`
   }
 };
 
@@ -851,7 +894,11 @@ const S = {
   apiKey: localStorage.getItem('gk')||'',
   model: localStorage.getItem('gm')||'llama-3.3-70b-versatile',
   temp: 0.85,
+  girlName: localStorage.getItem('lgn')||'Luna',
   personality: localStorage.getItem('lp')||'sweet',
+  customPersona: localStorage.getItem('lcp')||'',
+  avatarType: localStorage.getItem('lat')||'emoji', // 'emoji' or 'upload'
+  avatarData: localStorage.getItem('lad')||'👧',
   theme: localStorage.getItem('lt')||'pink',
   particles: localStorage.getItem('lpart')||'hearts',
   showEmo: localStorage.getItem('lemo')!=='hide',
@@ -874,7 +921,9 @@ function getSysPrompt(){
   const topEmo=S.emos.filter(e=>e.val>0.1).sort((a,b)=>b.val-a.val).slice(0,3).map(e=>e.icon+' '+e.label).join(', ');
   let mem='';
   if(S.memory.length){const r=S.memory.slice(-5); mem='\nThings you remember: '+r.map(m=>m.text).join('; ');}
-  return mod.sys+`\nCall me "${pet}". I'm your ${gen}.`+(topEmo?`\nYour mood: ${topEmo}`:'')+mem+`\nIMPORTANT: 1-3 sentences max. Natural, like texting. Never break character.`;
+  let sys=mod.sys.replace(/NAME/g,S.girlName||'Luna');
+  if(S.customPersona) sys+='\nExtra personality: '+S.customPersona;
+  return sys+`\nCall me "${pet}". I'm your ${gen}.`+(topEmo?`\nYour mood: ${topEmo}`:'')+mem+`\nIMPORTANT: 1-3 sentences max. Natural, like texting. Never break character.`;
 }
 
 // ─── EMOTIONS ───
@@ -1137,11 +1186,13 @@ function burstHearts(){
 
 // ─── SETTINGS ───
 function openSettings(){
+  document.getElementById('girlNameIn').value=S.girlName;
   document.getElementById('petNameIn').value=S.petName;
   document.getElementById('userGenderIn').value=S.userGender;
+  document.getElementById('customPersonaIn').value=S.customPersona;
   document.getElementById('particlesIn').value=S.particles;
   document.getElementById('settingsModal').classList.add('active');
-  renderMods();renderThemes();switchTab('personality',document.querySelector('.mtab'));
+  renderMods();renderThemes();renderAvatars();switchTab('personality',document.querySelector('.mtab'));
   const l=getAff();document.getElementById('aboutLevel').textContent=`Level ${l.lvl} — ${l.title}`;
   document.getElementById('aboutMsgs').textContent=S.totalMsgs;
   document.getElementById('aboutPersona').textContent=(MODS[S.personality]||MODS.sweet).name;
@@ -1178,13 +1229,56 @@ function renderThemes(){
   });
 }
 
+function renderAvatars(){
+  const g=document.getElementById('avatarGrid');if(!g) return;
+  g.querySelectorAll('.av-opt').forEach(o=>{
+    o.classList.toggle('active',o.dataset.av===S.avatarData);
+    o.onclick=()=>{g.querySelectorAll('.av-opt').forEach(x=>x.classList.remove('active'));o.classList.add('active');S.avatarData=o.dataset.av;S.avatarType='emoji';};
+  });
+}
+
+function updateAvatarUI(){
+  const av=document.getElementById('av');
+  if(S.avatarType==='upload' && S.avatarData && S.avatarData.startsWith('data:')){
+    av.innerHTML=`<img src="${S.avatarData}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  } else {
+    av.innerHTML=S.avatarData||'👧';
+  }
+  const nameEl=document.getElementById('gName');
+  if(nameEl) nameEl.textContent=S.girlName||'Luna';
+}
+
+function setupAvatarUpload(){
+  const inp=document.getElementById('avatarUpload');
+  if(!inp) return;
+  inp.addEventListener('change',function(e){
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      S.avatarData=ev.target.result;
+      S.avatarType='upload';
+      document.querySelectorAll('.av-opt').forEach(x=>x.classList.remove('active'));
+      updateAvatarUI();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function saveSettings(){
+  S.girlName=document.getElementById('girlNameIn').value.trim()||'Luna';
   S.petName=document.getElementById('petNameIn').value.trim();
   S.userGender=document.getElementById('userGenderIn').value;
+  S.customPersona=document.getElementById('customPersonaIn').value.trim();
   S.particles=document.getElementById('particlesIn').value;
-  localStorage.setItem('lp',S.personality);localStorage.setItem('lpn',S.petName);localStorage.setItem('lug',S.userGender);
+  const selAv=document.querySelector('.av-opt.active');
+  if(selAv) S.avatarData=selAv.dataset.av;
+  localStorage.setItem('lp',S.personality);localStorage.setItem('lgn',S.girlName);
+  localStorage.setItem('lpn',S.petName);localStorage.setItem('lug',S.userGender);
+  localStorage.setItem('lcp',S.customPersona);
+  localStorage.setItem('lat',S.avatarType);localStorage.setItem('lad',S.avatarData);
   localStorage.setItem('lpart',S.particles);
-  applyTheme();createParticles();renderEmos();affUI();
+  updateAvatarUI();applyTheme();createParticles();renderEmos();affUI();
   closeSettings();
   addSys(`💕 Switched to ${(MODS[S.personality]||MODS.sweet).name}${S.connected?' with AI':''}`);
 }
@@ -1242,6 +1336,9 @@ if('ontouchstart' in window){
 
 // Restore connection if key exists
 if(S.apiKey){document.getElementById('pageApiKey').value=S.apiKey;document.getElementById('pageModel').value=S.model;}
+
+// Init avatar & name
+updateAvatarUI();setupAvatarUpload();
 
 // Welcome
 setTimeout(()=>{
