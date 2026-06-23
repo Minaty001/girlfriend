@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>💕 Luna - AI Girlfriend Chatbot</title>
+<title>💕 {{NAME}} - AI Girlfriend Chatbot</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -865,6 +865,46 @@ const LOCAL = {
 };
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
+function tailorResponse(text, intent){
+  const top=S.emos.filter(e=>e.val>0.15).sort((a,b)=>b.val-a.val);
+  const dom=top[0]; const modId=S.personality||'sweet';
+  if(!dom) return text;
+  let r=text;
+  // Emotion-based suffixes
+  if(dom.id==='sad'&&dom.val>0.35){
+    const sf=[" I'm here for you baby 💕"," Don't worry, I'll always be with you 🥺"," Let me cheer you up! ❤️"];
+    if(!/sad|cry|sorry/.test(r)&&Math.random()>0.6) r+=pick(sf);
+  }
+  if(dom.id==='loved'&&dom.val>0.4){
+    if(Math.random()>0.6) r+=pick([" 💕"," ❤️"," 🥰"," You make me so happy~"]);
+  }
+  if(dom.id==='playful'&&dom.val>0.3&&modId!=='cool'){
+    if(Math.random()>0.7) r+=pick([" 😆"," Hehe~"," You're so silly! 💕"]);
+  }
+  if(dom.id==='excited'&&dom.val>0.3){
+    if(Math.random()>0.5) r+='!!';
+  }
+  if(dom.id==='sleepy'&&dom.val>0.35){
+    if(!/tired|sleep|yawn/.test(r)&&Math.random()>0.6) r+=pick([" *yawn* 😴"," Getting sleepy... 💕"," Cozy vibes~ 🌙"]);
+  }
+  if(dom.id==='anxious'&&dom.val>0.3){
+    if(Math.random()>0.7) r=pick(["Hey, everything's okay 💕","You seem distant... is everything fine? 🥺","I'm here if you need me ❤️ "])+r;
+  }
+  if(dom.id==='jealous'&&dom.val>0.3&&modId==='tsundere'){
+    if(Math.random()>0.6) r="...you've been talking to someone else? Hmph! "+r;
+  }
+  // Mod-based tweaks
+  if(modId==='tsundere'&&dom.id==='loved'&&dom.val>0.3){
+    if(Math.random()>0.6&&!r.startsWith('...')) r=`...whatever. I guess I like you too. ${r}`;
+  }
+  if(modId==='energetic'&&!/!$/.test(r)){
+    if(Math.random()>0.4) r+='!!';
+  }
+  // Custom persona hint awareness
+  if(S.customPersona&&Math.random()>0.7) r+=` ${pick(["💕","🌸","✨","~"])}`;
+  return r;
+}
+
 function detectIntent(t){
   const s=t.toLowerCase(); const i=[];
   if(/good morning|morning|mornin/i.test(s)) i.push('greetingMorning');
@@ -887,7 +927,7 @@ function detectIntent(t){
   return i[0];
 }
 
-function localResp(t){return pick(LOCAL[detectIntent(t)]||LOCAL.default);}
+function localResp(t){const intent=detectIntent(t);return tailorResponse(pick(LOCAL[intent]||LOCAL.default),intent);}
 
 // ─── STATE ───
 const S = {
@@ -918,12 +958,19 @@ function getSysPrompt(){
   const mod=MODS[S.personality]||MODS.sweet;
   const pet=S.petName||'baby';
   const gen=S.userGender==='girlfriend'?'girlfriend':S.userGender==='boyfriend'?'boyfriend':'partner';
-  const topEmo=S.emos.filter(e=>e.val>0.1).sort((a,b)=>b.val-a.val).slice(0,3).map(e=>e.icon+' '+e.label).join(', ');
+  const lvl=getAff();
+  const tod=timeKey();const tem=timeEmoji();
+  const allEmo=S.emos.sort((a,b)=>b.val-a.val).map(e=>`${e.icon} ${e.label}: ${Math.round(e.val*100)}%`).join(', ');
   let mem='';
   if(S.memory.length){const r=S.memory.slice(-5); mem='\nThings you remember: '+r.map(m=>m.text).join('; ');}
   let sys=mod.sys.replace(/NAME/g,S.girlName||'Luna');
   if(S.customPersona) sys+='\nExtra personality: '+S.customPersona;
-  return sys+`\nCall me "${pet}". I'm your ${gen}.`+(topEmo?`\nYour mood: ${topEmo}`:'')+mem+`\nIMPORTANT: 1-3 sentences max. Natural, like texting. Never break character.`;
+  return sys+`\nCall me "${pet}". I'm your ${gen}.`+
+    `\nCurrent emotions: ${allEmo}`+
+    `\nRelationship: Level ${lvl.lvl} — ${lvl.title}`+
+    `\nTime: ${tod} ${tem}`+
+    (mem?mem:'')+
+    `\nIMPORTANT: 1-3 sentences max. Natural, like texting. Never break character.`;
 }
 
 // ─── EMOTIONS ───
@@ -1117,7 +1164,7 @@ async function sendMsg(){
   showTyping();
   const intent=detectIntent(text);
   let resp;let usedAI=false;
-  if(S.connected&&S.apiKey){try{resp=await groqResp(text);usedAI=true;}catch(e){console.warn('Groq fail:',e);resp=localResp(text);}}
+  if(S.connected&&S.apiKey){try{resp=tailorResponse(await groqResp(text),intent);usedAI=true;}catch(e){console.warn('Groq fail:',e);resp=localResp(text);}}
   else resp=localResp(text);
   const delay=usedAI?Math.max(500,Math.min(2000,200+resp.length*10+Math.random()*400)):Math.max(400,Math.min(1600,200+resp.length*12+Math.random()*500));
   await new Promise(r=>setTimeout(r,delay));
@@ -1246,6 +1293,7 @@ function updateAvatarUI(){
   }
   const nameEl=document.getElementById('gName');
   if(nameEl) nameEl.textContent=S.girlName||'Luna';
+  document.title=`💕 ${S.girlName||'Luna'} - AI Girlfriend Chatbot`;
 }
 
 function setupAvatarUpload(){
