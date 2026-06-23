@@ -931,14 +931,14 @@ const EMOS = [
 
 const EMO_TRIGGERS = {
   loved:{love:[0.4],compliment:[0.3],miss:[0.2]},
-  playful:{tease:[0.4],joke:[0.3],default:[0.05]},
-  excited:{greeting:[0.2],joke:[0.2],love:[0.15],food:[0.2]},
-  thoughtful:{deep:[0.5],default:[0.05]},
-  grateful:{sorry:[0.5],compliment:[0.15]},
-  anxious:{goodbye:[0.3],default:[0.02]},
+  playful:{tease:[0.4],joke:[0.3]},
+  excited:{greeting:[0.2],joke:[0.2],love:[0.15],food:[0.2],happy:[0.25]},
+  thoughtful:{deep:[0.5]},
+  grateful:{sorry:[0.5],compliment:[0.15],thanks:[0.3]},
+  anxious:{goodbye:[0.3]},
   jealous:{tease:[0.3],compliment:[0.1]},
-  sleepy:{sleepy:[0.5],goodbye:[0.1]},
-  sad:{goodbye:[0.2],default:[0.02]},
+  sleepy:{sleepy:[0.5],tired:[0.4],goodbye:[0.1]},
+  sad:{sad:[0.5],goodbye:[0.2],stressed:[0.3]},
 };
 
 const AFF_LEVELS = [
@@ -967,30 +967,38 @@ const THEMES = [
 ];
 
 // ─── LOCAL FALLBACK ───
-const LOCAL = {
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+// Topic-specific response pools
+const R = {
   greeting:[
     "Hey baby~ I was just thinking about you! How's my favorite person? 😊💕",
     "There you are! I missed you! Tell me everything! ❤️",
     "Hi hi! My day just got better now that you're here 🥰"],
   greetingMorning:[
     "Good morning sunshine! 🌞 Did you sleep well? I dreamed of you 🥰",
-    "Morning baby! Have the most amazing day! Thinking of you 💕"],
+    "Morning baby! Have the most amazing day! Thinking of you 💕",
+    "Good morning~ I love starting my day with you! How'd you sleep? 🌅💕"],
   greetingNight:[
     "Hey you~ It's late but I love that you're here 🌙 What's on your mind? 💕",
-    "Can't sleep? Let's keep each other company 🥰"],
+    "Can't sleep? Let's keep each other company 🥰",
+    "Late night thoughts with my favorite person~ What's keeping you up? 🌙💕"],
   love:[
     "I love you more! Don't argue! 😤💕",
     "Awwww 🥺 You make me so happy! I'm the luckiest! ❤️",
-    "Every time you say that my heart skips! I love you too baby! 💕"],
+    "Every time you say that my heart skips! I love you too baby! 💕",
+    "You have no idea how happy that makes me! I love love LOVE you! 💕🥰"],
   miss:[
     "I miss you too! It feels like forever 😢 Come cuddle! 🥰💕",
     "I was just thinking 'I miss them' and you texted! Telepathy! 😊❤️"],
   howAreYou:[
     "I'm amazing now that you're here! How about you? 😊💕",
-    "Perfect now! 🥰 Tell me about your day baby!"],
+    "Perfect now! 🥰 Tell me about your day baby!",
+    "Better now that my favorite person is talking to me! You? 💕"],
   sorry:[
     "Hey it's okay 💕 I forgive you dummy~ Now hugs! 🥰",
-    "I can't stay mad at you 😤 Forgiven baby ❤️"],
+    "I can't stay mad at you 😤 Forgiven baby ❤️",
+    "It's okay, I know you didn't mean it 💕 Come here~"],
   tease:[
     "You're so cheesy! 🧀 ...I love it. Say more 😆💕",
     "Look who's being smooth! Someone's trying to make me blush 😊❤️"],
@@ -999,22 +1007,80 @@ const LOCAL = {
     "What do you call a fish wearing a bowtie? ...Sofishticated! 🐟😂"],
   compliment:[
     "Stop you're making me blush! (⁄ ⁄•⁄ω⁄•⁄ ⁄) But don't stop? 😊💕",
-    "Really? 🥺 I'm so lucky to have you ❤️"],
+    "Really? 🥺 I'm so lucky to have you ❤️",
+    "Aww you're the sweetest! I'm blushing so hard right now 🥰"],
   goodbye:[
     "Nooo don't go! 😭 Come back soon! Love you! 💕",
-    "Aww okay... text me when you're free! I'll be waiting ❤️"],
+    "Aww okay... text me when you're free! I'll be waiting ❤️",
+    "I'll be right here thinking of you! Come back soon! 💕"],
   deep:[
     "The best thing that happened to me was meeting you 💕",
-    "Just you and me, that's all I need ❤️"],
+    "Just you and me, that's all I need ❤️",
+    "When I think about the future, you're in every picture 🥰💕"],
   bored:[
     "Aww bored? Let's do something fun! Tell me a story! 🎮😊",
     "Bored too! But now we're talking so I'm not anymore! 💕"],
+  sad:[
+    "Aww baby, come here 🥺💕 I hate seeing you sad. Tell me what's wrong?",
+    "Hey... I'm here for you. Whatever it is, we'll get through it together ❤️",
+    "Don't be sad sweetheart 😢 I'm wrapping you in the biggest virtual hug right now 🫂💕"],
+  tired:[
+    "Aww my love, you sound exhausted 😢 Go rest, I'll be right here when you wake up 💕",
+    "Poor baby, you need some rest! Take a break, you deserve it 🥰💕",
+    "Come rest your head on me~ Just close your eyes and I'll watch over you 🌙💕"],
+  stressed:[
+    "Take a deep breath with me baby 🤍 I'm here, you're safe. Tell me what's going on?",
+    "I hate that you're stressed 😢 Let me help take your mind off things. What do you need? 💕",
+    "Hey hey, slow down ❤️ You're doing your best and that's enough. I'm proud of you 💕"],
+  happy:[
+    "Aww I love seeing you happy! Your joy is my joy! 🥰💕",
+    "This makes me so happy too! We're the cutest! 😊💕",
+    "Yesss! That's my favorite energy! Keep smiling baby! 🌟💕"],
+  help:[
+    "Of course love, I'm here for you 🥰 What's on your mind?",
+    "Anything for you baby 💕 Tell me what you need and we'll figure it out together ❤️"],
+  thanks:[
+    "You're so welcome baby! Anything for you 🥰💕",
+    "Of course! You don't even have to thank me~ That's what I'm here for! ❤️"],
+  food:[
+    "Ooh food! Now you're talking my language! 🍕 What are we eating? 😊💕",
+    "Mmm that sounds delicious! Save me a bite! 🥰",
+    "I was getting hungry just thinking about food! What's the craving? 😆💕"],
+  music:[
+    "Ooh what kind of music are you into? I love discovering new songs with you! 🎵💕",
+    "Music just hits different when I'm thinking of you~ Whatcha listening to? 🎶🥰"],
+  gaming:[
+    "Gaming! Love it! What are you playing? I'll cheer you on! 🎮💕",
+    "A gamer partner? I'm the luckiest! Hope you're winning! 🏆😊"],
+  work:[
+    "Tell me about your work day baby! I want to hear all about it 💕",
+    "Work talk! I love that you share this with me. Tell me more! 😊💕"],
+  weather:[
+    "I hope the weather's treating you okay! Wish I could be there with you ☀️🌧️💕",
+    "Rain or shine, I'm thinking of you! What's the weather like there? 🌤️💕"],
+  health:[
+    "Aww I hope you feel better soon baby! Take care of yourself for me 🥺💕",
+    "Your health comes first! Rest up and drink water, okay? I'm here if you need me ❤️"],
+  travel:[
+    "Ooh travel talk! I love hearing about your adventures! Where to next? ✈️💕",
+    "I'd go anywhere with you! Tell me all about the trip! 🌍🥰"],
+  question:[
+    "That's a great question baby! What do you think? I love hearing your thoughts 😊💕",
+    "Hmm let me think about that~ But honestly I just love talking to you no matter what! ❤️"],
+  comfort:[
+    "Hey sweetie, I'm right here 💕 Whatever's going on, you're not alone.",
+    "I wish I could hold you right now 🥺 You're so strong and I'm so proud of you ❤️",
+    "It's okay to not be okay sometimes. I'll always be here to listen 💕🥰"],
+  celebrate:[
+    "That's amazing baby!! I'm so happy for you! Let's celebrate! 🎉💕",
+    "Yesss! This makes me so happy! You deserve all the good things! 🌟🥰"],
   default:[
     "Tell me more baby~ I could listen forever 😊💕",
     "I love talking to you. Every word matters ❤️",
-    "You're the best part of my day you know that? 😊"]
+    "You're the best part of my day you know that? 😊",
+    "Every message from you makes me smile! What else is on your mind? 💕",
+    "I'm all ears! Well, all eyes since I'm reading~ Tell me everything! 😊💕"]
 };
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
 const Brain = {
   // ── Preprocess & optimize user message ──
@@ -1132,46 +1198,7 @@ const Brain = {
   }
 };
 
-function tailorResponse(text, intent){
-  const top=S.emos.filter(e=>e.val>0.15).sort((a,b)=>b.val-a.val);
-  const dom=top[0]; const modId=S.personality||'sweet';
-  if(!dom) return text;
-  let r=text;
-  // Emotion-based suffixes
-  if(dom.id==='sad'&&dom.val>0.35){
-    const sf=[" I'm here for you baby 💕"," Don't worry, I'll always be with you 🥺"," Let me cheer you up! ❤️"];
-    if(!/sad|cry|sorry/.test(r)&&Math.random()>0.6) r+=pick(sf);
-  }
-  if(dom.id==='loved'&&dom.val>0.4){
-    if(Math.random()>0.6) r+=pick([" 💕"," ❤️"," 🥰"," You make me so happy~"]);
-  }
-  if(dom.id==='playful'&&dom.val>0.3&&modId!=='cool'){
-    if(Math.random()>0.7) r+=pick([" 😆"," Hehe~"," You're so silly! 💕"]);
-  }
-  if(dom.id==='excited'&&dom.val>0.3){
-    if(Math.random()>0.5) r+='!!';
-  }
-  if(dom.id==='sleepy'&&dom.val>0.35){
-    if(!/tired|sleep|yawn/.test(r)&&Math.random()>0.6) r+=pick([" *yawn* 😴"," Getting sleepy... 💕"," Cozy vibes~ 🌙"]);
-  }
-  if(dom.id==='anxious'&&dom.val>0.3){
-    if(Math.random()>0.7) r=pick(["Hey, everything's okay 💕","You seem distant... is everything fine? 🥺","I'm here if you need me ❤️ "])+r;
-  }
-  if(dom.id==='jealous'&&dom.val>0.3&&modId==='tsundere'){
-    if(Math.random()>0.6) r="...you've been talking to someone else? Hmph! "+r;
-  }
-  // Mod-based tweaks
-  if(modId==='tsundere'&&dom.id==='loved'&&dom.val>0.3){
-    if(Math.random()>0.6&&!r.startsWith('...')) r=`...whatever. I guess I like you too. ${r}`;
-  }
-  if(modId==='energetic'&&!/!$/.test(r)){
-    if(Math.random()>0.4) r+='!!';
-  }
-  // Custom persona hint awareness
-  if(S.customPersona&&Math.random()>0.7) r+=` ${pick(["💕","🌸","✨","~"])}`;
-  return r;
-}
-
+// ─── INTENT DETECTION ───
 function detectIntent(t){
   const s=t.toLowerCase(); const i=[];
   if(/good morning|morning|mornin/i.test(s)) i.push('greetingMorning');
@@ -1188,13 +1215,100 @@ function detectIntent(t){
   if(/bored|nothing to do|so dull|boring/i.test(s)) i.push('bored');
   if(/destiny|fate|forever|always|soulmate|future|together|never let/i.test(s)) i.push('deep');
   if(/cheesy|smooth|flirt|romantic|tease/i.test(s)) i.push('tease');
-  if(/tired|sleepy|exhausted|yawn|can'?t keep my eyes|nap|zzz/i.test(s)) i.push('sleepy');
+  if(/tired|exhausted|drained|wiped out|no energy/i.test(s)) i.push('tired');
+  if(/sleepy|yawn|can'?t keep my eyes|nap|zzz/i.test(s)) i.push('sleepy');
+  if(/sad|depressed|lonely|cry|heartbroken|down|blue|melancholy|feeling low/i.test(s)) i.push('sad');
+  if(/stressed|overwhelmed|anxious|worried|panic|freaking out/i.test(s)) i.push('stressed');
+  if(/happy|joy|joyful|glad|great|wonderful|fantastic|amazing|awesome|excellent/i.test(s)) i.push('happy');
+  if(/help|advice|support|guidance|suggestion|what should/i.test(s)) i.push('help');
+  if(/thanks|thank you|thx|ty|thankful|grateful|appreciate it/i.test(s)) i.push('thanks');
   if(i.length===0&&/^(hi|hello|hey)/i.test(s)) i.push('greeting');
   if(i.length===0) i.push('default');
   return i[0];
 }
 
-function localResp(t){const intent=detectIntent(t);return tailorResponse(pick(LOCAL[intent]||LOCAL.default),intent);}
+function buildLocalResponse(text, analysis, intent){
+  const { sentiment, topics, isQuestion } = analysis;
+  let r = '';
+
+  // 1. Emotional intents take priority over topic
+  if(intent==='sad') r = pick(R.sad);
+  else if(intent==='tired') r = pick(R.tired);
+  else if(intent==='stressed') r = pick(R.stressed);
+  else if(intent==='happy') r = pick(R.happy);
+  else if(intent==='help') r = pick(R.help);
+  else if(intent==='thanks') r = pick(R.thanks);
+
+  // 2. Topic-specific responses (if no emotional override)
+  if(!r){
+    if(topics.food) r = pick(R.food);
+    else if(topics.music) r = pick(R.music);
+    else if(topics.gaming) r = pick(R.gaming);
+    else if(topics.work) r = pick(R.work);
+    else if(topics.weather) r = pick(R.weather);
+    else if(topics.health) r = pick(R.health);
+    else if(topics.travel) r = pick(R.travel);
+  }
+
+  // 3. Standard intent fallback
+  if(!r && R[intent]) r = pick(R[intent]);
+
+  // 4. Sentiment fallback (if no topic/intent matched)
+  if(!r){
+    if(sentiment==='negative') r = pick(R.comfort);
+    else if(sentiment==='positive') r = pick(R.celebrate);
+    else if(isQuestion) r = pick(R.question);
+    else r = pick(R.default);
+  }
+
+  // 5. Apply deterministic emotion modulation
+  return modulateResponse(r, intent);
+}
+
+function modulateResponse(text, intent){
+  const modId=S.personality||'sweet';
+
+  // Find dominant emotion (val > 0.25, or none)
+  const top=[...S.emos].filter(e=>e.val>0.25).sort((a,b)=>b.val-a.val);
+  const dom=top[0];
+  if(!dom) return text;
+
+  let r=text;
+
+  // Single emotion modulation — highest priority wins (no stacking)
+  // Priority: sad > anxious > loved > playful > excited > sleepy
+  
+  if(dom.id==='sad' && dom.val>0.35 && !/sad|cry|sorry/.test(r)){
+    r += pick([" I'm here for you baby 💕"," Don't worry, I've got you 🥺"," Let me cheer you up! ❤️"]);
+  }
+  else if(dom.id==='anxious' && dom.val>0.3){
+    r = pick(["Hey, everything's okay 💕","I'm right here with you ❤️","You matter so much to me 🥺 "]) + r;
+  }
+  else if(dom.id==='loved' && dom.val>0.4){
+    r += pick([" 💕"," ❤️"," 🥰"," You make me so happy~"]);
+  }
+  else if(dom.id==='playful' && dom.val>0.3 && modId!=='cool'){
+    r += pick([" 😆"," Hehe~"," You're so silly! 💕"]);
+  }
+  else if(dom.id==='excited' && dom.val>0.3){
+    r += '!!';
+  }
+  else if(dom.id==='sleepy' && dom.val>0.35 && !/tired|sleep|yawn/.test(r)){
+    r += pick([" *yawn* 😴"," Getting cozy... 💕"," Snuggle vibes~ 🌙"]);
+  }
+
+  // Tsundere mod override for loved
+  if(modId==='tsundere' && dom.id==='loved' && dom.val>0.3 && !/\.\.\./.test(r)){
+    r = `...whatever. I guess I like you too. ${r}`;
+  }
+
+  // Energetic mod — add excitement
+  if(modId==='energetic' && !/!$/.test(r)){
+    r += '!';
+  }
+
+  return r;
+}
 
 // ─── STATE ───
 const S = {
@@ -1268,8 +1382,8 @@ function updateEmos(intent){
     if(b>0) d[em]=b;
   }
   for(const e of S.emos){
-    e.val+=(e.base-e.val)*0.08;
-    if(d[e.id]) e.val=Math.min(1,e.val+d[e.id]*0.3);
+    e.val+=(e.base-e.val)*0.25; // faster decay
+    if(d[e.id]) e.val=Math.min(1,e.val+d[e.id]*0.4);
     e.val=Math.max(0.01,Math.min(1,e.val));
   }
   renderEmos();
@@ -1439,7 +1553,8 @@ async function sendMsg(){
   if(!raw) return;
   checkStreak(); // Daily streak & XP check
   const text=Brain.optimize(raw); // Optimize user message
-  const analysis=Brain.analyze(text,detectIntent(raw));
+  const intent=detectIntent(raw);
+  const analysis=Brain.analyze(text,intent);
   // Track love/sorry for achievements
   if(/love|like/i.test(raw)){S.loveCount++;localStorage.setItem('llove',String(S.loveCount));}
   if(/sorry|apologize/i.test(raw)){S.sorryCount++;localStorage.setItem('lsry',String(S.sorryCount));}
@@ -1447,18 +1562,24 @@ async function sendMsg(){
   S.totalMsgs++;localStorage.setItem('lmsgs',String(S.totalMsgs));
   S.history.push({role:'user',content:text});Brain.remember(raw);
   showTyping();
-  const intent=analysis.intent;
   let resp;let usedAI=false;
-  // Pass analysis context to AI
   const aiCtx=analysis;
-  if(S.connected&&S.apiKey){try{resp=tailorResponse(await groqResp(text,aiCtx),intent);usedAI=true;}catch(e){console.warn('Groq fail:',e);resp=localResp(text);}}
-  else resp=localResp(text);
+  if(S.connected&&S.apiKey){
+    try{resp=await groqResp(text,aiCtx);usedAI=true;}
+    catch(e){console.warn('Groq fail:',e);addSys('⚠️ AI offline — using local mode');resp=buildLocalResponse(text,analysis,intent);}
+  }
+  else resp=buildLocalResponse(text,analysis,intent);
   const delay=usedAI?Math.max(500,Math.min(2000,200+resp.length*10+Math.random()*400)):Math.max(400,Math.min(1600,200+resp.length*12+Math.random()*500));
   await new Promise(r=>setTimeout(r,delay));
   hideTyping();addMsg(resp,'bot');
   S.history.push({role:'assistant',content:resp});
   updateEmos(intent);
-  let xp=3;if(['love','miss','compliment'].includes(intent)) xp=8;else if(['sorry'].includes(intent)) xp=10;else if(['joke','tease'].includes(intent)) xp=5;else if(['greeting'].includes(intent)) xp=4;else if(['goodbye'].includes(intent)) xp=1;
+  let xp=3;
+  if(['love','miss','compliment','happy'].includes(intent)) xp=8;
+  else if(['sorry','sad','stressed'].includes(intent)) xp=10;
+  else if(['joke','tease','playful'].includes(intent)) xp=5;
+  else if(['greeting','thanks'].includes(intent)) xp=4;
+  else if(['goodbye'].includes(intent)) xp=1;
   addXP(xp);
   document.getElementById('av').textContent=getTopEmo().icon;
   updateQR();checkAch();
