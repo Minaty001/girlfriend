@@ -1,0 +1,20 @@
+patterns:
+  daily-triage:
+    tool: claude
+    level: L1
+    state: STATE.md
+    cadence: 1d
+    skills:
+      - .claude/skills/loop-triage
+    description: "Daily project health check — report only"
+
+  pr-babysitter:
+    tool: claude
+    level: L2
+    state: pr-babysitter-state.md
+    cadence: "*/10 9-18 * * 1-5"
+    skills:
+      - .claude/skills/pr-review-triage
+      - .claude/skills/minimal-fix
+    verifier: .claude/agents/loop-verifier.md
+    description: "PR monitoring and assisted review"

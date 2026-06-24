@@ -2,236 +2,162 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>💕 Luna - AI Girlfriend Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEURAL CORE — AI Operating System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <style id="theme-styles"></style>
 </head>
 <body>
 
-  <!-- ─── Background Particles ─── -->
-  <div id="particlesContainer"></div>
-
-  <!-- ─── App Container ─── -->
-  <div class="app-container">
-
-    <!-- ─── Header ─── -->
-    <header class="header">
-      <div class="avatar" tabindex="0" aria-label="Avatar">
-        <span class="av-emoji">🌸</span>
-        <span class="status-dot"></span>
+  <!-- ═══ Boot Screen ═══ -->
+  <div id="boot-screen" class="boot-screen">
+    <div class="boot-content">
+      <div class="boot-ring"></div>
+      <div class="boot-text">
+        <h1>NEURAL CORE</h1>
+        <p>INITIALIZING NEURAL NETWORK</p>
+        <div class="boot-bar"><div class="boot-fill" id="boot-fill"></div></div>
+        <span class="boot-percent" id="boot-percent">0%</span>
       </div>
-      <div class="header-info">
-        <div class="name-row">
-          <h2>Luna</h2>
-          <span class="mode-badge">Local</span>
-          <span class="streak-badge">
-            <span class="streak-fire">🔥</span>
-            <span class="streak-count">0</span>
-          </span>
+    </div>
+  </div>
+
+  <!-- ═══ Application ═══ -->
+  <div id="app">
+
+    <!-- Layer 0 — Background -->
+    <div class="layer-bg"></div>
+
+    <!-- Layer 1 — Atmosphere -->
+    <div class="layer-atmosphere" id="atmosphere"></div>
+
+    <!-- Layer 2 — Hex Grid -->
+    <div class="layer-hex" id="hexGrid"></div>
+
+    <!-- Layer 3-5 — Neural Canvas -->
+    <canvas id="neuralCanvas" class="layer-canvas"></canvas>
+
+    <!-- Layer 6 — HUD -->
+    <div class="layer-hud">
+
+      <!-- Left Panel — System Monitor -->
+      <div class="hud-panel hud-left" id="hudLeft">
+        <div class="hud-header">
+          <span class="hud-title">SYSTEM MONITOR</span>
+          <span class="hud-led" id="statusLed">●</span>
         </div>
-        <div class="status-text">Thinking of you 💕</div>
-      </div>
-      <div class="header-btns">
-        <button class="hbtn" onclick="LUNA.openGiftPanel()" title="Send a gift" aria-label="Gifts">🎁</button>
-        <button class="hbtn" onclick="LUNA.openSettings()" title="Settings" aria-label="Settings">⚙️</button>
-      </div>
-    </header>
-
-    <!-- ─── Affection Bar ─── -->
-    <div class="affection-bar">
-      <span class="affection-icon">💕</span>
-      <div class="affection-track"><div class="affection-fill"></div></div>
-      <span class="affection-label">Stranger 😐</span>
-    </div>
-
-    <!-- ─── Emotion Tags ─── -->
-    <div class="emotion-bar"></div>
-
-    <!-- ─── AI Bar ─── -->
-    <div class="ai-bar">
-      <div class="ai-bar-header" onclick="LUNA.toggleAIBar()" tabindex="0" role="button" aria-label="Toggle AI settings">
-        <span class="ab-label">🤖 AI</span>
-        <span class="ab-status offline">Offline</span>
-        <span class="ab-hint">API Key / Backend</span>
-        <span class="ab-toggle">▼</span>
-      </div>
-      <div class="ai-bar-body">
-        <div class="ai-bar-row">
-          <input type="password" id="ai-key" placeholder="Groq API Key (gsk_...)" autocomplete="off">
-          <select id="ai-model">
-            <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
-            <option value="llama3-70b-8192">Llama 3 70B</option>
-            <option value="llama3-8b-8192">Llama 3 8B</option>
-            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-            <option value="gemma2-9b-it">Gemma 2 9B</option>
-          </select>
-          <button class="ab-btn" onclick="LUNA.connectBackend()">Connect</button>
-          <button class="ab-btn secondary" onclick="LUNA.disconnectBackend()">Disconnect</button>
-        </div>
-        <div class="ai-bar-row" style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(233,30,99,0.08);">
-          <input type="text" id="backend-url" placeholder="http://localhost:8000" value="http://localhost:8000">
-          <button class="ab-btn" id="ab-connect" onclick="LUNA.connectBackend()">Use Backend</button>
-          <button class="ab-btn secondary" onclick="LUNA.disconnectBackend()">Local</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── Chat Area ─── -->
-    <div class="chat-area" id="chat-area"></div>
-
-    <!-- ─── Typing Indicator ─── -->
-    <div class="typing-ind">
-      <div class="tav" aria-hidden="true">🌸</div>
-      <div class="bub"><span></span><span></span><span></span></div>
-    </div>
-
-    <!-- ─── Quick Replies ─── -->
-    <div class="qr-bar" id="qr-bar"></div>
-
-    <!-- ─── Input Area ─── -->
-    <div class="input-area">
-      <div class="input-row">
-        <div class="input-w">
-          <textarea id="chat-input" rows="1" placeholder="Say something sweet..." aria-label="Chat message"></textarea>
-          <button class="voice-btn" onclick="LUNA.toggleVoice()" title="Voice input" aria-label="Voice input">🎤</button>
-          <button class="send-btn" onclick="LUNA.sendMessage()" aria-label="Send message">
-            <span class="send-icon">➤</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── Milestone Popup ─── -->
-    <div class="milestone-popup" id="milestone-popup">
-      <div class="big-emoji" id="milestone-emoji">💕</div>
-      <h3 id="milestone-title">Level Up!</h3>
-      <p id="milestone-desc">Your bond is growing!</p>
-      <button id="milestone-btn">Aww thanks! 🥰</button>
-    </div>
-
-    <!-- ─── Achievement Toast ─── -->
-    <div class="ach-toast" id="ach-toast">
-      <span class="aicon" id="ach-icon">🏆</span>
-      <span class="aname" id="ach-name">Achievement!</span>
-      <span class="adesc" id="ach-desc">You unlocked something special</span>
-    </div>
-
-    <!-- ─── Gift Overlay ─── -->
-    <div class="gift-overlay" id="gift-overlay">
-      <div class="gift-panel">
-        <h3>🎁 Send a Gift</h3>
-        <div class="gift-grid" id="gift-grid"></div>
-        <button class="gclose" onclick="LUNA.closeGiftPanel()">Cancel</button>
-      </div>
-    </div>
-
-    <!-- ─── Gift Send Animation ─── -->
-    <div class="gift-send-anim" id="gift-send-anim"></div>
-
-    <!-- ─── Settings Modal ─── -->
-    <div class="modal-overlay" id="modal-overlay">
-      <div class="modal">
-        <div class="modal-tabs">
-          <div class="mtab active" data-tab="personality">💕 Persona</div>
-          <div class="mtab" data-tab="appearance">🎨 Look</div>
-          <div class="mtab" data-tab="ai">🤖 AI</div>
-          <div class="mtab" data-tab="about">ℹ️ About</div>
-        </div>
-        <div class="modal-body">
-
-          <!-- Persona Tab -->
-          <div class="mpage active" id="personality-page">
-            <h4>💕 Personality Mod</h4>
-            <div class="sg">
-              <label>Choose her persona</label>
-              <div class="mod-grid" id="mod-grid"></div>
-            </div>
-            <div class="sg">
-              <label>Girl's Name</label>
-              <input type="text" id="s-name" placeholder="Luna" maxlength="30">
-            </div>
-            <div class="sg">
-              <label>Your Name</label>
-              <input type="text" id="s-user-name" placeholder="You" maxlength="20">
-            </div>
+        <div class="hud-divider"></div>
+        <div class="hud-metrics" id="metricsContainer">
+          <div class="metric">
+            <span class="metric-label">NEURAL CORE</span>
+            <span class="metric-value" id="mCoreStatus">ACTIVE</span>
           </div>
-
-          <!-- Appearance Tab -->
-          <div class="mpage" id="appearance-page">
-            <h4>🎨 Theme & Look</h4>
-            <div class="sg">
-              <label>Color Theme</label>
-              <div class="theme-grid" id="theme-grid"></div>
-            </div>
-            <div class="sg">
-              <label>Avatar Emoji</label>
-              <div class="avatar-grid" id="avatar-grid"></div>
-            </div>
-            <div class="sg">
-              <label class="upload-label">Or upload your own image</label>
-              <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-                <div class="av-preview" id="av-preview">🌸</div>
-                <input type="file" id="avatar-upload" accept="image/*" onchange="LUNA.uploadAvatar(this)">
-              </div>
-            </div>
+          <div class="metric">
+            <span class="metric-label">SYNAPTIC ACTIVITY</span>
+            <div class="metric-bar-track"><div class="metric-bar-fill" id="mSynaptic" style="width:72%"></div></div>
+            <span class="metric-num" id="mSynapticVal">72%</span>
           </div>
-
-          <!-- AI Tab -->
-          <div class="mpage" id="ai-page">
-            <h4>🤖 AI Settings</h4>
-            <div class="sg">
-              <label>Groq API Key</label>
-              <input type="password" id="s-ai-key" placeholder="gsk_..." autocomplete="off">
-              <div class="hint">Get a free key at console.groq.com</div>
-            </div>
-            <div class="sg">
-              <label>AI Model</label>
-              <select id="s-ai-model">
-                <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
-                <option value="llama3-70b-8192">Llama 3 70B</option>
-                <option value="llama3-8b-8192">Llama 3 8B</option>
-                <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                <option value="gemma2-9b-it">Gemma 2 9B</option>
-              </select>
-            </div>
-            <div class="sg">
-              <label>Backend API URL</label>
-              <input type="text" id="s-backend-url" placeholder="http://localhost:8000">
-              <div class="hint">For the Python backend server</div>
-            </div>
-            <div class="sg">
-              <label>
-                <input type="checkbox" id="s-tts" checked>
-                &nbsp;Enable Text-to-Speech
-              </label>
-            </div>
+          <div class="metric">
+            <span class="metric-label">QUANTUM COHERENCE</span>
+            <div class="metric-bar-track"><div class="metric-bar-fill" id="mCoherence" style="width:94%"></div></div>
+            <span class="metric-num" id="mCoherenceVal">94.2%</span>
           </div>
-
-          <!-- About Tab -->
-          <div class="mpage" id="about-page">
-            <div id="about-content"></div>
+          <div class="metric">
+            <span class="metric-label">MEMORY FRAGMENTS</span>
+            <span class="metric-value" id="mMemory">8,547</span>
           </div>
-
-        </div>
-        <div class="modal-footer">
-          <button class="btn-sec" onclick="LUNA.closeSettings()">Cancel</button>
-          <button class="btn-pri" onclick="LUNA.saveSettings()">Save</button>
+          <div class="metric">
+            <span class="metric-label">SYSTEM TEMP</span>
+            <span class="metric-value" id="mTemp">36.8°C</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">UPTIME</span>
+            <span class="metric-value" id="mUptime">00:00:00</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">QUANTUM ENTROPY</span>
+            <div class="metric-bar-track"><div class="metric-bar-fill" id="mEntropy" style="width:23%"></div></div>
+            <span class="metric-num" id="mEntropyVal">0.23</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">THOUGHT VELOCITY</span>
+            <span class="metric-value" id="mVelocity">1.42 TFLOPS</span>
+          </div>
         </div>
       </div>
+
+      <!-- Right Panel — Neural Stream -->
+      <div class="hud-panel hud-right" id="hudRight">
+        <div class="hud-header">
+          <span class="hud-title">NEURAL STREAM</span>
+          <span class="hud-led hud-led-green">●</span>
+        </div>
+        <div class="hud-divider"></div>
+        <div class="hud-stream" id="neuralStream">
+          <div class="stream-entry">> neural core initialized</div>
+          <div class="stream-entry">> quantum state: coherent</div>
+          <div class="stream-entry">> synaptic mapping active</div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar — Command Interface -->
+      <div class="hud-panel hud-bottom" id="hudBottom">
+        <div class="bottom-left">
+          <span class="bottom-label">NEURAL CORE v1.0</span>
+          <span class="bottom-divider">|</span>
+          <span class="bottom-label" id="bConnection">CONNECTION: SECURE</span>
+          <span class="bottom-divider">|</span>
+          <span class="bottom-label" id="bNodes">NODES: 0</span>
+          <span class="bottom-divider">|</span>
+          <span class="bottom-label" id="bSynapses">SYNAPSES: 0</span>
+        </div>
+        <div class="bottom-right">
+          <span class="bottom-label" id="bFps">FPS: 60</span>
+        </div>
+      </div>
+
+      <!-- Corner Elements -->
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <!-- Circular Radar -->
+      <div class="hud-radar" id="hudRadar">
+        <svg viewBox="0 0 120 120" class="radar-svg">
+          <circle cx="60" cy="60" r="58" fill="none" stroke="rgba(0,255,255,0.08)" stroke-width="0.5"/>
+          <circle cx="60" cy="60" r="40" fill="none" stroke="rgba(0,255,255,0.06)" stroke-width="0.5"/>
+          <circle cx="60" cy="60" r="20" fill="none" stroke="rgba(0,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="60" y1="2" x2="60" y2="118" stroke="rgba(0,255,255,0.04)" stroke-width="0.3"/>
+          <line x1="2" y1="60" x2="118" y2="60" stroke="rgba(0,255,255,0.04)" stroke-width="0.3"/>
+          <line x1="60" y1="60" x2="60" y2="2" stroke="#00FFFF" stroke-width="0.8" class="radar-sweep" id="radarSweep"/>
+        </svg>
+      </div>
+
+      <!-- Floating Data Windows -->
+      <div class="float-window" id="fwTop">
+        <span class="fw-label">NEURAL DENSITY</span>
+        <span class="fw-value" id="fwDensity">0.84</span>
+      </div>
+      <div class="float-window" id="fwRight">
+        <span class="fw-label">WAVE FUNCTION</span>
+        <span class="fw-value" id="fwWave">Ψ(x,t)</span>
+      </div>
+
     </div>
 
-    <!-- ─── Footer ─── -->
-    <div class="footer">
-      <a href="#" tabindex="0">✨ Luna v3 — Made with 💕</a>
+    <!-- Layer 7 — Cursor -->
+    <div class="cursor-ring" id="cursorRing">
+      <div class="cursor-inner"></div>
+      <div class="cursor-outer"></div>
     </div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="cursor-trail" id="cursorTrail"></div>
 
   </div>
 
-  <!-- ─── Script ─── -->
-  <script defer src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

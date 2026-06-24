@@ -1,0 +1,3180 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "girlfriend-bot",
+    "languages": [
+      "css",
+      "dockerfile",
+      "html",
+      "javascript",
+      "json",
+      "python",
+      "txt",
+      "yaml"
+    ],
+    "frameworks": [
+      "FastAPI",
+      "Pydantic",
+      "Uvicorn",
+      "Docker",
+      "Docker Compose",
+      "GitHub Actions"
+    ],
+    "description": "Luna AI Girlfriend Chatbot - An interactive AI girlfriend chatbot with emotion simulation, affection system, and firewall protection built with FastAPI and vanilla JavaScript.",
+    "analyzedAt": "2026-06-24T06:14:49.875352+00:00",
+    "gitCommitHash": "61ec2fece1ea7cb8174d3e97466ef46d021497ad"
+  },
+  "nodes": [
+    {
+      "id": "service:docker-compose.yml",
+      "type": "service",
+      "name": "docker-compose.yml",
+      "filePath": "docker-compose.yml",
+      "summary": "Luna v3 Docker Compose configuration defining a single `luna-bot` service. Builds from the local Dockerfile, maps host port 8000 to container port 8000, sets HOST/PORT environment variables, mounts all application files (brain.py, app.py, style.css, script.js, index.html) for live reload during development, configures an HTTP health check against /health, and enables auto-restart unless stopped.",
+      "tags": [
+        "docker-compose",
+        "container-orchestration",
+        "service-definition",
+        "healthcheck",
+        "volume-mounts"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "Dockerfile",
+      "summary": "Single-stage production Docker image for Luna v3 based on python:3.13-slim. Installs minimal system dependencies (ca-certificates), copies requirements.txt and installs Python packages, copies all application source files (brain.py, app.py, style.css, script.js, index.html), creates a non-root 'app' user for security, exposes port 8000, sets up a periodic HEALTHCHECK, and launches the FastAPI application via uvicorn on 0.0.0.0:8000.",
+      "tags": [
+        "dockerfile",
+        "python",
+        "containerization",
+        "fastapi",
+        "uvicorn"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "pipeline:.github/workflows/ci.yml",
+      "type": "pipeline",
+      "label": "CI Pipeline",
+      "filePath": ".github/workflows/ci.yml",
+      "summary": "CI pipeline triggered on push and pull_request to main. Runs linting with pyflakes, import validation, firewall tests, brain logic tests, and full API endpoint tests (health, chat, gift, state, reset) across Python 3.13 and 3.14 using a matrix strategy.",
+      "tags": [
+        "ci",
+        "testing",
+        "linting",
+        "python",
+        "github-actions",
+        "matrix-build"
+      ],
+      "complexity": "moderate",
+      "metrics": {
+        "totalLines": 125,
+        "nonEmptyLines": 107,
+        "sectionCount": 3,
+        "stepCount": 8
+      },
+      "name": "ci.yml"
+    },
+    {
+      "id": "pipeline:.github/workflows/deploy.yml",
+      "type": "pipeline",
+      "label": "Deploy Pipeline",
+      "filePath": ".github/workflows/deploy.yml",
+      "summary": "Manual deploy pipeline (workflow_dispatch) that builds a Docker image using Docker Buildx and pushes it to GitHub Container Registry (ghcr.io). Tags are generated from semantic version, a user-supplied input tag, and a short SHA. Uses gha cache mode for layer caching.",
+      "tags": [
+        "deploy",
+        "docker",
+        "github-actions",
+        "container-registry",
+        "cd",
+        "ghcr"
+      ],
+      "complexity": "moderate",
+      "metrics": {
+        "totalLines": 53,
+        "nonEmptyLines": 45,
+        "sectionCount": 4,
+        "stepCount": 5
+      },
+      "name": "deploy.yml"
+    },
+    {
+      "id": "file:index.html",
+      "type": "file",
+      "label": "index.html",
+      "summary": "Main HTML entry point for the Luna AI Girlfriend Chatbot. Defines the complete UI structure including header with avatar and streak badge, affection/emotion/accordion AI bar, chat message area, typing indicator, quick reply chips, input area with voice and send buttons, milestone popup, achievement toast, gift overlay with send animation, and a full settings modal with four tabs (Personality, Appearance, AI, About). Loads Google Fonts (Nunito), style.css, and script.js.",
+      "tags": [
+        "html",
+        "frontend",
+        "chatbot",
+        "ui",
+        "luna",
+        "entry-point"
+      ],
+      "complexity": "simple",
+      "language": "html",
+      "fileCategory": "markup",
+      "sizeLines": 237,
+      "nonEmptyLines": 214,
+      "name": "index.html"
+    },
+    {
+      "id": "file:style.css",
+      "type": "file",
+      "label": "style.css",
+      "summary": "Complete design system and stylesheet for the Luna AI Girlfriend Chatbot. Contains design tokens (CSS custom properties for colors, typography, spacing, radii, shadows, transitions, z-index layers), global reset and base styles, 14 emoji animation keyframes (bounce, float, pulse, pop, spin, wiggle, dance, shine, rain, confetti, heartbeat) with utility classes, a particle float animation system with burst effects, full component styling for header, avatar, affection bar, emotion tags, AI bar, chat messages (user/bot/system), typing indicator, quick replies, input area with voice/TTS buttons, milestone popup, settings modal with tabs (Personality, Appearance, AI, About), mod grid, theme grid, avatar grid, gift panel with grid, achievement toast, and comprehensive responsive breakpoints for tablet, phone landscape, phone portrait (<480px), and very small phones (<360px). Includes accessibility support via prefers-reduced-motion, prefers-reduced-transparency, prefers-contrast, and print styles.",
+      "tags": [
+        "css",
+        "design-system",
+        "animations",
+        "responsive",
+        "theming",
+        "frontend",
+        "chatbot"
+      ],
+      "complexity": "moderate",
+      "language": "css",
+      "fileCategory": "markup",
+      "sizeLines": 1966,
+      "nonEmptyLines": 1683,
+      "name": "style.css"
+    },
+    {
+      "id": "document:requirements.txt",
+      "type": "document",
+      "label": "requirements.txt",
+      "summary": "Python backend dependency manifest for the Luna AI Girlfriend Chatbot. Declares four core dependencies: fastapi (>=0.110.0) for the REST API server, uvicorn[standard] (>=0.29.0) as the ASGI server, httpx (>=0.27.0) for async HTTP client requests, and pydantic (>=2.0.0) for data validation and settings management. Includes python-multipart for file upload support.",
+      "tags": [
+        "python",
+        "dependencies",
+        "backend",
+        "fastapi",
+        "requirements"
+      ],
+      "complexity": "simple",
+      "language": "txt",
+      "fileCategory": "docs",
+      "sizeLines": 8,
+      "nonEmptyLines": 7,
+      "name": "requirements.txt"
+    },
+    {
+      "id": "file:.understand-anything/.understandignore",
+      "type": "file",
+      "label": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "language": "unknown",
+      "sizeLines": 41,
+      "summary": "Ignore patterns file for the analysis tool, specifying globs to exclude from knowledge-graph scanning. All patterns are commented out by default, providing templates for excluding Python bytecode, test files, and build artifacts.",
+      "tags": [
+        "config",
+        "ignore",
+        "analysis"
+      ],
+      "complexity": "moderate",
+      "name": ".understandignore"
+    },
+    {
+      "id": "config:.understand-anything/config.json",
+      "type": "config",
+      "label": "config.json",
+      "filePath": ".understand-anything/config.json",
+      "language": "json",
+      "sizeLines": 3,
+      "summary": "Analysis tool configuration specifying outputLanguage as English for all generated knowledge graph content.",
+      "tags": [
+        "config",
+        "language"
+      ],
+      "complexity": "moderate",
+      "name": "config.json"
+    },
+    {
+      "id": "file:app.py",
+      "type": "file",
+      "label": "app.py",
+      "filePath": "app.py",
+      "language": "python",
+      "sizeLines": 435,
+      "summary": "FastAPI backend for the Luna AI Girlfriend Chatbot. Defines REST endpoints for chat, gift sending, session state, reset, and health checks. Integrates Groq AI API for AI-powered responses with a local fallback. Manages in-memory sessions, XP/affection system, emotions, achievements, streak tracking, and firewall protection against prompt injection.",
+      "tags": [
+        "backend",
+        "api",
+        "fastapi",
+        "webserver"
+      ],
+      "complexity": "moderate",
+      "name": "app.py"
+    },
+    {
+      "id": "file:brain.py",
+      "type": "file",
+      "label": "brain.py",
+      "filePath": "brain.py",
+      "language": "python",
+      "sizeLines": 965,
+      "summary": "Core chatbot intelligence engine containing the Brain class with static methods for text optimization, intent detection, sentiment analysis, topic extraction, response planning, local response building, emotion modulation, memory extraction, and AI system prompt generation. Also provides standalone modules for emotion updates, affection/XP progression, streak management, achievement checking, and firewall security.",
+      "tags": [
+        "core",
+        "nlp",
+        "engine",
+        "intelligence"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py"
+    },
+    {
+      "id": "file:script.js",
+      "type": "file",
+      "label": "script.js",
+      "filePath": "script.js",
+      "language": "javascript",
+      "sizeLines": 2077,
+      "summary": "Frontend client for the Luna AI Girlfriend Chatbot implemented as an IIFE exposing the LUNA global object. Contains the full interactive UI: chat rendering, emotion/affection system, local/groq/backend chat modes, gift system, voice recognition, text-to-speech, settings panel with personality mods/themes/avatars, achievement toasts, milestone popups, streak tracking, memory extraction, particle animations, confetti effects, and a client-side firewall against prompt injection.",
+      "tags": [
+        "frontend",
+        "ui",
+        "client",
+        "iife"
+      ],
+      "complexity": "moderate",
+      "name": "script.js"
+    },
+    {
+      "id": "class:app.py/SettingsModel",
+      "type": "class",
+      "label": "SettingsModel",
+      "filePath": "app.py",
+      "lineStart": 66,
+      "lineEnd": 79,
+      "summary": "Pydantic model for chatbot configuration including personality, girl/pet name, user gender, custom persona, Groq API connection settings, avatar, theme, particles, and temperature.",
+      "tags": [
+        "pydantic",
+        "model",
+        "config"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/SettingsModel"
+    },
+    {
+      "id": "class:app.py/ChatRequest",
+      "type": "class",
+      "label": "ChatRequest",
+      "filePath": "app.py",
+      "lineStart": 82,
+      "lineEnd": 85,
+      "summary": "Pydantic request model for the /chat endpoint with session_id, message text, and optional settings.",
+      "tags": [
+        "pydantic",
+        "request"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/ChatRequest"
+    },
+    {
+      "id": "class:app.py/ChatResponse",
+      "type": "class",
+      "label": "ChatResponse",
+      "filePath": "app.py",
+      "lineStart": 88,
+      "lineEnd": 92,
+      "summary": "Pydantic response model for the /chat endpoint returning session_id, response text, state snapshot, and new achievements.",
+      "tags": [
+        "pydantic",
+        "response"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/ChatResponse"
+    },
+    {
+      "id": "class:app.py/GiftRequest",
+      "type": "class",
+      "label": "GiftRequest",
+      "filePath": "app.py",
+      "lineStart": 95,
+      "lineEnd": 99,
+      "summary": "Pydantic request model for the /gift endpoint with session_id, emoji, name, and XP value.",
+      "tags": [
+        "pydantic",
+        "request"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/GiftRequest"
+    },
+    {
+      "id": "class:app.py/GiftResponse",
+      "type": "class",
+      "label": "GiftResponse",
+      "filePath": "app.py",
+      "lineStart": 102,
+      "lineEnd": 106,
+      "summary": "Pydantic response model for the /gift endpoint returning session_id, reaction text, state, and new achievements.",
+      "tags": [
+        "pydantic",
+        "response"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/GiftResponse"
+    },
+    {
+      "id": "class:app.py/StateResponse",
+      "type": "class",
+      "label": "StateResponse",
+      "filePath": "app.py",
+      "lineStart": 109,
+      "lineEnd": 111,
+      "summary": "Pydantic response model for the /state endpoint returning session_id and full state snapshot.",
+      "tags": [
+        "pydantic",
+        "response"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/StateResponse"
+    },
+    {
+      "id": "class:brain.py/Brain",
+      "type": "class",
+      "label": "Brain",
+      "filePath": "brain.py",
+      "lineStart": 360,
+      "lineEnd": 789,
+      "summary": "Core chatbot intelligence class with 12 static methods covering text optimization, intent detection (20+ intents), sentiment analysis, topic extraction (11 domains), context analysis, strategic response planning, local response building from pools, emotion/personality modulation, memory extraction, and AI system prompt generation with full state context.",
+      "tags": [
+        "core",
+        "nlp",
+        "intelligence"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain"
+    },
+    {
+      "id": "function:brain.py/Brain.optimize",
+      "type": "function",
+      "label": "Brain.optimize",
+      "filePath": "brain.py",
+      "lineStart": 364,
+      "lineEnd": 386,
+      "summary": "Normalizes casual speech and slang in user input (u→you, gonna→going to, lol→haha, etc.), condenses excessive repeated characters and punctuation.",
+      "tags": [
+        "nlp",
+        "preprocessing"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.optimize"
+    },
+    {
+      "id": "function:brain.py/Brain.detect_intent",
+      "type": "function",
+      "label": "Brain.detect_intent",
+      "filePath": "brain.py",
+      "lineStart": 389,
+      "lineEnd": 445,
+      "summary": "Detects primary user intent from text using regex pattern matching across 20+ categories including greeting, love, miss, sorry, joke, food, compliment, goodbye, sad, tired, sleepy, stressed, happy, help, thanks, deep, tease, bored, and more.",
+      "tags": [
+        "nlp",
+        "intent",
+        "classification"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.detect_intent"
+    },
+    {
+      "id": "function:brain.py/Brain.sentiment",
+      "type": "function",
+      "label": "Brain.sentiment",
+      "filePath": "brain.py",
+      "lineStart": 448,
+      "lineEnd": 475,
+      "summary": "Rule-based sentiment analysis returning positive, negative, or neutral based on keyword scoring.",
+      "tags": [
+        "nlp",
+        "sentiment"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.sentiment"
+    },
+    {
+      "id": "function:brain.py/Brain.topics",
+      "type": "function",
+      "label": "Brain.topics",
+      "filePath": "brain.py",
+      "lineStart": 478,
+      "lineEnd": 535,
+      "summary": "Extracts conversation topics (work, food, entertainment, gaming, social, travel, health, music, education, weather, finance) from user text using regex patterns.",
+      "tags": [
+        "nlp",
+        "topics"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.topics"
+    },
+    {
+      "id": "function:brain.py/Brain.analyze",
+      "type": "function",
+      "label": "Brain.analyze",
+      "filePath": "brain.py",
+      "lineStart": 538,
+      "lineEnd": 555,
+      "summary": "Full context analysis returning sentiment, topics, is_question flag, has_emoji, word_count, complexity (long/short), urgency (high/normal/low), and detected intent.",
+      "tags": [
+        "analysis",
+        "context"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.analyze"
+    },
+    {
+      "id": "function:brain.py/Brain.plan",
+      "type": "function",
+      "label": "Brain.plan",
+      "filePath": "brain.py",
+      "lineStart": 558,
+      "lineEnd": 571,
+      "summary": "Strategic response planning: determines strategy (comfort/amplify/normal), dominant emotion, and flags for needs_comfort, needs_celebration, keep_short.",
+      "tags": [
+        "planning",
+        "strategy"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.plan"
+    },
+    {
+      "id": "function:brain.py/Brain.build_local_response",
+      "type": "function",
+      "label": "Brain.build_local_response",
+      "filePath": "brain.py",
+      "lineStart": 576,
+      "lineEnd": 630,
+      "summary": "Builds response from predefined text pools using a priority system: emotional intents first, then topic-specific, then standard intent fallback, then sentiment fallback.",
+      "tags": [
+        "response",
+        "local"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.build_local_response"
+    },
+    {
+      "id": "function:brain.py/Brain.modulate_response",
+      "type": "function",
+      "label": "Brain.modulate_response",
+      "filePath": "brain.py",
+      "lineStart": 634,
+      "lineEnd": 669,
+      "summary": "Applies emotion and personality modulation to response text: adds emotional suffixes/prefixes based on dominant emotion value and personality mod (tsundere, energetic, etc.).",
+      "tags": [
+        "emotion",
+        "modulation"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.modulate_response"
+    },
+    {
+      "id": "function:brain.py/Brain.extract_memories",
+      "type": "function",
+      "label": "Brain.extract_memories",
+      "filePath": "brain.py",
+      "lineStart": 673,
+      "lineEnd": 717,
+      "summary": "Extracts factual memories from user text including name, likes/dislikes, events, and feelings using regex patterns.",
+      "tags": [
+        "memory",
+        "extraction"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.extract_memories"
+    },
+    {
+      "id": "function:brain.py/Brain.get_sys_prompt",
+      "type": "function",
+      "label": "Brain.get_sys_prompt",
+      "filePath": "brain.py",
+      "lineStart": 721,
+      "lineEnd": 769,
+      "summary": "Builds a comprehensive system prompt for the Groq AI LLM call incorporating personality mod, relationship level, emotions, memories, time context, sentiment analysis, topics, and character instructions.",
+      "tags": [
+        "ai",
+        "prompt",
+        "llm"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/Brain.get_sys_prompt"
+    },
+    {
+      "id": "function:brain.py/pick",
+      "type": "function",
+      "label": "pick",
+      "filePath": "brain.py",
+      "lineStart": 12,
+      "lineEnd": 14,
+      "summary": "Utility function returning a random item from a list. Used throughout for random response selection.",
+      "tags": [
+        "utility",
+        "random"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/pick"
+    },
+    {
+      "id": "function:brain.py/_get_aff",
+      "type": "function",
+      "label": "_get_aff",
+      "filePath": "brain.py",
+      "lineStart": 139,
+      "lineEnd": 145,
+      "summary": "Internal helper mapping XP to affection level by iterating through AFF_LEVELS.",
+      "tags": [
+        "affection",
+        "helper"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/_get_aff"
+    },
+    {
+      "id": "function:brain.py/firewall_check",
+      "type": "function",
+      "label": "firewall_check",
+      "filePath": "brain.py",
+      "lineStart": 349,
+      "lineEnd": 357,
+      "summary": "Checks user message against firewall patterns to block prompt injection, system prompt extraction, jailbreak, and character-breaking attempts. Returns (blocked, category, reply).",
+      "tags": [
+        "security",
+        "firewall"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/firewall_check"
+    },
+    {
+      "id": "function:brain.py/update_emos",
+      "type": "function",
+      "label": "update_emos",
+      "filePath": "brain.py",
+      "lineStart": 793,
+      "lineEnd": 814,
+      "summary": "Updates emotion values based on detected intent: applies decay toward base value, boosts triggered emotions, and clamps between 0.01 and 1.0.",
+      "tags": [
+        "emotion",
+        "engine"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/update_emos"
+    },
+    {
+      "id": "function:brain.py/get_top_emo",
+      "type": "function",
+      "label": "get_top_emo",
+      "filePath": "brain.py",
+      "lineStart": 817,
+      "lineEnd": 820,
+      "summary": "Returns the currently dominant emotion (highest value) from state, falling back to default Happy.",
+      "tags": [
+        "emotion"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/get_top_emo"
+    },
+    {
+      "id": "function:brain.py/get_affection",
+      "type": "function",
+      "label": "get_affection",
+      "filePath": "brain.py",
+      "lineStart": 824,
+      "lineEnd": 826,
+      "summary": "Gets affection level dict for a given XP value.",
+      "tags": [
+        "affection"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/get_affection"
+    },
+    {
+      "id": "function:brain.py/get_affection_progress",
+      "type": "function",
+      "label": "get_affection_progress",
+      "filePath": "brain.py",
+      "lineStart": 829,
+      "lineEnd": 839,
+      "summary": "Calculates percentage progress towards the next affection level.",
+      "tags": [
+        "affection",
+        "progress"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/get_affection_progress"
+    },
+    {
+      "id": "function:brain.py/add_xp",
+      "type": "function",
+      "label": "add_xp",
+      "filePath": "brain.py",
+      "lineStart": 842,
+      "lineEnd": 852,
+      "summary": "Adds XP to state, caps at MAX_XP, detects level-up milestones, and returns {new_xp, milestone}.",
+      "tags": [
+        "xp",
+        "leveling"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/add_xp"
+    },
+    {
+      "id": "function:brain.py/check_streak",
+      "type": "function",
+      "label": "check_streak",
+      "filePath": "brain.py",
+      "lineStart": 856,
+      "lineEnd": 894,
+      "summary": "Checks and updates daily chat streak: determines if streak continues or resets, claims daily XP bonus, tracks longest_streak.",
+      "tags": [
+        "streak",
+        "engagement"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/check_streak"
+    },
+    {
+      "id": "function:brain.py/check_achievements",
+      "type": "function",
+      "label": "check_achievements",
+      "filePath": "brain.py",
+      "lineStart": 898,
+      "lineEnd": 911,
+      "summary": "Checks all achievements against current state, returns newly unlocked ones (without lambda check function).",
+      "tags": [
+        "achievements",
+        "gamification"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/check_achievements"
+    },
+    {
+      "id": "function:brain.py/add_memory",
+      "type": "function",
+      "label": "add_memory",
+      "filePath": "brain.py",
+      "lineStart": 915,
+      "lineEnd": 935,
+      "summary": "Extracts memories from user text using Brain.extract_memories, deduplicates by text similarity, caps at 30 entries.",
+      "tags": [
+        "memory",
+        "management"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/add_memory"
+    },
+    {
+      "id": "function:brain.py/default_state",
+      "type": "function",
+      "label": "default_state",
+      "filePath": "brain.py",
+      "lineStart": 939,
+      "lineEnd": 965,
+      "summary": "Creates a fresh default chatbot state dictionary with all fields: emotions (initialized at 0.5), XP, message count, memory, streak, achievements, personality, avatar, theme settings.",
+      "tags": [
+        "state",
+        "default"
+      ],
+      "complexity": "moderate",
+      "name": "brain.py/default_state"
+    },
+    {
+      "id": "function:app.py/get_or_create_session",
+      "type": "function",
+      "label": "get_or_create_session",
+      "filePath": "app.py",
+      "lineStart": 55,
+      "lineEnd": 61,
+      "summary": "Retrieves existing session by ID or creates a new one with default state and a generated UUID.",
+      "tags": [
+        "session",
+        "management"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/get_or_create_session"
+    },
+    {
+      "id": "function:app.py/_apply_settings",
+      "type": "function",
+      "label": "_apply_settings",
+      "filePath": "app.py",
+      "lineStart": 116,
+      "lineEnd": 132,
+      "summary": "Applies SettingsModel fields to session state including personality, names, avatar, theme, API key, model, temperature.",
+      "tags": [
+        "settings",
+        "config"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/_apply_settings"
+    },
+    {
+      "id": "function:app.py/_build_client_state",
+      "type": "function",
+      "label": "_build_client_state",
+      "filePath": "app.py",
+      "lineStart": 135,
+      "lineEnd": 162,
+      "summary": "Builds a client-facing state snapshot from session state, excluding chat history, with affection level, progress, streak, and all display fields.",
+      "tags": [
+        "state",
+        "serialization"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/_build_client_state"
+    },
+    {
+      "id": "function:app.py/call_groq",
+      "type": "function",
+      "label": "call_groq",
+      "filePath": "app.py",
+      "lineStart": 167,
+      "lineEnd": 195,
+      "summary": "Async function calling the Groq API for AI-powered responses. Builds messages from system prompt and history, sends POST request with configurable model, temperature, max_tokens.",
+      "tags": [
+        "ai",
+        "api",
+        "groq"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/call_groq"
+    },
+    {
+      "id": "function:app.py/_calc_xp",
+      "type": "function",
+      "label": "_calc_xp",
+      "filePath": "app.py",
+      "lineStart": 200,
+      "lineEnd": 212,
+      "summary": "Calculates XP gain based on intent: love/miss/compliment/happy=8, sorry/sad/stressed=10, joke/tease=5, greeting/thanks=4, goodbye=1, default=3.",
+      "tags": [
+        "xp",
+        "calculation"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/_calc_xp"
+    },
+    {
+      "id": "function:app.py/chat",
+      "type": "function",
+      "label": "chat",
+      "filePath": "app.py",
+      "lineStart": 218,
+      "lineEnd": 307,
+      "summary": "Main /chat POST endpoint. Processes message through: streak check, love/sorry counters, firewall check, Brain text optimization/intent/analysis/plan, memory extraction, Groq AI or local response generation, history update, emotion update, XP gain, achievement check. Returns ChatResponse.",
+      "tags": [
+        "endpoint",
+        "chat",
+        "main"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/chat"
+    },
+    {
+      "id": "function:app.py/send_gift",
+      "type": "function",
+      "label": "send_gift",
+      "filePath": "app.py",
+      "lineStart": 311,
+      "lineEnd": 354,
+      "summary": "POST /gift endpoint. Increments gift count, adds XP, selects gift reaction from predefined messages by emoji type, checks achievements.",
+      "tags": [
+        "endpoint",
+        "gift"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/send_gift"
+    },
+    {
+      "id": "function:app.py/get_state",
+      "type": "function",
+      "label": "get_state",
+      "filePath": "app.py",
+      "lineStart": 358,
+      "lineEnd": 370,
+      "summary": "GET /state endpoint. Returns current session state or fresh default if session not found.",
+      "tags": [
+        "endpoint",
+        "state"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/get_state"
+    },
+    {
+      "id": "function:app.py/reset_session",
+      "type": "function",
+      "label": "reset_session",
+      "filePath": "app.py",
+      "lineStart": 374,
+      "lineEnd": 386,
+      "summary": "POST /reset endpoint. Resets session to default state or creates new session.",
+      "tags": [
+        "endpoint",
+        "reset"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/reset_session"
+    },
+    {
+      "id": "function:app.py/health",
+      "type": "function",
+      "label": "health",
+      "filePath": "app.py",
+      "lineStart": 390,
+      "lineEnd": 397,
+      "summary": "GET /health endpoint returning service status, version, and active session count.",
+      "tags": [
+        "endpoint",
+        "health"
+      ],
+      "complexity": "moderate",
+      "name": "app.py/health"
+    },
+    {
+      "id": "function:script.js/defaultState",
+      "type": "function",
+      "label": "defaultState",
+      "filePath": "script.js",
+      "lineStart": 324,
+      "lineEnd": 357,
+      "summary": "Returns a fresh default state object for the frontend with mode, mod, emotion, affection, XP, name, avatar, message/gift counts, unlocked emotions, memories, achievements, streak, and user settings.",
+      "tags": [
+        "state",
+        "initialization"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/defaultState"
+    },
+    {
+      "id": "function:script.js/cacheDOM",
+      "type": "function",
+      "label": "cacheDOM",
+      "filePath": "script.js",
+      "lineStart": 384,
+      "lineEnd": 432,
+      "summary": "Caches all frequently-used DOM element references into a DOM object for performance: avatar, header, chat area, input, buttons, overlays, modal panels, and animation containers.",
+      "tags": [
+        "dom",
+        "performance"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/cacheDOM"
+    },
+    {
+      "id": "function:script.js/saveState",
+      "type": "function",
+      "label": "saveState",
+      "filePath": "script.js",
+      "lineStart": 438,
+      "lineEnd": 446,
+      "summary": "Persists current state and last 100 chat history entries to localStorage under 'luna_state' key.",
+      "tags": [
+        "persistence",
+        "localStorage"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/saveState"
+    },
+    {
+      "id": "function:script.js/loadState",
+      "type": "function",
+      "label": "loadState",
+      "filePath": "script.js",
+      "lineStart": 448,
+      "lineEnd": 474,
+      "summary": "Loads and merges saved state from localStorage with default state to handle new fields introduced in updates.",
+      "tags": [
+        "persistence",
+        "localStorage"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/loadState"
+    },
+    {
+      "id": "function:script.js/applyTheme",
+      "type": "function",
+      "label": "applyTheme",
+      "filePath": "script.js",
+      "lineStart": 491,
+      "lineEnd": 510,
+      "summary": "Applies a theme (default/sunset/ocean/forest/lavender/midnight/sakura/honey) by injecting CSS custom properties for body gradient, header, affection bar, buttons, and hover states.",
+      "tags": [
+        "ui",
+        "theme",
+        "styling"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/applyTheme"
+    },
+    {
+      "id": "function:script.js/updateUI",
+      "type": "function",
+      "label": "updateUI",
+      "filePath": "script.js",
+      "lineStart": 516,
+      "lineEnd": 525,
+      "summary": "Master UI update function calling updateAffection, updateEmotionBar, updateAvatar, updateName, updateStreakBadge, updateInputState, updateAIBarState, and updateModeBadge.",
+      "tags": [
+        "ui",
+        "render"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/updateUI"
+    },
+    {
+      "id": "function:script.js/updateAffection",
+      "type": "function",
+      "label": "updateAffection",
+      "filePath": "script.js",
+      "lineStart": 534,
+      "lineEnd": 547,
+      "summary": "Updates affection display: finds current level from AFF_LEVELS, calculates percentage, updates fill bar width, label text, and icon.",
+      "tags": [
+        "ui",
+        "affection"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/updateAffection"
+    },
+    {
+      "id": "function:script.js/updateEmotionBar",
+      "type": "function",
+      "label": "updateEmotionBar",
+      "filePath": "script.js",
+      "lineStart": 557,
+      "lineEnd": 569,
+      "summary": "Renders the emotion bar showing all 10 emotions with their emoji icons. Active and unlocked emotions are labeled; locked ones show '???'.",
+      "tags": [
+        "ui",
+        "emotion"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/updateEmotionBar"
+    },
+    {
+      "id": "function:script.js/detectEmotion",
+      "type": "function",
+      "label": "detectEmotion",
+      "filePath": "script.js",
+      "lineStart": 632,
+      "lineEnd": 640,
+      "summary": "Detects user emotion from text by checking EMO_TRIGGERS keyword lists. Returns the first matching emotion ID or null.",
+      "tags": [
+        "nlp",
+        "emotion",
+        "detection"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/detectEmotion"
+    },
+    {
+      "id": "function:script.js/updateEmotion",
+      "type": "function",
+      "label": "updateEmotion",
+      "filePath": "script.js",
+      "lineStart": 646,
+      "lineEnd": 655,
+      "summary": "Sets the current emotion, unlocks it if new, checks 'all_emos' achievement, and refreshes UI.",
+      "tags": [
+        "emotion",
+        "gamification"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/updateEmotion"
+    },
+    {
+      "id": "function:script.js/addXP",
+      "type": "function",
+      "label": "addXP",
+      "filePath": "script.js",
+      "lineStart": 657,
+      "lineEnd": 671,
+      "summary": "Adds XP, converts to affection at 1.2x rate, handles level-up thresholds (starting at 100, incrementing by 50, max 5000), checks XP achievements, saves state, updates UI.",
+      "tags": [
+        "xp",
+        "leveling",
+        "gamification"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/addXP"
+    },
+    {
+      "id": "function:script.js/checkStreak",
+      "type": "function",
+      "label": "checkStreak",
+      "filePath": "script.js",
+      "lineStart": 677,
+      "lineEnd": 692,
+      "summary": "Checks daily streak continuity: increments if yesterday, resets otherwise. Triggers streak achievements at 2, 5, 7 days. Saves and updates UI.",
+      "tags": [
+        "streak",
+        "engagement"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/checkStreak"
+    },
+    {
+      "id": "function:script.js/checkAchievement",
+      "type": "function",
+      "label": "checkAchievement",
+      "filePath": "script.js",
+      "lineStart": 698,
+      "lineEnd": 706,
+      "summary": "Checks and unlocks an achievement by ID, awards its XP, shows toast notification.",
+      "tags": [
+        "achievement",
+        "gamification"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/checkAchievement"
+    },
+    {
+      "id": "function:script.js/showAchievementToast",
+      "type": "function",
+      "label": "showAchievementToast",
+      "filePath": "script.js",
+      "lineStart": 708,
+      "lineEnd": 719,
+      "summary": "Shows a toast notification for newly unlocked achievements with icon, name, description, and XP reward. Auto-hides after 3 seconds and triggers confetti burst.",
+      "tags": [
+        "ui",
+        "notification"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/showAchievementToast"
+    },
+    {
+      "id": "function:script.js/extractMemories",
+      "type": "function",
+      "label": "extractMemories",
+      "filePath": "script.js",
+      "lineStart": 725,
+      "lineEnd": 740,
+      "summary": "Extracts memories from user messages containing trigger keywords (i love, i like, i hate, etc.). Deduplicates, caps at 10 for achievement check.",
+      "tags": [
+        "memory",
+        "extraction"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/extractMemories"
+    },
+    {
+      "id": "function:script.js/showMilestone",
+      "type": "function",
+      "label": "showMilestone",
+      "filePath": "script.js",
+      "lineStart": 746,
+      "lineEnd": 761,
+      "summary": "Shows a milestone popup with emoji, title, description. Auto-dismisses after 6 seconds or on button click. Triggers confetti burst.",
+      "tags": [
+        "ui",
+        "milestone"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/showMilestone"
+    },
+    {
+      "id": "function:script.js/addMessage",
+      "type": "function",
+      "label": "addMessage",
+      "filePath": "script.js",
+      "lineStart": 767,
+      "lineEnd": 829,
+      "summary": "Renders a chat message bubble (user/bot/sys) with TTS button for bot messages, timestamp, reaction buttons (❤️😂🥰😊🔥), and animation. Saves to chatHistory.",
+      "tags": [
+        "ui",
+        "chat",
+        "render"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/addMessage"
+    },
+    {
+      "id": "function:script.js/getLocalResponse",
+      "type": "function",
+      "label": "getLocalResponse",
+      "filePath": "script.js",
+      "lineStart": 859,
+      "lineEnd": 905,
+      "summary": "Local chatbot response generator: classifies input into categories (greetings, love, hugs, sad, angry, etc.) using keyword matching, with personality mod overrides (tsundere, yandere, dere, kuudere, genki, mama, ojou, pervert). Returns random response from selected pool.",
+      "tags": [
+        "response",
+        "local",
+        "nlp"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/getLocalResponse"
+    },
+    {
+      "id": "function:script.js/firewallCheck",
+      "type": "function",
+      "label": "firewallCheck",
+      "filePath": "script.js",
+      "lineStart": 1010,
+      "lineEnd": 1026,
+      "summary": "Client-side firewall checking user input against EXTRACT_PROMPT, BREAK_CHARACTER, EXTRACT_KNOWLEDGE, and JAILBREAK pattern sets. Returns {blocked, category, reply} or null.",
+      "tags": [
+        "security",
+        "firewall"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/firewallCheck"
+    },
+    {
+      "id": "function:script.js/processMessage",
+      "type": "function",
+      "label": "processMessage",
+      "filePath": "script.js",
+      "lineStart": 1041,
+      "lineEnd": 1142,
+      "summary": "Main message processing pipeline: adds user message, runs firewall check, updates local state (streak, memories, emotion, XP, achievements), shows typing indicator, generates response via groq/backend/local, adds bot message, checks affection milestones, saves state.",
+      "tags": [
+        "chat",
+        "pipeline",
+        "main"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/processMessage"
+    },
+    {
+      "id": "function:script.js/groqChat",
+      "type": "function",
+      "label": "groqChat",
+      "filePath": "script.js",
+      "lineStart": 1152,
+      "lineEnd": 1190,
+      "summary": "Calls Groq AI API with system prompt and chat history. Constructs messages array, sends POST to /openai/v1/chat/completions with configurable model, returns AI response text.",
+      "tags": [
+        "ai",
+        "api",
+        "groq"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/groqChat"
+    },
+    {
+      "id": "function:script.js/backendChat",
+      "type": "function",
+      "label": "backendChat",
+      "filePath": "script.js",
+      "lineStart": 1196,
+      "lineEnd": 1283,
+      "summary": "Calls backend /chat endpoint with full settings payload. On success, syncs frontend state with backend response: emotion, XP/affection, streak, memories, achievements, message count, personality, name, avatar. Also handles new achievement toasts.",
+      "tags": [
+        "backend",
+        "api",
+        "sync"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/backendChat"
+    },
+    {
+      "id": "function:script.js/sendGift",
+      "type": "function",
+      "label": "sendGift",
+      "filePath": "script.js",
+      "lineStart": 1365,
+      "lineEnd": 1435,
+      "summary": "Sends a gift: plays fly animation, calls backend /gift endpoint if in backend mode (syncing state), or falls back to local handler. Updates emotion, triggers confetti.",
+      "tags": [
+        "gift",
+        "interaction"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/sendGift"
+    },
+    {
+      "id": "function:script.js/fallbackGift",
+      "type": "function",
+      "label": "fallbackGift",
+      "filePath": "script.js",
+      "lineStart": 1437,
+      "lineEnd": 1466,
+      "summary": "Local gift handling: increments gift count, awards XP, checks gift achievements, picks random response from GIFT_RESPONSES, shows typing indicator, updates emotion to happy.",
+      "tags": [
+        "gift",
+        "fallback"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/fallbackGift"
+    },
+    {
+      "id": "function:script.js/setupVoice",
+      "type": "function",
+      "label": "setupVoice",
+      "filePath": "script.js",
+      "lineStart": 1487,
+      "lineEnd": 1519,
+      "summary": "Initializes Web Speech API speech recognition. Sets up onresult (sends recognized text), onerror, and onend handlers. Hides voice button if unsupported.",
+      "tags": [
+        "voice",
+        "speech",
+        "recognition"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/setupVoice"
+    },
+    {
+      "id": "function:script.js/setupTTS",
+      "type": "function",
+      "label": "setupTTS",
+      "filePath": "script.js",
+      "lineStart": 1538,
+      "lineEnd": 1552,
+      "summary": "Initializes text-to-speech: finds a female English voice via speechSynthesis, falling back to any English voice.",
+      "tags": [
+        "tts",
+        "speech",
+        "voice"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/setupTTS"
+    },
+    {
+      "id": "function:script.js/speakText",
+      "type": "function",
+      "label": "speakText",
+      "filePath": "script.js",
+      "lineStart": 1554,
+      "lineEnd": 1573,
+      "summary": "Text-to-speech using SpeechSynthesisUtterance. Cleans text of emojis/special chars, uses female English voice at rate 1.0/pitch 1.2. Toggle on/off on repeat call.",
+      "tags": [
+        "tts",
+        "speech"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/speakText"
+    },
+    {
+      "id": "function:script.js/renderModGrid",
+      "type": "function",
+      "label": "renderModGrid",
+      "filePath": "script.js",
+      "lineStart": 1606,
+      "lineEnd": 1628,
+      "summary": "Renders personality mod selection grid (gentle, tsundere, yandere, dere, kuudere, genki, mama, ojou, pervert) with emoji, label, description. Highlights active mod.",
+      "tags": [
+        "ui",
+        "settings",
+        "personality"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/renderModGrid"
+    },
+    {
+      "id": "function:script.js/saveSettings",
+      "type": "function",
+      "label": "saveSettings",
+      "filePath": "script.js",
+      "lineStart": 1696,
+      "lineEnd": 1724,
+      "summary": "Saves settings from modal form fields: name, user name, AI key/model, backend URL, TTS toggle. Auto-detects mode (backend > groq > local). Updates UI and closes settings.",
+      "tags": [
+        "settings",
+        "save"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/saveSettings"
+    },
+    {
+      "id": "function:script.js/spawnParticles",
+      "type": "function",
+      "label": "spawnParticles",
+      "filePath": "script.js",
+      "lineStart": 1843,
+      "lineEnd": 1859,
+      "summary": "Creates 15 floating background particles with random emojis (🌸💕✨🌺 etc.), random positions, sizes, durations, and low opacity for ambient decoration.",
+      "tags": [
+        "animation",
+        "particles"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/spawnParticles"
+    },
+    {
+      "id": "function:script.js/spawnConfettiBurst",
+      "type": "function",
+      "label": "spawnConfettiBurst",
+      "filePath": "script.js",
+      "lineStart": 1862,
+      "lineEnd": 1903,
+      "summary": "Creates a confetti burst animation at the center of a container: 12 particles explode outward with random angles, distances, and emojis. Cleans up after 1.2s.",
+      "tags": [
+        "animation",
+        "confetti"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/spawnConfettiBurst"
+    },
+    {
+      "id": "function:script.js/spawnEmojiRain",
+      "type": "function",
+      "label": "spawnEmojiRain",
+      "filePath": "script.js",
+      "lineStart": 1923,
+      "lineEnd": 1941,
+      "summary": "Creates 20 emoji elements falling from top of screen with random sizes, positions, and delays for a festive welcome effect.",
+      "tags": [
+        "animation",
+        "welcome"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/spawnEmojiRain"
+    },
+    {
+      "id": "function:script.js/setupKeyboard",
+      "type": "function",
+      "label": "setupKeyboard",
+      "filePath": "script.js",
+      "lineStart": 1952,
+      "lineEnd": 1967,
+      "summary": "Sets up keyboard shortcut: Escape closes settings modal, gift overlay, and milestone popup.",
+      "tags": [
+        "ui",
+        "keyboard",
+        "shortcuts"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/setupKeyboard"
+    },
+    {
+      "id": "function:script.js/setupInput",
+      "type": "function",
+      "label": "setupInput",
+      "filePath": "script.js",
+      "lineStart": 1820,
+      "lineEnd": 1836,
+      "summary": "Sets up chat input: auto-resizes height on input, sends message on Enter (Shift+Enter for newline).",
+      "tags": [
+        "ui",
+        "input"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/setupInput"
+    },
+    {
+      "id": "function:script.js/init",
+      "type": "function",
+      "label": "init",
+      "filePath": "script.js",
+      "lineStart": 1973,
+      "lineEnd": 2019,
+      "summary": "Main entry point: caches DOM, loads saved state, applies theme, sets up input/voice/TTS/settings tabs/keyboard, renders quick replies and gift grid, restores chat history or shows welcome messages, starts particles and emoji rain.",
+      "tags": [
+        "init",
+        "entry"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/init"
+    },
+    {
+      "id": "function:script.js/LUNA.init",
+      "type": "function",
+      "label": "LUNA.init",
+      "filePath": "script.js",
+      "lineStart": 2026,
+      "lineEnd": 2026,
+      "summary": "Public API: delegates to internal init function.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.init"
+    },
+    {
+      "id": "function:script.js/LUNA.sendMessage",
+      "type": "function",
+      "label": "LUNA.sendMessage",
+      "filePath": "script.js",
+      "lineStart": 2027,
+      "lineEnd": 2027,
+      "summary": "Public API: reads input, validates, clears input, calls processMessage.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.sendMessage"
+    },
+    {
+      "id": "function:script.js/LUNA.openSettings",
+      "type": "function",
+      "label": "LUNA.openSettings",
+      "filePath": "script.js",
+      "lineStart": 2028,
+      "lineEnd": 2028,
+      "summary": "Public API: opens the settings modal and renders settings content.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.openSettings"
+    },
+    {
+      "id": "function:script.js/LUNA.closeSettings",
+      "type": "function",
+      "label": "LUNA.closeSettings",
+      "filePath": "script.js",
+      "lineStart": 2029,
+      "lineEnd": 2029,
+      "summary": "Public API: closes the settings modal.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.closeSettings"
+    },
+    {
+      "id": "function:script.js/LUNA.saveSettings",
+      "type": "function",
+      "label": "LUNA.saveSettings",
+      "filePath": "script.js",
+      "lineStart": 2030,
+      "lineEnd": 2030,
+      "summary": "Public API: saves settings from modal form fields.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.saveSettings"
+    },
+    {
+      "id": "function:script.js/LUNA.toggleAIBar",
+      "type": "function",
+      "label": "LUNA.toggleAIBar",
+      "filePath": "script.js",
+      "lineStart": 2031,
+      "lineEnd": 2031,
+      "summary": "Public API: toggles the AI bar (backend/Groq connection panel).",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.toggleAIBar"
+    },
+    {
+      "id": "function:script.js/LUNA.connectBackend",
+      "type": "function",
+      "label": "LUNA.connectBackend",
+      "filePath": "script.js",
+      "lineStart": 2032,
+      "lineEnd": 2032,
+      "summary": "Public API: connects to backend URL from input field.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.connectBackend"
+    },
+    {
+      "id": "function:script.js/LUNA.disconnectBackend",
+      "type": "function",
+      "label": "LUNA.disconnectBackend",
+      "filePath": "script.js",
+      "lineStart": 2033,
+      "lineEnd": 2033,
+      "summary": "Public API: disconnects from backend and falls back to groq/local mode.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.disconnectBackend"
+    },
+    {
+      "id": "function:script.js/LUNA.toggleVoice",
+      "type": "function",
+      "label": "LUNA.toggleVoice",
+      "filePath": "script.js",
+      "lineStart": 2034,
+      "lineEnd": 2034,
+      "summary": "Public API: toggles voice recognition on/off.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.toggleVoice"
+    },
+    {
+      "id": "function:script.js/LUNA.speakText",
+      "type": "function",
+      "label": "LUNA.speakText",
+      "filePath": "script.js",
+      "lineStart": 2035,
+      "lineEnd": 2035,
+      "summary": "Public API: speaks provided text via TTS.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.speakText"
+    },
+    {
+      "id": "function:script.js/LUNA.openGiftPanel",
+      "type": "function",
+      "label": "LUNA.openGiftPanel",
+      "filePath": "script.js",
+      "lineStart": 2036,
+      "lineEnd": 2036,
+      "summary": "Public API: opens the gift selection panel.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.openGiftPanel"
+    },
+    {
+      "id": "function:script.js/LUNA.closeGiftPanel",
+      "type": "function",
+      "label": "LUNA.closeGiftPanel",
+      "filePath": "script.js",
+      "lineStart": 2037,
+      "lineEnd": 2037,
+      "summary": "Public API: closes the gift selection panel.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.closeGiftPanel"
+    },
+    {
+      "id": "function:script.js/LUNA.sendGift",
+      "type": "function",
+      "label": "LUNA.sendGift",
+      "filePath": "script.js",
+      "lineStart": 2038,
+      "lineEnd": 2038,
+      "summary": "Public API: sends a gift by emoji identifier.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.sendGift"
+    },
+    {
+      "id": "function:script.js/LUNA.uploadAvatar",
+      "type": "function",
+      "label": "LUNA.uploadAvatar",
+      "filePath": "script.js",
+      "lineStart": 2039,
+      "lineEnd": 2039,
+      "summary": "Public API: handles avatar image file upload.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.uploadAvatar"
+    },
+    {
+      "id": "function:script.js/LUNA.spawnConfettiBurst",
+      "type": "function",
+      "label": "LUNA.spawnConfettiBurst",
+      "filePath": "script.js",
+      "lineStart": 2040,
+      "lineEnd": 2040,
+      "summary": "Public API: triggers confetti burst animation.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.spawnConfettiBurst"
+    },
+    {
+      "id": "function:script.js/LUNA.spawnEmojiRain",
+      "type": "function",
+      "label": "LUNA.spawnEmojiRain",
+      "filePath": "script.js",
+      "lineStart": 2041,
+      "lineEnd": 2041,
+      "summary": "Public API: triggers emoji rain animation.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.spawnEmojiRain"
+    },
+    {
+      "id": "function:script.js/LUNA.changeMod",
+      "type": "function",
+      "label": "LUNA.changeMod",
+      "filePath": "script.js",
+      "lineStart": 2042,
+      "lineEnd": 2048,
+      "summary": "Public API: changes personality mod by ID, saves and updates UI.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.changeMod"
+    },
+    {
+      "id": "function:script.js/LUNA.setMode",
+      "type": "function",
+      "label": "LUNA.setMode",
+      "filePath": "script.js",
+      "lineStart": 2049,
+      "lineEnd": 2055,
+      "summary": "Public API: sets chat mode to local/groq/backend, saves and updates UI.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.setMode"
+    },
+    {
+      "id": "function:script.js/LUNA.getState",
+      "type": "function",
+      "label": "LUNA.getState",
+      "filePath": "script.js",
+      "lineStart": 2056,
+      "lineEnd": 2056,
+      "summary": "Public API: returns a copy of the current application state.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.getState"
+    },
+    {
+      "id": "function:script.js/LUNA.resetState",
+      "type": "function",
+      "label": "LUNA.resetState",
+      "filePath": "script.js",
+      "lineStart": 2057,
+      "lineEnd": 2067,
+      "summary": "Public API: resets all state to defaults, clears history and localStorage, shows welcome message.",
+      "tags": [
+        "api",
+        "public"
+      ],
+      "complexity": "moderate",
+      "name": "script.js/LUNA.resetState"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:Dockerfile",
+      "type": "depends_on",
+      "weight": 0.6,
+      "notes": "docker-compose builds the luna-bot image from the local Dockerfile via `build: .`",
+      "direction": "forward"
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "file:app.py",
+      "type": "deploys",
+      "weight": 0.7,
+      "notes": "Dockerfile copies app.py (FastAPI application entry point) into the container",
+      "direction": "forward"
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "file:brain.py",
+      "type": "deploys",
+      "weight": 0.7,
+      "notes": "Dockerfile copies brain.py (AI chatbot logic and emotion simulation) into the container",
+      "direction": "forward"
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "file:style.css",
+      "type": "deploys",
+      "weight": 0.7,
+      "notes": "Dockerfile copies style.css (chat UI styling) into the container",
+      "direction": "forward"
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "file:script.js",
+      "type": "deploys",
+      "weight": 0.7,
+      "notes": "Dockerfile copies script.js (frontend chat interaction logic) into the container",
+      "direction": "forward"
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "file:index.html",
+      "type": "deploys",
+      "weight": 0.7,
+      "notes": "Dockerfile copies index.html (chat interface HTML) into the container",
+      "direction": "forward"
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "pipeline:.github/workflows/deploy.yml",
+      "type": "triggers",
+      "weight": 0.6,
+      "label": "CI success gates deploy",
+      "direction": "forward"
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "service:Dockerfile",
+      "type": "depends_on",
+      "weight": 0.6,
+      "label": "CI tests code that is Dockerized",
+      "direction": "forward"
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "service:docker-compose.yml",
+      "type": "depends_on",
+      "weight": 0.6,
+      "label": "CI runs in Docker context",
+      "direction": "forward"
+    },
+    {
+      "source": "pipeline:.github/workflows/deploy.yml",
+      "target": "service:Dockerfile",
+      "type": "depends_on",
+      "weight": 0.6,
+      "label": "Deploy builds Docker image from Dockerfile",
+      "direction": "forward"
+    },
+    {
+      "source": "pipeline:.github/workflows/deploy.yml",
+      "target": "service:docker-compose.yml",
+      "type": "depends_on",
+      "weight": 0.6,
+      "label": "Deploy references docker-compose context",
+      "direction": "forward"
+    },
+    {
+      "source": "document:requirements.txt",
+      "target": "file:app.py",
+      "type": "configures",
+      "label": "configures",
+      "weight": 0.6,
+      "summary": "requirements.txt declares the Python dependencies (fastapi, uvicorn, httpx, pydantic, python-multipart) that app.py imports and uses for the backend API server",
+      "direction": "forward"
+    },
+    {
+      "source": "document:requirements.txt",
+      "target": "file:brain.py",
+      "type": "configures",
+      "label": "configures",
+      "weight": 0.6,
+      "summary": "requirements.txt declares the Python dependencies (fastapi, uvicorn, httpx, pydantic, python-multipart) that brain.py imports and uses for AI/business logic",
+      "direction": "forward"
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:style.css",
+      "type": "depends_on",
+      "label": "depends_on",
+      "weight": 0.6,
+      "summary": "index.html links style.css via <link rel='stylesheet' href='style.css'> for all visual styling",
+      "direction": "forward"
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:script.js",
+      "type": "depends_on",
+      "label": "depends_on",
+      "weight": 0.6,
+      "summary": "index.html loads script.js via <script defer src='script.js'></script> for all interactive behavior",
+      "direction": "forward"
+    },
+    {
+      "source": "file:script.js",
+      "target": "file:style.css",
+      "type": "depends_on",
+      "label": "depends_on",
+      "weight": 0.6,
+      "summary": "script.js depends on style.css for visual styling of UI components it manipulates",
+      "direction": "forward"
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:style.css",
+      "type": "related",
+      "label": "related",
+      "weight": 0.5,
+      "summary": "index.html and style.css are related frontend files that together form the chatbot's user interface layer",
+      "direction": "forward"
+    },
+    {
+      "source": "file:app.py",
+      "target": "file:brain.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app.py",
+      "target": "class:app.py/SettingsModel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "class:app.py/ChatRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "class:app.py/ChatResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "class:app.py/GiftRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "class:app.py/GiftResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "class:app.py/StateResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/get_or_create_session",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/_apply_settings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/_build_client_state",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/call_groq",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/_calc_xp",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/chat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/send_gift",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/get_state",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/reset_session",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app.py",
+      "target": "function:app.py/health",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "class:brain.py/Brain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/pick",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/_get_aff",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/firewall_check",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/update_emos",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/get_top_emo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/get_affection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/get_affection_progress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/add_xp",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/check_streak",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/check_achievements",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/add_memory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:brain.py",
+      "target": "function:brain.py/default_state",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.optimize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.detect_intent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.sentiment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.topics",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.analyze",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.plan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.build_local_response",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.modulate_response",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.extract_memories",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "class:brain.py/Brain",
+      "target": "function:brain.py/Brain.get_sys_prompt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/firewall_check",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/Brain.optimize",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/Brain.detect_intent",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/Brain.analyze",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/Brain.plan",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/add_memory",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/Brain.build_local_response",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/Brain.modulate_response",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/update_emos",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:app.py/_calc_xp",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/add_xp",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/check_achievements",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:brain.py/check_streak",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:app.py/call_groq",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:app.py/_build_client_state",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:app.py/get_or_create_session",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:app.py/chat",
+      "target": "function:app.py/_apply_settings",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:app.py/call_groq",
+      "target": "function:brain.py/Brain.get_sys_prompt",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:app.py/send_gift",
+      "target": "function:brain.py/add_xp",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/send_gift",
+      "target": "function:brain.py/check_achievements",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:app.py/send_gift",
+      "target": "function:app.py/_build_client_state",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:app.py/send_gift",
+      "target": "function:app.py/get_or_create_session",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:app.py/_build_client_state",
+      "target": "function:brain.py/get_affection",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:app.py/_build_client_state",
+      "target": "function:brain.py/get_affection_progress",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:brain.py/get_affection",
+      "target": "function:brain.py/_get_aff",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:brain.py/get_affection_progress",
+      "target": "function:brain.py/get_affection",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:brain.py/add_xp",
+      "target": "function:brain.py/get_affection",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:brain.py/add_memory",
+      "target": "function:brain.py/Brain.extract_memories",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:brain.py/Brain.get_sys_prompt",
+      "target": "function:brain.py/_get_aff",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:brain.py/Brain.analyze",
+      "target": "function:brain.py/Brain.sentiment",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:brain.py/Brain.analyze",
+      "target": "function:brain.py/Brain.topics",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:brain.py/Brain.build_local_response",
+      "target": "function:brain.py/pick",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:brain.py/firewall_check",
+      "target": "function:brain.py/pick",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/defaultState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/cacheDOM",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/saveState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/loadState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/applyTheme",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/updateUI",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/updateAffection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/updateEmotionBar",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/detectEmotion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/updateEmotion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/addXP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/checkStreak",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/checkAchievement",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/showAchievementToast",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/extractMemories",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/showMilestone",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/addMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/getLocalResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/firewallCheck",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/processMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/groqChat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/backendChat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/sendGift",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/fallbackGift",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/setupVoice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/setupTTS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/speakText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/renderModGrid",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/saveSettings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/spawnParticles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/spawnConfettiBurst",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/spawnEmojiRain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/setupKeyboard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/setupInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.sendMessage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.openSettings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.closeSettings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.saveSettings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.toggleAIBar",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.connectBackend",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.disconnectBackend",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.toggleVoice",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.speakText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.openGiftPanel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.closeGiftPanel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.sendGift",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.uploadAvatar",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.spawnConfettiBurst",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.spawnEmojiRain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.changeMod",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.setMode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.getState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "file:script.js",
+      "target": "function:script.js/LUNA.resetState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "function:script.js/LUNA.init",
+      "target": "function:script.js/init",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "function:script.js/LUNA.sendMessage",
+      "target": "function:script.js/processMessage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:script.js/LUNA.openSettings",
+      "target": "function:script.js/renderModGrid",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/LUNA.saveSettings",
+      "target": "function:script.js/saveSettings",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "function:script.js/LUNA.sendGift",
+      "target": "function:script.js/sendGift",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "function:script.js/LUNA.spawnConfettiBurst",
+      "target": "function:script.js/spawnConfettiBurst",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "function:script.js/LUNA.spawnEmojiRain",
+      "target": "function:script.js/spawnEmojiRain",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "function:script.js/LUNA.resetState",
+      "target": "function:script.js/defaultState",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/firewallCheck",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/checkStreak",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/extractMemories",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/detectEmotion",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/updateEmotion",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/addXP",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/checkAchievement",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/groqChat",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/backendChat",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/getLocalResponse",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/addMessage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/showMilestone",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/saveState",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/processMessage",
+      "target": "function:script.js/spawnConfettiBurst",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "function:script.js/backendChat",
+      "target": "function:script.js/updateUI",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/backendChat",
+      "target": "function:script.js/showAchievementToast",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/sendGift",
+      "target": "function:script.js/fallbackGift",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:script.js/sendGift",
+      "target": "function:script.js/spawnConfettiBurst",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "function:script.js/fallbackGift",
+      "target": "function:script.js/addXP",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:script.js/fallbackGift",
+      "target": "function:script.js/checkAchievement",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/fallbackGift",
+      "target": "function:script.js/updateEmotion",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/fallbackGift",
+      "target": "function:script.js/addMessage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/fallbackGift",
+      "target": "function:script.js/spawnConfettiBurst",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.4
+    },
+    {
+      "source": "function:script.js/fallbackGift",
+      "target": "function:script.js/saveState",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/checkAchievement",
+      "target": "function:script.js/addXP",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/checkAchievement",
+      "target": "function:script.js/showAchievementToast",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:script.js/updateUI",
+      "target": "function:script.js/updateAffection",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/updateUI",
+      "target": "function:script.js/updateEmotionBar",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/cacheDOM",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/loadState",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/applyTheme",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/setupInput",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/setupVoice",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/setupTTS",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/setupKeyboard",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/spawnParticles",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/spawnEmojiRain",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/addMessage",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/updateUI",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:script.js/init",
+      "target": "function:script.js/saveState",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:infrastructure",
+      "name": "Infrastructure Layer",
+      "description": "Containerization and deployment definitions — Dockerfile for building the image and docker-compose.yml for orchestrating the service.",
+      "nodeIds": [
+        "service:docker-compose.yml",
+        "service:Dockerfile"
+      ]
+    },
+    {
+      "id": "layer:backend-api",
+      "name": "Backend API Layer",
+      "description": "FastAPI Python backend — app.py defines HTTP endpoints for chat, gifts, session management, and health checks; brain.py implements core chatbot intelligence with emotion simulation, personalities, and response logic.",
+      "nodeIds": [
+        "file:app.py",
+        "file:brain.py"
+      ]
+    },
+    {
+      "id": "layer:frontend-ui",
+      "name": "Frontend UI Layer",
+      "description": "Browser-based chatbot interface — index.html (entry point), style.css (design system with animations and responsiveness), and script.js (client logic with 3 chat modes, voice TTS, and animation engine).",
+      "nodeIds": [
+        "file:index.html",
+        "file:style.css",
+        "file:script.js"
+      ]
+    },
+    {
+      "id": "layer:ci-cd",
+      "name": "CI/CD Layer",
+      "description": "Automated pipeline definitions — ci.yml runs matrix testing (lint, firewall, brain logic, API endpoints) on push; deploy.yml builds and pushes a Docker image to GHCR on manual trigger.",
+      "nodeIds": [
+        "pipeline:.github/workflows/ci.yml",
+        "pipeline:.github/workflows/deploy.yml"
+      ]
+    },
+    {
+      "id": "layer:configuration",
+      "name": "Configuration Layer",
+      "description": "Project configuration and dependency files — requirements.txt (Python dependencies), .understand-anything/config.json (codebase analysis tool settings), and .understand-anything/.understandignore (ignore patterns for analysis).",
+      "nodeIds": [
+        "document:requirements.txt",
+        "config:.understand-anything/config.json",
+        "file:.understand-anything/.understandignore"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Backend API Entry Point — app.py",
+      "description": "Start here: the FastAPI server is the backbone of the entire application. It defines 8 HTTP endpoints (chat, gift, session, reset, health) that the frontend calls. Note how it imports `brain.py` for all AI logic and manages Groq API credentials. This file is the primary bridge between the user interface and the chatbot intelligence — every message a user sends flows through this server first.",
+      "nodeIds": [
+        "file:app.py"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Core AI Logic — brain.py",
+      "description": "Imported directly by app.py, this is the heart of the chatbot. It contains 6 personalities, 10 emotion states, 10 affection levels, and 28 response categories — all defining how 'Luna' behaves. Also includes firewall detection (filtering toxic input) and an achievement system. Understanding this file explains how app.py's chat endpoint generates responses.",
+      "nodeIds": [
+        "file:brain.py"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Python Dependencies — requirements.txt",
+      "description": "This document configures both app.py and brain.py by listing the Python packages they rely on: FastAPI for the web framework, uvicorn as the ASGI server, httpx for async HTTP calls (used by brain.py for Groq API access), pydantic for data validation, and python-multipart for form data. It's the manifest that makes the backend layer run.",
+      "nodeIds": [
+        "document:requirements.txt"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Frontend HTML Structure — index.html",
+      "description": "Now we move from backend to frontend. This HTML file is what users actually see and interact with. It declares the DOM structure for the header, affection bar, chat message area, quick reply buttons, text input, and a settings modal. Note the script and link tags that wire in script.js and style.css — this is where the frontend triad connects.",
+      "nodeIds": [
+        "file:index.html"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Design System & Animations — style.css",
+      "description": "Referenced by both index.html and script.js, this stylesheet defines the entire visual language of the chatbot interface. It contains 14 animation keyframes (for message entry, avatar bounce, heart float effects), responsive breakpoints, accessibility rules, and component-level styles. The design system gives Luna her personality through motion and color.",
+      "nodeIds": [
+        "file:style.css"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Client-Side Chat Engine — script.js",
+      "description": "The JavaScript engine that brings the UI to life. It supports 3 chat modes (Local, Groq, Backend) which determine where messages are processed, features an animation engine, voice/TTS support, and 20+ UI interaction methods. This file depends on style.css for animations and connects to index.html's DOM elements. It also calls the app.py backend endpoints for the Backend mode.",
+      "nodeIds": [
+        "file:script.js"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "Container Image — Dockerfile",
+      "description": "Now we look at how the project is packaged and deployed. The Dockerfile creates a production image from python:3.13-slim, installs system dependencies, copies all source files (app.py, brain.py, index.html, style.css, script.js), creates a non-root user, and launches the FastAPI server via uvicorn on port 8000. It is the central hub of the infrastructure layer — every pipeline and compose configuration depends on it.",
+      "nodeIds": [
+        "service:Dockerfile"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Service Orchestration — docker-compose.yml",
+      "description": "The Docker Compose file builds from the Dockerfile and adds runtime configuration: port mapping (8000), volume mounts for live reload during development, health checks, and auto-restart policy. It configures how the containerized app actually runs as a service. The deploy pipeline depends on this to test the full stack.",
+      "nodeIds": [
+        "service:docker-compose.yml"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Continuous Integration — ci.yml",
+      "description": "The final layer: automation. The CI pipeline runs on every push or PR to main with a matrix testing strategy across Python 3.13 and 3.14. It executes linting, firewall tests (validating brain.py's input filtering), brain logic tests, and API endpoint tests against app.py. It also triggers the deploy pipeline on success, completing the automation chain.",
+      "nodeIds": [
+        "pipeline:.github/workflows/ci.yml"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "Continuous Deployment — deploy.yml",
+      "description": "The deployment pipeline is manually triggered and builds the Docker image from the Dockerfile, then pushes it to GitHub Container Registry with semantic version, input, and SHA tags. This is the final step in the delivery pipeline — it takes the tested code from CI and makes it available as a deployable container image.",
+      "nodeIds": [
+        "pipeline:.github/workflows/deploy.yml"
+      ]
+    }
+  ]
+}
