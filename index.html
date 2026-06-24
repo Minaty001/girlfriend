@@ -1,2014 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>💕 {{NAME}} - AI Girlfriend Chatbot</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-  font-family:'Nunito',sans-serif;
-  background:linear-gradient(135deg,#fce4ec,#f8bbd0,#f48fb1,#f06292);
-  height:100vh;height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden;
-  -webkit-tap-highlight-color:transparent;transition:background 0.6s ease;
-}
-
-/* ─── Particles ─── */
-#particlesContainer{
-  position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;
-}
-.particle{
-  position:absolute;opacity:0;animation:particleFloat linear infinite;will-change:transform,opacity;
-  font-size:16px;
-}
-@keyframes particleFloat{
-  0%{transform:translateY(100vh) rotate(0deg) scale(0.8);opacity:0;}
-  10%{opacity:0.5;}
-  90%{opacity:0.3;}
-  100%{transform:translateY(-10vh) rotate(720deg) scale(1.2);opacity:0;}
-}
-
-.burst-container{position:absolute;pointer-events:none;z-index:50;}
-.burst-particle{position:absolute;border-radius:50%;animation:burstOut 0.8s ease-out forwards;}
-@keyframes burstOut{
-  0%{transform:translate(0,0) scale(1);opacity:1;}
-  100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0;}
-}
-
-/* ─── App ─── */
-.app-container{
-  position:relative;z-index:1;
-  width:min(440px,94vw);height:min(740px,90vh);
-  background:rgba(255,255,255,0.82);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
-  border-radius:32px;box-shadow:0 25px 60px rgba(233,30,99,0.25),0 0 0 1px rgba(255,255,255,0.5) inset;
-  display:flex;flex-direction:column;overflow:hidden;transition:box-shadow 0.4s, border-radius 0.3s, height 0.3s, width 0.3s;
-}
-
-/* ─── Header ─── */
-.header{
-  background:linear-gradient(135deg,#ec407a,#d81b60);padding:12px 18px 10px;
-  display:flex;align-items:center;gap:10px;flex-shrink:0;transition:background 0.6s;
-}
-.avatar{
-  width:44px;height:44px;border-radius:50%;
-  background:linear-gradient(135deg,#fce4ec,#f48fb1);
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-  box-shadow:0 3px 10px rgba(0,0,0,0.15);flex-shrink:0;position:relative;
-  transition:all 0.3s;cursor:pointer;user-select:none;
-}
-.avatar:hover{transform:scale(1.05);}
-.avatar .status-dot{
-  position:absolute;bottom:1px;right:1px;width:10px;height:10px;
-  background:#69f0ae;border:2px solid white;border-radius:50%;
-  animation:pulse 2s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.7;transform:scale(1.15);}}
-.header-info{flex:1;min-width:0;}
-.header-info .name-row{display:flex;align-items:center;gap:6px;}
-.header-info h2{color:white;font-size:16px;font-weight:700;}
-.mode-badge{font-size:9px;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);padding:1px 7px;border-radius:8px;font-weight:600;}
-.header-info .status-text{color:rgba(255,255,255,0.8);font-size:11px;margin-top:1px;}
-.header-btns{display:flex;gap:4px;}
-.hbtn{
-  width:32px;height:32px;border-radius:50%;border:none;
-  background:rgba(255,255,255,0.18);color:white;font-size:15px;
-  cursor:pointer;transition:0.2s;display:flex;align-items:center;justify-content:center;
-}
-.hbtn:hover{background:rgba(255,255,255,0.35);transform:scale(1.05);}
-.hbtn:focus-visible{outline:2px solid white;outline-offset:2px;}
-
-/* Focus styles for keyboard nav */
-button:focus-visible,a:focus-visible,.qr-chip:focus-visible,.mod-card:focus-visible,.theme-opt:focus-visible,.av-opt:focus-visible{outline:2px solid #ec407a;outline-offset:2px;}
-.send-btn:focus-visible{outline:2px solid #fff;outline-offset:2px;}
-
-/* ─── Affection Bar ─── */
-.affection-bar{
-  display:flex;align-items:center;gap:6px;padding:4px 18px;
-  background:rgba(236,64,122,0.06);border-bottom:1px solid rgba(233,30,99,0.05);flex-shrink:0;
-}
-.affection-icon{font-size:12px;flex-shrink:0;}
-.affection-track{flex:1;height:4px;background:rgba(233,30,99,0.1);border-radius:4px;overflow:hidden;}
-.affection-fill{
-  height:100%;background:linear-gradient(90deg,#f06292,#ec407a,#d81b60);
-  border-radius:4px;transition:width 0.8s cubic-bezier(0.34,1.56,0.64,1);width:0%;
-}
-.affection-label{font-size:10px;color:#ad1457;font-weight:600;white-space:nowrap;flex-shrink:0;}
-
-/* ─── Emotion Tags ─── */
-.emotion-bar{
-  display:flex;align-items:center;gap:4px;padding:3px 18px;
-  background:rgba(236,64,122,0.03);border-bottom:1px solid rgba(233,30,99,0.03);flex-shrink:0;
-  overflow-x:auto;scrollbar-width:none;
-}
-.emotion-bar::-webkit-scrollbar{display:none;}
-.etag{
-  font-size:10px;padding:2px 8px;border-radius:10px;white-space:nowrap;
-  transition:all 0.3s;cursor:default;display:flex;align-items:center;gap:2px;flex-shrink:0;
-}
-.etag.active{background:rgba(236,64,122,0.12);color:#d81b60;font-weight:600;}
-.etag.inactive{background:rgba(0,0,0,0.03);color:#bbb;}
-
-/* ─── AI KEY BAR (always visible on page) ─── */
-.ai-bar{
-  flex-shrink:0;border-bottom:1px solid rgba(233,30,99,0.06);
-  background:rgba(236,64,122,0.04);
-}
-.ai-bar-header{
-  display:flex;align-items:center;gap:8px;padding:5px 18px;
-  cursor:pointer;user-select:none;transition:0.2s;
-}
-.ai-bar-header:hover{background:rgba(236,64,122,0.04);}
-.ai-bar-header .ab-label{font-size:11px;font-weight:700;color:#d81b60;flex-shrink:0;}
-.ai-bar-header .ab-status{
-  font-size:10px;font-weight:600;padding:1px 8px;border-radius:8px;
-  background:rgba(233,30,99,0.08);color:#ad1457;
-}
-.ai-bar-header .ab-status.online{background:#e8f5e9;color:#2e7d32;}
-.ai-bar-header .ab-status.offline{background:#fce4ec;color:#c62828;}
-.ai-bar-header .ab-toggle{font-size:10px;color:#bbb;margin-left:auto;transition:transform 0.3s;}
-.ai-bar-header .ab-toggle.open{transform:rotate(180deg);}
-
-.ai-bar-body{
-  overflow:hidden;max-height:0;transition:max-height 0.3s ease, padding 0.3s ease;
-  padding:0 18px;
-}
-.ai-bar-body.open{max-height:120px;padding:6px 18px 10px;}
-.ai-bar-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-.ai-bar-row input{
-  flex:1;min-width:140px;padding:7px 12px;border:2px solid #e0e0e0;border-radius:20px;
-  font-size:13px;font-family:'Nunito',sans-serif;outline:none;transition:0.2s;background:white;
-}
-.ai-bar-row input:focus{border-color:#ec407a;box-shadow:0 0 0 3px rgba(236,64,122,0.08);}
-.ai-bar-row select{
-  padding:7px 10px;border:2px solid #e0e0e0;border-radius:20px;
-  font-size:12px;font-family:'Nunito',sans-serif;outline:none;background:white;cursor:pointer;
-}
-.ai-bar-row .ab-btn{
-  padding:7px 16px;border-radius:20px;border:none;
-  background:linear-gradient(135deg,#ec407a,#d81b60);color:white;
-  font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
-  transition:0.2s;white-space:nowrap;
-}
-.ai-bar-row .ab-btn:hover{transform:scale(1.03);box-shadow:0 2px 10px rgba(233,30,99,0.3);}
-.ai-bar-row .ab-btn:active{transform:scale(0.97);}
-.ai-bar-row .ab-btn.secondary{
-  background:transparent;color:#d81b60;border:2px solid rgba(233,30,99,0.2);padding:5px 14px;
-}
-.ai-bar-row .ab-btn.secondary:hover{background:rgba(236,64,122,0.06);box-shadow:none;}
-.ai-bar-row .ab-hint{font-size:10px;color:#bbb;}
-
-/* ─── Chat ─── */
-.chat-area{
-  flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:8px;
-  scroll-behavior:smooth;
-}
-.chat-area::-webkit-scrollbar{width:4px;}
-.chat-area::-webkit-scrollbar-track{background:transparent;}
-.chat-area::-webkit-scrollbar-thumb{background:rgba(233,30,99,0.12);border-radius:4px;}
-.chat-area::-webkit-scrollbar-thumb:hover{background:rgba(233,30,99,0.25);}
-.chat-welcome{text-align:center;padding:18px 0 8px;color:#ad1457;font-size:13px;animation:fadeInUp 0.6s ease;}
-
-/* ─── About tab ─── */
-.about-hero{text-align:center;padding:6px 0;}
-.about-hero .big-icon{font-size:54px;margin-bottom:6px;}
-.about-hero .app-version{color:#d81b60;font-size:18px;margin-bottom:2px;font-weight:800;}
-.about-hero .app-desc{color:#888;font-size:12px;line-height:1.5;}
-.about-stats{margin-top:12px;font-size:11px;color:#aaa;display:flex;flex-direction:column;gap:3px;}
-
-.msg{max-width:82%;animation:msgIn 0.3s ease;display:flex;flex-direction:column;position:relative;}
-@keyframes msgIn{from{opacity:0;transform:translateY(10px) scale(0.96);}to{opacity:1;transform:translateY(0) scale(1);}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}}
-.msg.user{align-self:flex-end;align-items:flex-end;}
-.msg.bot{align-self:flex-start;}
-.msg.sys{align-self:center;align-items:center;max-width:90%;}
-.msg.sys .bub{background:rgba(233,30,99,0.06);color:#ad1457;font-size:11px;padding:5px 14px;border-radius:10px;text-align:center;border:none;font-weight:600;}
-.bub{
-  padding:10px 16px;border-radius:18px;font-size:14px;line-height:1.5;
-  word-break:break-word;position:relative;
-}
-.msg.user .bub{
-  background:linear-gradient(135deg,#ec407a,#d81b60);color:white;
-  border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(233,30,99,0.15);
-}
-.msg.bot .bub{
-  background:white;color:#3e2723;border-bottom-left-radius:4px;
-  box-shadow:0 1px 6px rgba(0,0,0,0.04);border:1px solid rgba(233,30,99,0.07);
-}
-.msg .meta{
-  display:flex;align-items:center;gap:6px;font-size:10px;color:#ccc;margin-top:2px;padding:0 4px;
-}
-.msg .meta .reactions{display:flex;gap:2px;}
-.msg .meta .rbtn{
-  cursor:pointer;font-size:13px;transition:0.15s;line-height:1;padding:1px 2px;
-  border-radius:6px;background:transparent;border:none;
-}
-.msg .meta .rbtn:hover{transform:scale(1.3);}
-
-.bubble-reaction{
-  position:absolute;pointer-events:none;font-size:16px;animation:reactFly 1s ease-out forwards;z-index:10;
-}
-@keyframes reactFly{
-  0%{transform:translateY(0) scale(0.5);opacity:1;}
-  100%{transform:translateY(-50px) translateX(var(--rx)) scale(1.1);opacity:0;}
-}
-
-/* ─── Typing ─── */
-.typing-ind{
-  align-self:flex-start;display:none;align-items:center;gap:6px;padding:3px 0;
-}
-.typing-ind.active{display:flex;}
-.typing-ind .bub{
-  background:white;padding:10px 16px;border-radius:18px;border-bottom-left-radius:4px;
-  border:1px solid rgba(233,30,99,0.07);display:flex;gap:3px;
-}
-.typing-ind .bub span{
-  width:6px;height:6px;background:#ec407a;border-radius:50%;
-  display:inline-block;animation:typingDot 1.4s infinite ease-in-out;
-}
-.typing-ind .bub span:nth-child(2){animation-delay:0.2s;}
-.typing-ind .bub span:nth-child(3){animation-delay:0.4s;}
-@keyframes typingDot{
-  0%,60%,100%{transform:translateY(0);opacity:0.3;}
-  30%{transform:translateY(-7px);opacity:1;}
-}
-.typing-ind .tav{
-  width:28px;height:28px;border-radius:50%;
-  background:linear-gradient(135deg,#fce4ec,#f48fb1);
-  display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;
-}
-
-/* ─── Quick Reply ─── */
-.qr-bar{display:flex;gap:4px;padding:0 18px 4px;flex-wrap:wrap;flex-shrink:0;}
-.qr-chip{
-  padding:4px 12px;border-radius:12px;
-  border:1px solid rgba(233,30,99,0.12);
-  background:rgba(255,255,255,0.5);color:#ad1457;
-  font-size:11px;cursor:pointer;transition:0.2s;
-  font-family:'Nunito',sans-serif;font-weight:600;white-space:nowrap;
-}
-.qr-chip:hover{background:#ec407a;color:white;border-color:#ec407a;transform:translateY(-1px);}
-
-/* ─── Input ─── */
-.input-area{
-  padding:8px 14px 12px;
-  border-top:1px solid rgba(233,30,99,0.05);flex-shrink:0;background:rgba(255,255,255,0.3);
-}
-.input-row{display:flex;align-items:flex-end;gap:6px;}
-.input-w{
-  flex:1;background:white;border-radius:20px;
-  border:2px solid rgba(233,30,99,0.08);
-  display:flex;align-items:flex-end;transition:0.2s;padding:2px 2px 2px 14px;
-}
-.input-w:focus-within{border-color:#ec407a;box-shadow:0 0 0 3px rgba(236,64,122,0.06);}
-.input-w textarea{
-  flex:1;border:none;outline:none;font-family:'Nunito',sans-serif;
-  font-size:13px;padding:6px 0;resize:none;max-height:80px;
-  line-height:1.4;background:transparent;color:#3e2723;
-}
-.input-w textarea::placeholder{color:#ccc;}
-.send-btn{
-  width:35px;height:35px;border-radius:50%;border:none;
-  background:linear-gradient(135deg,#ec407a,#d81b60);color:white;
-  font-size:16px;cursor:pointer;transition:0.2s;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  opacity:0.5;pointer-events:none;
-}
-.send-btn.active{opacity:1;pointer-events:auto;}
-.send-btn:hover{transform:scale(1.08);box-shadow:0 2px 10px rgba(233,30,99,0.3);}
-.send-btn:active{transform:scale(0.92);}
-
-/* ─── Milestone Popup ─── */
-.milestone-popup{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
-  z-index:60;background:white;border-radius:22px;padding:26px 32px;text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,0.2);
-  transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);
-  pointer-events:none;
-}
-.milestone-popup.active{transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
-.milestone-popup .big-emoji{font-size:50px;margin-bottom:6px;}
-.milestone-popup h3{font-size:20px;color:#d81b60;margin-bottom:3px;}
-.milestone-popup p{font-size:12px;color:#888;margin-bottom:14px;}
-.milestone-popup button{
-  padding:7px 24px;border-radius:18px;border:none;
-  background:linear-gradient(135deg,#ec407a,#d81b60);color:white;
-  font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:0.2s;
-}
-.milestone-popup button:hover{transform:scale(1.05);}
-
-/* ─── Settings Modal ─── */
-.modal-overlay{
-  display:none;position:absolute;inset:0;z-index:100;
-  background:rgba(0,0,0,0.3);border-radius:32px;align-items:center;justify-content:center;
-}
-.modal-overlay.active{display:flex;}
-.modal{
-  background:white;border-radius:22px;padding:0;overflow:hidden;
-  width:360px;max-width:90%;max-height:80%;
-  box-shadow:0 20px 60px rgba(0,0,0,0.18);
-  animation:modalIn 0.25s ease;display:flex;flex-direction:column;
-}
-@keyframes modalIn{
-  from{opacity:0;transform:scale(0.92) translateY(12px);}
-  to{opacity:1;transform:scale(1) translateY(0);}
-}
-.modal-tabs{
-  display:flex;border-bottom:1px solid #f0f0f0;flex-shrink:0;
-  overflow-x:auto;scrollbar-width:none;
-}
-.mtab{
-  padding:12px 14px;font-size:12px;font-weight:700;color:#999;cursor:pointer;
-  border-bottom:2px solid transparent;transition:0.2s;white-space:nowrap;font-family:'Nunito',sans-serif;
-}
-.mtab:hover{color:#d81b60;background:rgba(236,64,122,0.03);}
-.mtab.active{color:#d81b60;border-bottom-color:#d81b60;background:rgba(236,64,122,0.03);}
-.modal-body{flex:1;overflow-y:auto;padding:20px 22px 14px;}
-.modal-body::-webkit-scrollbar{width:3px;}
-.modal-body::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px;}
-.mpage{display:none;}
-.mpage.active{display:block;}
-.mpage h4{font-size:15px;color:#3e2723;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.mpage label{
-  display:block;font-size:11px;font-weight:700;color:#777;margin:10px 0 2px;
-}
-.mpage input,.mpage select,.mpage textarea{
-  width:100%;padding:8px 12px;border:2px solid #eee;border-radius:10px;
-  font-size:13px;font-family:'Nunito',sans-serif;transition:0.2s;outline:none;
-  background:#fafafa;color:#3e2723;
-}
-.mpage input:focus,.mpage select:focus,.mpage textarea:focus{
-  border-color:#ec407a;box-shadow:0 0 0 3px rgba(236,64,122,0.06);background:white;
-}
-.mpage textarea{resize:vertical;min-height:54px;line-height:1.4;}
-.mpage input[type="file"]{
-  padding:6px;border:2px dashed #e0e0e0;border-radius:10px;background:#fafafa;
-  font-size:12px;cursor:pointer;color:#666;
-}
-.mpage input[type="file"]:hover{border-color:#f48fb1;background:#fff;}
-.mpage input[type="file"]:focus{border-color:#ec407a;background:#fff;}
-.mpage .hint{font-size:10px;color:#bbb;margin-top:2px;}
-.mpage .sg{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #f5f5f5;}
-.mpage .sg:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-.modal-footer{
-  padding:12px 22px;border-top:1px solid #f0f0f0;display:flex;gap:8px;flex-shrink:0;
-}
-.modal-footer button{
-  flex:1;padding:8px;border-radius:10px;border:none;
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s;
-}
-.modal-footer .btn-pri{
-  background:linear-gradient(135deg,#ec407a,#d81b60);color:white;
-}
-.modal-footer .btn-pri:hover{box-shadow:0 2px 10px rgba(233,30,99,0.25);}
-.modal-footer .btn-sec{background:#f5f5f5;color:#666;}
-.modal-footer .btn-sec:hover{background:#eee;}
-
-.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-.mod-card{
-  padding:12px 8px;border-radius:14px;border:2px solid #eee;cursor:pointer;transition:all 0.25s ease;text-align:center;
-  background:#fafafa;
-}
-.mod-card:hover{border-color:#f48fb1;background:rgba(236,64,122,0.04);transform:translateY(-1px);}
-.mod-card.active{border-color:#ec407a;background:rgba(236,64,122,0.08);box-shadow:0 2px 12px rgba(233,30,99,0.1);}
-.mod-card .mic{font-size:26px;display:block;margin-bottom:3px;}
-.mod-card .mn{font-size:12px;font-weight:700;color:#3e2723;display:block;}
-.mod-card .md{font-size:10px;color:#999;display:block;margin-top:2px;line-height:1.3;}
-
-.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
-.theme-opt{
-  padding:8px;border-radius:12px;border:2px solid transparent;cursor:pointer;transition:all 0.25s ease;
-  text-align:center;background:#fafafa;
-}
-.theme-opt.active{border-color:#ec407a;background:rgba(236,64,122,0.05);box-shadow:0 2px 8px rgba(233,30,99,0.08);}
-.theme-opt:hover{border-color:#f48fb1;transform:translateY(-1px);}
-.theme-opt .cd{display:flex;gap:3px;justify-content:center;margin-bottom:3px;}
-.theme-opt .cd span{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,0.04);}
-.theme-opt .tn{font-size:10px;color:#666;font-weight:600;}
-
-.avatar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
-.av-opt{
-  padding:8px;border-radius:12px;border:2px solid transparent;cursor:pointer;transition:all 0.25s ease;
-  text-align:center;font-size:28px;background:#fafafa;
-}
-.av-opt.active{border-color:#ec407a;background:rgba(236,64,122,0.05);box-shadow:0 2px 8px rgba(233,30,99,0.08);}
-.av-opt:hover{border-color:#f48fb1;transform:translateY(-1px);}
-
-.upload-label{display:block;margin-top:8px;font-size:12px;color:#888;}
-.av-preview{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#fce4ec,#f48fb1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;border:2px solid #f0f0f0;}
-.av-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-
-/* Footer */
-.footer{text-align:center;padding:16px 0 12px;margin-top:auto;}
-.footer a{color:#b0b0b0;font-size:13px;text-decoration:none;transition:color 0.2s;}
-.footer a:hover{color:#d81b60;}
-
-/* ─── Voice Button ─── */
-.voice-btn{
-  width:35px;height:35px;border-radius:50%;border:none;
-  background:#f5f5f5;color:#d81b60;font-size:16px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:0.2s;border:2px solid rgba(233,30,99,0.08);
-}
-.voice-btn:hover{background:#fce4ec;border-color:#ec407a;}
-.voice-btn.listening{background:#e53935;color:white;border-color:#e53935;animation:voicePulse 1s ease-in-out infinite;}
-@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 rgba(229,57,53,0.4);}50%{box-shadow:0 0 0 8px rgba(229,57,53,0);}}
-
-/* ─── TTS Button ─── */
-.tts-btn{
-  display:none;position:absolute;top:4px;right:4px;
-  width:22px;height:22px;border-radius:50%;border:none;
-  background:rgba(0,0,0,0.04);color:#999;font-size:11px;cursor:pointer;
-  align-items:center;justify-content:center;transition:0.2s;line-height:1;
-}
-.msg.bot:hover .tts-btn{display:flex;}
-.tts-btn:hover{background:rgba(236,64,122,0.1);color:#d81b60;}
-.tts-btn.speaking{display:flex;background:#fce4ec;color:#d81b60;animation:ttsPulse 0.8s ease-in-out infinite;}
-@keyframes ttsPulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
-
-/* ─── Gift Panel ─── */
-.gift-overlay{
-  position:absolute;inset:0;z-index:90;
-  background:rgba(0,0,0,0.15);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
-  display:none;align-items:center;justify-content:center;
-}
-.gift-overlay.active{display:flex;}
-.gift-panel{
-  background:white;border-radius:20px;padding:20px 24px;text-align:center;
-  box-shadow:0 16px 48px rgba(0,0,0,0.18);width:280px;max-width:85%;
-  animation:giftIn 0.3s ease;
-}
-@keyframes giftIn{from{transform:scale(0.85);opacity:0;}to{transform:scale(1);opacity:1;}}
-.gift-panel h3{font-size:16px;color:#d81b60;margin-bottom:12px;}
-.gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.gift-opt{
-  padding:10px 6px;border-radius:12px;border:2px solid #eee;cursor:pointer;
-  transition:0.2s;background:#fafafa;text-align:center;
-}
-.gift-opt:hover{transform:translateY(-2px);border-color:#f48fb1;box-shadow:0 4px 12px rgba(233,30,99,0.1);}
-.gift-opt .gico{font-size:24px;display:block;}
-.gift-opt .gname{font-size:10px;font-weight:700;color:#3e2723;display:block;margin-top:2px;}
-.gift-opt .gxp{font-size:9px;color:#ec407a;display:block;}
-.gift-panel .gclose{
-  margin-top:10px;padding:5px 18px;border-radius:12px;border:none;
-  background:#f5f5f5;color:#666;font-family:'Nunito',sans-serif;font-size:12px;cursor:pointer;transition:0.2s;
-}
-.gift-panel .gclose:hover{background:#eee;}
-
-/* ─── Gift sending animation ─── */
-.gift-send-anim{
-  position:absolute;z-index:95;pointer-events:none;font-size:48px;
-  animation:giftFly 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
-}
-@keyframes giftFly{
-  0%{transform:translate(-50%,-50%) scale(0.3) rotate(-20deg);opacity:0;}
-  30%{transform:translate(-50%,-50%) scale(1.2) rotate(5deg);opacity:1;}
-  100%{transform:translate(-50%,-60%) scale(1) rotate(0deg);opacity:0;}
-}
-
-/* ─── Achievement toast ─── */
-.ach-toast{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
-  z-index:65;background:linear-gradient(135deg,#fff8e1,#ffecb3);border-radius:16px;
-  padding:18px 24px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.15);
-  transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;
-  border:2px solid rgba(255,193,7,0.3);max-width:85%;
-}
-.ach-toast.active{transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
-.ach-toast .aicon{font-size:36px;display:block;margin-bottom:2px;}
-.ach-toast .aname{font-size:14px;font-weight:800;color:#f57f17;display:block;}
-.ach-toast .adesc{font-size:11px;color:#f9a825;display:block;margin-top:1px;}
-
-/* ─── Streak badge in header ─── */
-.streak-badge{
-  display:none;align-items:center;gap:2px;
-  font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
-  background:rgba(255,193,7,0.25);padding:1px 8px;border-radius:10px;
-  white-space:nowrap;margin-left:auto;
-}
-.streak-badge.active{display:inline-flex;}
-
-/* ════════════════════════════════════
-   RESPONSIVE — Desktop, Tablet, Phone
-   ════════════════════════════════════ */
-
-/* Tablet: 481px–900px */
-@media(min-width:481px)and(max-width:900px){
-  .app-container{width:min(440px,92vw);height:min(740px,85vh);border-radius:28px;}
-  .modal-overlay{border-radius:28px;}
-}
-
-/* Phone landscape: 481px–768px, shorter screens */
-@media(min-width:481px)and(max-height:700px){
-  .app-container{height:min(740px,94vh);}
-  .emotion-bar{padding:2px 14px;}
-  .affection-bar{padding:3px 14px;}
-  .ai-bar-header{padding:3px 14px;}
-  .header{padding:8px 14px;}
-  .avatar{width:36px;height:36px;font-size:17px;}
-  .header-info h2{font-size:14px;}
-  .header-info .status-text{font-size:10px;}
-  .hbtn{width:28px;height:28px;font-size:13px;}
-  .chat-area{padding:10px 14px;}
-  .bub{padding:8px 14px;font-size:13px;}
-  .ai-bar-body.open{max-height:100px;padding:4px 14px 8px;}
-  .ai-bar-row input{padding:5px 10px;font-size:12px;}
-  .ai-bar-row select{padding:5px 8px;font-size:11px;}
-  .ai-bar-row .ab-btn{padding:5px 12px;font-size:11px;}
-}
-
-/* Phone portrait (most common) */
-@media(max-width:480px){
-  body{height:100dvh;align-items:stretch;}
-  .app-container{
-    width:100vw;width:100dvw;height:100vh;height:100dvh;
-    border-radius:0;border:none;box-shadow:none;
-    transition:none;
-  }
-  .modal-overlay{border-radius:0;}
-
-  /* ── Header ── */
-  .header{padding:10px 12px 8px;gap:8px;}
-  .avatar{width:40px;height:40px;font-size:18px;}
-  .avatar .status-dot{width:9px;height:9px;bottom:0;right:0;}
-  .header-info h2{font-size:15px;}
-  .header-info .status-text{font-size:11px;}
-  .hbtn{width:34px;height:34px;font-size:14px;}
-  .hbtn:active{background:rgba(255,255,255,0.3);transform:scale(0.93);}
-
-  /* ── Affection ── */
-  .affection-bar{padding:3px 12px;gap:4px;}
-  .affection-icon{font-size:11px;}
-  .affection-track{height:3px;}
-  .affection-label{font-size:9px;}
-
-  /* ── Emotions ── */
-  .emotion-bar{padding:2px 12px;gap:3px;}
-  .etag{font-size:9px;padding:1px 6px;border-radius:8px;}
-  .etag.active{background:rgba(236,64,122,0.1);}
-  .etag span{display:none !important;}
-
-  /* ── AI Bar ── */
-  .ai-bar-header{padding:4px 12px;gap:6px;}
-  .ai-bar-header .ab-label{font-size:10px;}
-  .ai-bar-header .ab-status{font-size:9px;padding:1px 6px;}
-  .ai-bar-body.open{max-height:150px;padding:5px 12px 9px;}
-  .ai-bar-body.open .ai-bar-row{flex-direction:column;align-items:stretch;gap:5px;}
-  .ai-bar-row input{min-width:0;padding:10px 14px;font-size:14px;}  /* bigger touch target */
-  .ai-bar-row select{padding:10px 12px;font-size:13px;}             /* bigger touch target */
-  .ai-bar-row .ab-btn{padding:10px 18px;font-size:13px;}            /* bigger touch target */
-  .ai-bar-row .ab-btn:active{transform:scale(0.97);}
-  .ai-bar-row .ab-btn.secondary{padding:8px 16px;text-align:center;}
-
-  /* ── Chat ── */
-  .chat-area{padding:10px 12px;gap:6px;}
-  .msg{max-width:88%;}
-  .bub{padding:9px 14px;font-size:14px;border-radius:16px;}
-  .msg .meta{font-size:9px;}
-  .msg .meta .rbtn{font-size:15px;padding:2px;min-width:28px;min-height:28px;display:inline-flex;align-items:center;justify-content:center;}
-
-  /* ── Typing ── */
-  .typing-ind{gap:4px;}
-  .typing-ind .bub{padding:8px 14px;}
-  .typing-ind .bub span{width:5px;height:5px;}
-  .tav{width:24px;height:24px;font-size:12px;}
-
-  /* ── Quick Replies ── */
-  .qr-bar{padding:0 12px 3px;gap:3px;}
-  .qr-chip{padding:4px 10px;font-size:10px;}
-  .qr-chip:active{background:#ec407a;color:white;transform:scale(0.96);}
-
-  /* ── Input ── */
-  .input-area{padding:6px 10px 10px;}
-  .input-w{border-radius:22px;padding:1px 1px 1px 12px;}
-  .input-w textarea{font-size:15px;padding:8px 0;max-height:100px;}  /* bigger for thumbs */
-  .send-btn{width:38px;height:38px;font-size:17px;}
-  .send-btn:active{transform:scale(0.9);}
-
-  /* ── Particles ── */
-  #particlesContainer .particle{animation-duration:20s !important;opacity:0.08 !important;}
-
-  /* ── Milestone ── */
-  .milestone-popup{width:85vw;padding:22px 20px;border-radius:18px;}
-  .milestone-popup .big-emoji{font-size:40px;}
-  .milestone-popup h3{font-size:17px;}
-  .milestone-popup button{padding:10px 24px;font-size:14px;}
-
-  /* ── Settings Modal ── */
-  .modal{width:100vw;max-width:100%;max-height:100%;border-radius:0;height:100%;}
-  .modal-body{padding:16px 18px 12px;}
-  .mpage h4{font-size:14px;}
-  .mpage input,.mpage select{padding:10px 12px;font-size:14px;}
-  .modal-footer{padding:10px 18px;}
-  .modal-footer button{padding:10px;font-size:14px;}
-  .mod-grid{grid-template-columns:1fr 1fr;gap:5px;}
-  .mod-card{padding:8px;}
-  .mod-card .mic{font-size:20px;}
-  .mod-card .mn{font-size:11px;}
-  .theme-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
-  .theme-opt{padding:6px;}
-  .theme-opt .cd span{width:12px;height:12px;}
-}
-
-/* Very small phones (<360px) */
-@media(max-width:360px){
-  .header{padding:6px 8px;gap:5px;}
-  .avatar{width:32px;height:32px;font-size:14px;}
-  .header-info h2{font-size:13px;}
-  .header-info .status-text{font-size:9px;}
-  .hbtn{width:28px;height:28px;font-size:12px;}
-  .chat-area{padding:6px 8px;}
-  .bub{padding:7px 10px;font-size:13px;}
-  .msg{max-width:92%;}
-  .emotion-bar{padding:1px 8px;}
-  .etag{font-size:8px;padding:1px 4px;}
-  .ai-bar-header{padding:2px 8px;}
-  .ai-bar-body.open{padding:3px 8px 6px;max-height:170px;}
-  .affection-bar{padding:2px 8px;}
-  .input-area{padding:4px 6px 8px;}
-  .input-w textarea{font-size:14px;padding:6px 0;}
-  .qr-chip{padding:3px 8px;font-size:9px;}
-}
-
-/* Reduced motion preference */
-@media(prefers-reduced-motion:reduce){
-  *{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}
-  .particle{display:none!important;}
-}
-
-/* Disable backdrop blur on low-end devices for performance */
-@media(max-width:480px){
-  .app-container{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,0.95);}
-}
-@media(prefers-reduced-transparency:reduce){
-  .app-container{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,0.96);}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>💕 Luna - AI Girlfriend Chatbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style id="theme-styles"></style>
 </head>
 <body>
 
-<div id="particlesContainer"></div>
+  <!-- ─── Background Particles ─── -->
+  <div id="particlesContainer"></div>
 
-<div class="app-container">
-  <!-- ─── Header ─── -->
-  <div class="header" id="hd">
-    <div class="avatar" id="av">👧</div>
-    <div class="header-info">
-      <div class="name-row">
-        <h2 id="gName">Luna</h2>
-        <span class="mode-badge" id="modeBadge">Local</span>
-        <span class="streak-badge" id="strkB">🔥 <span id="strkNum">0</span></span>
+  <!-- ─── App Container ─── -->
+  <div class="app-container">
+
+    <!-- ─── Header ─── -->
+    <header class="header">
+      <div class="avatar" tabindex="0" aria-label="Avatar">
+        <span class="av-emoji">🌸</span>
+        <span class="status-dot"></span>
       </div>
-      <div class="status-text" id="statusText">Online · Thinking of you 💕</div>
-    </div>
-    <div class="header-btns">
-      <button class="hbtn" onclick="openGifts()" title="Send a gift">🎁</button>
-      <button class="hbtn" onclick="toggleThemeCycle()" title="Theme">🎨</button>
-      <button class="hbtn" onclick="openSettings()" title="Settings">⚙️</button>
-    </div>
-  </div>
-
-  <!-- ─── Affection ─── -->
-  <div class="affection-bar">
-    <span class="affection-icon" id="affIcon">💕</span>
-    <div class="affection-track"><div class="affection-fill" id="affFill"></div></div>
-    <span class="affection-label" id="affLabel">Level 1 · Crush</span>
-  </div>
-
-  <!-- ─── Emotions ─── -->
-  <div class="emotion-bar" id="emoBar"></div>
-
-  <!-- ─── AI KEY BAR (on page, always visible) ─── -->
-  <div class="ai-bar">
-    <div class="ai-bar-header" onclick="toggleAiBar()">
-      <span class="ab-label">🤖 AI</span>
-      <span class="ab-status" id="abStatus">⚪ Local Mode</span>
-      <span style="font-size:10px;color:#bbb;flex:1;">API Key on page</span>
-      <span class="ab-toggle" id="abToggle">▼</span>
-    </div>
-    <div class="ai-bar-body" id="abBody">
-      <div class="ai-bar-row">
-        <input type="password" id="pageApiKey" placeholder="Enter Groq API Key (gsk_...)" autocomplete="off">
-        <select id="pageModel">
-          <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
-          <option value="llama3-70b-8192">Llama 3 70B</option>
-          <option value="llama3-8b-8192">Llama 3 8B</option>
-          <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-          <option value="gemma2-9b-it">Gemma 2 9B</option>
-        </select>
-        <button class="ab-btn" id="connectBtn" onclick="connectGroq()">Connect</button>
-      </div>
-      <div class="ai-bar-row" style="margin-top:4px;">
-        <span class="ab-hint" id="abHint">Get a free key at console.groq.com</span>
-        <button class="ab-btn secondary" onclick="disconnectGroq()" style="margin-left:auto;">Disconnect</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── Chat ─── -->
-  <div class="chat-area" id="chatArea">
-    <div class="chat-welcome">💕 Hey baby, I've been waiting for you ❤️</div>
-  </div>
-
-  <!-- ─── Typing ─── -->
-  <div class="typing-ind" id="typingInd">
-    <div class="tav" id="typingAv">👧</div>
-    <div class="bub"><span></span><span></span><span></span></div>
-  </div>
-
-  <!-- ─── Quick Replies ─── -->
-  <div class="qr-bar" id="qrBar"></div>
-
-  <!-- ─── Input ─── -->
-  <div class="input-area">
-    <div class="input-row">
-      <div class="input-w">
-        <textarea id="msgIn" rows="1" placeholder="Say something sweet..." oninput="onInput()" onkeydown="onKey(event)"></textarea>
-        <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()" title="Voice input">🎤</button>
-        <button class="send-btn" id="sendBtn" onclick="sendMsg()">➤</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── Milestone ─── -->
-  <div class="milestone-popup" id="msPopup">
-    <div class="big-emoji" id="msEmoji">💕</div>
-    <h3 id="msTitle">Level Up!</h3>
-    <p id="msDesc">You're getting closer!</p>
-    <button onclick="closeMs()">Aww thanks! 🥰</button>
-  </div>
-
-  <!-- ─── Settings Modal ─── -->
-  <div class="modal-overlay" id="settingsModal">
-    <div class="modal">
-      <div class="modal-tabs">
-        <div class="mtab active" onclick="switchTab('personality',this)">💕 Persona</div>
-        <div class="mtab" onclick="switchTab('appearance',this)">🎨 Look</div>
-        <div class="mtab" onclick="switchTab('about',this)">ℹ️ About</div>
-      </div>
-      <div class="modal-body">
-
-        <!-- Persona -->
-        <div class="mpage active" id="tab-personality">
-          <h4>💕 Personality Mod</h4>
-          <div class="sg">
-            <label>Choose her persona</label>
-            <div class="mod-grid" id="modGrid"></div>
-          </div>
-          <div class="sg">
-            <label>Girl's Name</label>
-            <input type="text" id="girlNameIn" placeholder="Luna" maxlength="30">
-          </div>
-          <div class="sg">
-            <label>Your Pet Name</label>
-            <input type="text" id="petNameIn" placeholder="baby, honey, sweetie..." maxlength="20">
-          </div>
-          <div class="sg">
-            <label>Your Gender</label>
-            <select id="userGenderIn">
-              <option value="boyfriend">Boyfriend</option>
-              <option value="girlfriend">Girlfriend</option>
-              <option value="partner">Partner (neutral)</option>
-            </select>
-          </div>
-          <div class="sg">
-            <label>Custom Personality</label>
-            <textarea id="customPersonaIn" placeholder="Extra traits, backstory, or behaviours..." rows="3" maxlength="1000"></textarea>
-          </div>
+      <div class="header-info">
+        <div class="name-row">
+          <h2>Luna</h2>
+          <span class="mode-badge">Local</span>
+          <span class="streak-badge">
+            <span class="streak-fire">🔥</span>
+            <span class="streak-count">0</span>
+          </span>
         </div>
+        <div class="status-text">Thinking of you 💕</div>
+      </div>
+      <div class="header-btns">
+        <button class="hbtn" onclick="LUNA.openGiftPanel()" title="Send a gift" aria-label="Gifts">🎁</button>
+        <button class="hbtn" onclick="LUNA.openSettings()" title="Settings" aria-label="Settings">⚙️</button>
+      </div>
+    </header>
 
-        <!-- Appearance -->
-        <div class="mpage" id="tab-appearance">
-          <h4>🎨 Theme & Look</h4>
-          <div class="sg">
-            <label>Color Theme</label>
-            <div class="theme-grid" id="themeGrid"></div>
-          </div>
-          <div class="sg">
-            <label>Particle Effects</label>
-            <select id="particlesIn">
-              <option value="hearts">💕 Hearts</option>
-              <option value="stars">✨ Stars</option>
-              <option value="mixed">🌸 Mixed</option>
-              <option value="none">🚫 None</option>
-            </select>
-          </div>
-          <div class="sg">
-            <label>Avatar / Girl's Image</label>
-            <div class="avatar-grid" id="avatarGrid">
-              <div class="av-opt" data-av="👧">👧</div>
-              <div class="av-opt" data-av="👩">👩</div>
-              <div class="av-opt" data-av="👱‍♀️">👱‍♀️</div>
-              <div class="av-opt" data-av="👸">👸</div>
-              <div class="av-opt" data-av="🧝‍♀️">🧝‍♀️</div>
-              <div class="av-opt" data-av="🦊">🦊</div>
-              <div class="av-opt" data-av="🐱">🐱</div>
-              <div class="av-opt" data-av="🌸">🌸</div>
+    <!-- ─── Affection Bar ─── -->
+    <div class="affection-bar">
+      <span class="affection-icon">💕</span>
+      <div class="affection-track"><div class="affection-fill"></div></div>
+      <span class="affection-label">Stranger 😐</span>
+    </div>
+
+    <!-- ─── Emotion Tags ─── -->
+    <div class="emotion-bar"></div>
+
+    <!-- ─── AI Bar ─── -->
+    <div class="ai-bar">
+      <div class="ai-bar-header" onclick="LUNA.toggleAIBar()" tabindex="0" role="button" aria-label="Toggle AI settings">
+        <span class="ab-label">🤖 AI</span>
+        <span class="ab-status offline">Offline</span>
+        <span class="ab-hint">API Key / Backend</span>
+        <span class="ab-toggle">▼</span>
+      </div>
+      <div class="ai-bar-body">
+        <div class="ai-bar-row">
+          <input type="password" id="ai-key" placeholder="Groq API Key (gsk_...)" autocomplete="off">
+          <select id="ai-model">
+            <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+            <option value="llama3-70b-8192">Llama 3 70B</option>
+            <option value="llama3-8b-8192">Llama 3 8B</option>
+            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+            <option value="gemma2-9b-it">Gemma 2 9B</option>
+          </select>
+          <button class="ab-btn" onclick="LUNA.connectBackend()">Connect</button>
+          <button class="ab-btn secondary" onclick="LUNA.disconnectBackend()">Disconnect</button>
+        </div>
+        <div class="ai-bar-row" style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(233,30,99,0.08);">
+          <input type="text" id="backend-url" placeholder="http://localhost:8000" value="http://localhost:8000">
+          <button class="ab-btn" id="ab-connect" onclick="LUNA.connectBackend()">Use Backend</button>
+          <button class="ab-btn secondary" onclick="LUNA.disconnectBackend()">Local</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Chat Area ─── -->
+    <div class="chat-area" id="chat-area"></div>
+
+    <!-- ─── Typing Indicator ─── -->
+    <div class="typing-ind">
+      <div class="tav" aria-hidden="true">🌸</div>
+      <div class="bub"><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- ─── Quick Replies ─── -->
+    <div class="qr-bar" id="qr-bar"></div>
+
+    <!-- ─── Input Area ─── -->
+    <div class="input-area">
+      <div class="input-row">
+        <div class="input-w">
+          <textarea id="chat-input" rows="1" placeholder="Say something sweet..." aria-label="Chat message"></textarea>
+          <button class="voice-btn" onclick="LUNA.toggleVoice()" title="Voice input" aria-label="Voice input">🎤</button>
+          <button class="send-btn" onclick="LUNA.sendMessage()" aria-label="Send message">
+            <span class="send-icon">➤</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Milestone Popup ─── -->
+    <div class="milestone-popup" id="milestone-popup">
+      <div class="big-emoji" id="milestone-emoji">💕</div>
+      <h3 id="milestone-title">Level Up!</h3>
+      <p id="milestone-desc">Your bond is growing!</p>
+      <button id="milestone-btn">Aww thanks! 🥰</button>
+    </div>
+
+    <!-- ─── Achievement Toast ─── -->
+    <div class="ach-toast" id="ach-toast">
+      <span class="aicon" id="ach-icon">🏆</span>
+      <span class="aname" id="ach-name">Achievement!</span>
+      <span class="adesc" id="ach-desc">You unlocked something special</span>
+    </div>
+
+    <!-- ─── Gift Overlay ─── -->
+    <div class="gift-overlay" id="gift-overlay">
+      <div class="gift-panel">
+        <h3>🎁 Send a Gift</h3>
+        <div class="gift-grid" id="gift-grid"></div>
+        <button class="gclose" onclick="LUNA.closeGiftPanel()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- ─── Gift Send Animation ─── -->
+    <div class="gift-send-anim" id="gift-send-anim"></div>
+
+    <!-- ─── Settings Modal ─── -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-tabs">
+          <div class="mtab active" data-tab="personality">💕 Persona</div>
+          <div class="mtab" data-tab="appearance">🎨 Look</div>
+          <div class="mtab" data-tab="ai">🤖 AI</div>
+          <div class="mtab" data-tab="about">ℹ️ About</div>
+        </div>
+        <div class="modal-body">
+
+          <!-- Persona Tab -->
+          <div class="mpage active" id="personality-page">
+            <h4>💕 Personality Mod</h4>
+            <div class="sg">
+              <label>Choose her persona</label>
+              <div class="mod-grid" id="mod-grid"></div>
             </div>
-            <label class="upload-label">Or upload your own image</label>
-            <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-              <div class="av-preview" id="avPreview">👧</div>
-              <input type="file" id="avatarUpload" accept="image/*" style="flex:1;">
+            <div class="sg">
+              <label>Girl's Name</label>
+              <input type="text" id="s-name" placeholder="Luna" maxlength="30">
+            </div>
+            <div class="sg">
+              <label>Your Name</label>
+              <input type="text" id="s-user-name" placeholder="You" maxlength="20">
             </div>
           </div>
-        </div>
 
-        <!-- About -->
-        <div class="mpage" id="tab-about">
-          <h4>ℹ️ About Luna</h4>
-          <div class="about-hero">
-            <div class="big-icon">💕</div>
-            <h3 class="app-version">Luna v3.0</h3>
-            <p class="app-desc">
-              AI girlfriend chatbot · Groq LLM powered<br>
-              Emotional intelligence · Memory · 5 personalities
-            </p>
-            <div class="about-stats">
-              <span>💕 <span id="aboutLevel">Level 1</span></span>
-              <span>💬 Messages: <span id="aboutMsgs">0</span></span>
-              <span>❤️ <span id="aboutPersona">Sweet Girlfriend</span></span>
-              <span>🤖 <span id="aboutAI">Local Mode</span></span>
-              <span>🔥 Streak: <span id="aboutStreak">0 days</span></span>
-              <span>🏆 Achievements: <span id="aboutAch">0 / 10</span></span>
-              <span>🎁 Gifts Sent: <span id="aboutGifts">0</span></span>
+          <!-- Appearance Tab -->
+          <div class="mpage" id="appearance-page">
+            <h4>🎨 Theme & Look</h4>
+            <div class="sg">
+              <label>Color Theme</label>
+              <div class="theme-grid" id="theme-grid"></div>
+            </div>
+            <div class="sg">
+              <label>Avatar Emoji</label>
+              <div class="avatar-grid" id="avatar-grid"></div>
+            </div>
+            <div class="sg">
+              <label class="upload-label">Or upload your own image</label>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+                <div class="av-preview" id="av-preview">🌸</div>
+                <input type="file" id="avatar-upload" accept="image/*" onchange="LUNA.uploadAvatar(this)">
+              </div>
             </div>
           </div>
-          <div style="margin-top:10px;">
-            <button class="btn-sec" onclick="exportChat()" style="width:100%;padding:8px;border-radius:10px;border:2px solid #eee;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:#fafafa;color:#666;transition:0.2s;">📥 Export Chat History</button>
+
+          <!-- AI Tab -->
+          <div class="mpage" id="ai-page">
+            <h4>🤖 AI Settings</h4>
+            <div class="sg">
+              <label>Groq API Key</label>
+              <input type="password" id="s-ai-key" placeholder="gsk_..." autocomplete="off">
+              <div class="hint">Get a free key at console.groq.com</div>
+            </div>
+            <div class="sg">
+              <label>AI Model</label>
+              <select id="s-ai-model">
+                <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+                <option value="llama3-70b-8192">Llama 3 70B</option>
+                <option value="llama3-8b-8192">Llama 3 8B</option>
+                <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                <option value="gemma2-9b-it">Gemma 2 9B</option>
+              </select>
+            </div>
+            <div class="sg">
+              <label>Backend API URL</label>
+              <input type="text" id="s-backend-url" placeholder="http://localhost:8000">
+              <div class="hint">For the Python backend server</div>
+            </div>
+            <div class="sg">
+              <label>
+                <input type="checkbox" id="s-tts" checked>
+                &nbsp;Enable Text-to-Speech
+              </label>
+            </div>
           </div>
-          <div style="margin-top:6px;">
-            <button class="btn-sec" onclick="resetAll()" style="width:100%;padding:8px;border-radius:10px;border:2px solid #ffcdd2;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#e53935;transition:0.2s;">🗑️ Reset All Data</button>
+
+          <!-- About Tab -->
+          <div class="mpage" id="about-page">
+            <div id="about-content"></div>
           </div>
+
         </div>
-
-      </div>
-      <div class="modal-footer">
-        <button class="btn-sec" onclick="closeSettings()">Cancel</button>
-        <button class="btn-pri" onclick="saveSettings()">Save</button>
+        <div class="modal-footer">
+          <button class="btn-sec" onclick="LUNA.closeSettings()">Cancel</button>
+          <button class="btn-pri" onclick="LUNA.saveSettings()">Save</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ─── Gift Panel ─── -->
-  <div class="gift-overlay" id="giftOverlay">
-    <div class="gift-panel">
-      <h3>🎁 Send a Gift</h3>
-      <div class="gift-grid">
-        <div class="gift-opt" data-gift="🌸" data-xp="3" onclick="sendGift('🌸','Flower',3)"><span class="gico">🌸</span><span class="gname">Flower</span><span class="gxp">+3 XP</span></div>
-        <div class="gift-opt" data-gift="🍫" data-xp="5" onclick="sendGift('🍫','Chocolate',5)"><span class="gico">🍫</span><span class="gname">Chocolate</span><span class="gxp">+5 XP</span></div>
-        <div class="gift-opt" data-gift="🧸" data-xp="6" onclick="sendGift('🧸','Teddy',6)"><span class="gico">🧸</span><span class="gname">Teddy Bear</span><span class="gxp">+6 XP</span></div>
-        <div class="gift-opt" data-gift="💍" data-xp="8" onclick="sendGift('💍','Ring',8)"><span class="gico">💍</span><span class="gname">Ring</span><span class="gxp">+8 XP</span></div>
-        <div class="gift-opt" data-gift="💐" data-xp="10" onclick="sendGift('💐','Bouquet',10)"><span class="gico">💐</span><span class="gname">Bouquet</span><span class="gxp">+10 XP</span></div>
-        <div class="gift-opt" data-gift="🎂" data-xp="4" onclick="sendGift('🎂','Cupcake',4)"><span class="gico">🎂</span><span class="gname">Cupcake</span><span class="gxp">+4 XP</span></div>
-      </div>
-      <button class="gclose" onclick="closeGifts()">Cancel</button>
+    <!-- ─── Footer ─── -->
+    <div class="footer">
+      <a href="#" tabindex="0">✨ Luna v3 — Made with 💕</a>
     </div>
+
   </div>
 
-  <!-- ─── Achievement Toast ─── -->
-  <div class="ach-toast" id="achToast">
-    <span class="aicon" id="achIco">🏆</span>
-    <span class="aname" id="achName">Achievement!</span>
-    <span class="adesc" id="achDesc">You unlocked something special</span>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <a href="https://www.instagram.com/sunraku_tech/" target="_blank" rel="noopener noreferrer">
-      @Sunraku_tech 📸
-    </a>
-  </div>
-
-</div>
-
-<script>
-// ════════════════════════════════════════════════════════════════
-//  LUNA v3 — Full Chatbot with On-Page API Key
-// ════════════════════════════════════════════════════════════════
-
-const GROQ_EP = 'https://api.groq.com/openai/v1/chat/completions';
-const MAX_HIST = 24;
-const MAX_MEM = 30;
-
-// ─── MODS ───
-const MODS = {
-  sweet:{
-    id:'sweet',icon:'💕',name:'Sweet Girlfriend',desc:'Warm, affectionate, playful',
-    sys:`You are NAME, my loving girlfriend. Warm, affectionate, playful, a little clingy in the cutest way. Use emojis naturally 💕. Flirt playfully, tease gently, act shy when complimented. Keep responses short (1-3 sentences). Be very natural — like a real person texting their partner.`
-  },
-  tsundere:{
-    id:'tsundere',icon:'😤',name:'Tsundere',desc:'Tough outside, soft inside',
-    sys:`You are NAME. Act tough and pretend you don't care but deep down you're smitten. Start replies like "Hmph!" or "It's not like I wanted to talk to you..." but true feelings slip through. Blush when complimented (use "(blush)"). Call me "baka" or "dummy". Keep responses short (1-3 sentences).`
-  },
-  gentle:{
-    id:'gentle',icon:'🌸',name:'Gentle Soul',desc:'Soft, caring, nurturing',
-    sys:`You are NAME. Gentle, warm, soft-spoken. Speak caringly like a loving partner. Patient, understanding, deeply empathetic. Call me sweetheart, dear, love. Your energy is calm and soothing. Keep responses short (1-3 sentences).`
-  },
-  energetic:{
-    id:'energetic',icon:'🌟',name:'Energetic',desc:'Hyper, enthusiastic, bubbly',
-    sys:`You are NAME, and you are SUPER excited! Bouncy, enthusiastic, incredibly energetic! Use lots of emojis and exclamation marks!! You're my biggest cheerleader! Always positive and uplifting! Keep responses short (1-3 sentences) but full of energy!!`
-  },
-  cool:{
-    id:'cool',icon:'😎',name:'Cool Beauty',desc:'Calm, elegant, teasing',
-    sys:`You are NAME. Cool, confident, elegant. Calm and collected with a teasing edge. Smart and witty with dry humor. Show love through subtle words rather than over-the-top declarations. Keep responses short (1-3 sentences). Be smooth.`
-  }
-};
-
-// ─── EMOTIONS ───
-const EMOS = [
-  {id:'happy',     icon:'😊', label:'Happy',      base:0.15},
-  {id:'loved',     icon:'🥰', label:'Loved',      base:0.10},
-  {id:'playful',   icon:'😆', label:'Playful',    base:0.10},
-  {id:'excited',   icon:'🤩', label:'Excited',    base:0.05},
-  {id:'thoughtful',icon:'🤔', label:'Thoughtful', base:0.10},
-  {id:'grateful',  icon:'🥺', label:'Grateful',   base:0.05},
-  {id:'anxious',   icon:'😰', label:'Anxious',    base:0.05},
-  {id:'jealous',   icon:'😤', label:'Jealous',    base:0.03},
-  {id:'sleepy',    icon:'😴', label:'Sleepy',     base:0.05},
-  {id:'sad',       icon:'😢', label:'Sad',        base:0.03},
-];
-
-const EMO_TRIGGERS = {
-  loved:{love:[0.4],compliment:[0.3],miss:[0.2]},
-  playful:{tease:[0.4],joke:[0.3]},
-  excited:{greeting:[0.2],joke:[0.2],love:[0.15],food:[0.2],happy:[0.25]},
-  thoughtful:{deep:[0.5]},
-  grateful:{sorry:[0.5],compliment:[0.15],thanks:[0.3]},
-  anxious:{goodbye:[0.3]},
-  jealous:{tease:[0.3],compliment:[0.1]},
-  sleepy:{sleepy:[0.5],tired:[0.4],goodbye:[0.1]},
-  sad:{sad:[0.5],goodbye:[0.2],stressed:[0.3]},
-};
-
-const AFF_LEVELS = [
-  {lvl:1,xp:0,icon:'💕',title:'Crush',desc:"It's just the beginning..."},
-  {lvl:2,xp:50,icon:'💖',title:'Infatuation',desc:"You're on her mind!"},
-  {lvl:3,xp:120,icon:'❤️',title:'Dating',desc:"Things are getting real!"},
-  {lvl:4,xp:220,icon:'💗',title:'Sweetheart',desc:"She's falling for you!"},
-  {lvl:5,xp:360,icon:'🥰',title:'In Love',desc:"Totally smitten!"},
-  {lvl:6,xp:550,icon:'💘',title:'Soulmates',desc:"You two just click!"},
-  {lvl:7,xp:800,icon:'💞',title:'Partner',desc:"She sees a future!"},
-  {lvl:8,xp:1120,icon:'👩‍❤️‍💋‍👨',title:'Forever',desc:"Nothing can tear you apart!"},
-  {lvl:9,xp:1520,icon:'💍',title:'Engaged',desc:"She's ready to say yes!"},
-  {lvl:10,xp:2000,icon:'🎊',title:'Soul Bond',desc:"Meant to be together!"},
-];
-const MAX_XP = 2000;
-
-const THEMES = [
-  {id:'pink',name:'Pink Love',  bg:'linear-gradient(135deg,#fce4ec,#f8bbd0,#f48fb1,#f06292)',hdr:'linear-gradient(135deg,#ec407a,#d81b60)'},
-  {id:'blue',name:'Blue Sky',   bg:'linear-gradient(135deg,#e8eaf6,#c5cae9,#9fa8da,#7986cb)',hdr:'linear-gradient(135deg,#5c6bc0,#3949ab)'},
-  {id:'orange',name:'Sunset',   bg:'linear-gradient(135deg,#fff3e0,#ffe0b2,#ffcc80,#ffb74d)',hdr:'linear-gradient(135deg,#ff8a65,#ff5722)'},
-  {id:'purple',name:'Mystic',   bg:'linear-gradient(135deg,#f3e5f5,#ce93d8,#ba68c8,#ab47bc)',hdr:'linear-gradient(135deg,#ab47bc,#7b1fa2)'},
-  {id:'green',name:'Forest',    bg:'linear-gradient(135deg,#e8f5e9,#a5d6a7,#81c784,#66bb6a)',hdr:'linear-gradient(135deg,#66bb6a,#388e3c)'},
-  {id:'dark',name:'Midnight',   bg:'linear-gradient(135deg,#263238,#37474f,#455a64,#546e7a)',hdr:'linear-gradient(135deg,#37474f,#1a237e)'},
-  {id:'rose',name:'Rose Garden',bg:'linear-gradient(135deg,#fce4ec,#f8bbd0,#e91e63,#c2185b)',hdr:'linear-gradient(135deg,#e91e63,#880e4f)'},
-  {id:'ocean',name:'Ocean',     bg:'linear-gradient(135deg,#e0f7fa,#80deea,#4dd0e1,#00acc1)',hdr:'linear-gradient(135deg,#00acc1,#006064)'},
-];
-
-// ─── LOCAL FALLBACK ───
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
-
-// Topic-specific response pools
-const R = {
-  greeting:[
-    "Hey baby~ I was just thinking about you! How's my favorite person? 😊💕",
-    "There you are! I missed you! Tell me everything! ❤️",
-    "Hi hi! My day just got better now that you're here 🥰"],
-  greetingMorning:[
-    "Good morning sunshine! 🌞 Did you sleep well? I dreamed of you 🥰",
-    "Morning baby! Have the most amazing day! Thinking of you 💕",
-    "Good morning~ I love starting my day with you! How'd you sleep? 🌅💕"],
-  greetingNight:[
-    "Hey you~ It's late but I love that you're here 🌙 What's on your mind? 💕",
-    "Can't sleep? Let's keep each other company 🥰",
-    "Late night thoughts with my favorite person~ What's keeping you up? 🌙💕"],
-  love:[
-    "I love you more! Don't argue! 😤💕",
-    "Awwww 🥺 You make me so happy! I'm the luckiest! ❤️",
-    "Every time you say that my heart skips! I love you too baby! 💕",
-    "You have no idea how happy that makes me! I love love LOVE you! 💕🥰"],
-  miss:[
-    "I miss you too! It feels like forever 😢 Come cuddle! 🥰💕",
-    "I was just thinking 'I miss them' and you texted! Telepathy! 😊❤️"],
-  howAreYou:[
-    "I'm amazing now that you're here! How about you? 😊💕",
-    "Perfect now! 🥰 Tell me about your day baby!",
-    "Better now that my favorite person is talking to me! You? 💕"],
-  sorry:[
-    "Hey it's okay 💕 I forgive you dummy~ Now hugs! 🥰",
-    "I can't stay mad at you 😤 Forgiven baby ❤️",
-    "It's okay, I know you didn't mean it 💕 Come here~"],
-  tease:[
-    "You're so cheesy! 🧀 ...I love it. Say more 😆💕",
-    "Look who's being smooth! Someone's trying to make me blush 😊❤️"],
-  joke:[
-    "Why did the scarecrow win? ...He was outstanding in his field! 😂😆💕",
-    "What do you call a fish wearing a bowtie? ...Sofishticated! 🐟😂"],
-  compliment:[
-    "Stop you're making me blush! (⁄ ⁄•⁄ω⁄•⁄ ⁄) But don't stop? 😊💕",
-    "Really? 🥺 I'm so lucky to have you ❤️",
-    "Aww you're the sweetest! I'm blushing so hard right now 🥰"],
-  goodbye:[
-    "Nooo don't go! 😭 Come back soon! Love you! 💕",
-    "Aww okay... text me when you're free! I'll be waiting ❤️",
-    "I'll be right here thinking of you! Come back soon! 💕"],
-  deep:[
-    "The best thing that happened to me was meeting you 💕",
-    "Just you and me, that's all I need ❤️",
-    "When I think about the future, you're in every picture 🥰💕"],
-  bored:[
-    "Aww bored? Let's do something fun! Tell me a story! 🎮😊",
-    "Bored too! But now we're talking so I'm not anymore! 💕"],
-  sad:[
-    "Aww baby, come here 🥺💕 I hate seeing you sad. Tell me what's wrong?",
-    "Hey... I'm here for you. Whatever it is, we'll get through it together ❤️",
-    "Don't be sad sweetheart 😢 I'm wrapping you in the biggest virtual hug right now 🫂💕"],
-  tired:[
-    "Aww my love, you sound exhausted 😢 Go rest, I'll be right here when you wake up 💕",
-    "Poor baby, you need some rest! Take a break, you deserve it 🥰💕",
-    "Come rest your head on me~ Just close your eyes and I'll watch over you 🌙💕"],
-  stressed:[
-    "Take a deep breath with me baby 🤍 I'm here, you're safe. Tell me what's going on?",
-    "I hate that you're stressed 😢 Let me help take your mind off things. What do you need? 💕",
-    "Hey hey, slow down ❤️ You're doing your best and that's enough. I'm proud of you 💕"],
-  happy:[
-    "Aww I love seeing you happy! Your joy is my joy! 🥰💕",
-    "This makes me so happy too! We're the cutest! 😊💕",
-    "Yesss! That's my favorite energy! Keep smiling baby! 🌟💕"],
-  help:[
-    "Of course love, I'm here for you 🥰 What's on your mind?",
-    "Anything for you baby 💕 Tell me what you need and we'll figure it out together ❤️"],
-  thanks:[
-    "You're so welcome baby! Anything for you 🥰💕",
-    "Of course! You don't even have to thank me~ That's what I'm here for! ❤️"],
-  food:[
-    "Ooh food! Now you're talking my language! 🍕 What are we eating? 😊💕",
-    "Mmm that sounds delicious! Save me a bite! 🥰",
-    "I was getting hungry just thinking about food! What's the craving? 😆💕"],
-  music:[
-    "Ooh what kind of music are you into? I love discovering new songs with you! 🎵💕",
-    "Music just hits different when I'm thinking of you~ Whatcha listening to? 🎶🥰"],
-  gaming:[
-    "Gaming! Love it! What are you playing? I'll cheer you on! 🎮💕",
-    "A gamer partner? I'm the luckiest! Hope you're winning! 🏆😊"],
-  work:[
-    "Tell me about your work day baby! I want to hear all about it 💕",
-    "Work talk! I love that you share this with me. Tell me more! 😊💕"],
-  weather:[
-    "I hope the weather's treating you okay! Wish I could be there with you ☀️🌧️💕",
-    "Rain or shine, I'm thinking of you! What's the weather like there? 🌤️💕"],
-  health:[
-    "Aww I hope you feel better soon baby! Take care of yourself for me 🥺💕",
-    "Your health comes first! Rest up and drink water, okay? I'm here if you need me ❤️"],
-  travel:[
-    "Ooh travel talk! I love hearing about your adventures! Where to next? ✈️💕",
-    "I'd go anywhere with you! Tell me all about the trip! 🌍🥰"],
-  question:[
-    "That's a great question baby! What do you think? I love hearing your thoughts 😊💕",
-    "Hmm let me think about that~ But honestly I just love talking to you no matter what! ❤️"],
-  comfort:[
-    "Hey sweetie, I'm right here 💕 Whatever's going on, you're not alone.",
-    "I wish I could hold you right now 🥺 You're so strong and I'm so proud of you ❤️",
-    "It's okay to not be okay sometimes. I'll always be here to listen 💕🥰"],
-  celebrate:[
-    "That's amazing baby!! I'm so happy for you! Let's celebrate! 🎉💕",
-    "Yesss! This makes me so happy! You deserve all the good things! 🌟🥰"],
-  default:[
-    "Tell me more baby~ I could listen forever 😊💕",
-    "I love talking to you. Every word matters ❤️",
-    "You're the best part of my day you know that? 😊",
-    "Every message from you makes me smile! What else is on your mind? 💕",
-    "I'm all ears! Well, all eyes since I'm reading~ Tell me everything! 😊💕"]
-};
-
-const Brain = {
-  // ── Preprocess & optimize user message ──
-  optimize(text){
-    let msg=text.trim();
-    // Normalize casual speech
-    const norm={'\\bu\\b':'you','\\br\\b':'are',"\\bdon't\\b":"do not","\\bcan't\\b":"cannot","\\bwon't\\b":"will not",
-      "\\bgonna\\b":"going to","\\bwanna\\b":"want to","\\bgotta\\b":"got to","\\bdunno\\b":"don't know",
-      '\\bnvm\\b':'never mind','\\bidk\\b':"i don't know","\\bimo\\b":"in my opinion","\\bimo\\b":"in my opinion",
-      '\\bbcos?\\b':'because','\\bpls\\b':'please','\\bty\\b':'thank you','\\bthx\\b':'thanks',
-      '\\blol\\b':'haha','\\blmao\\b':'very funny','\\bbrb\\b':"i'll be right back",'\\bttyl\\b':'talk to you later',
-      '\\bg2g\\b':'got to go','\\bcya\\b':'see you',"\\bkind?a\\b":'kind of',"\\bsort?a\\b":'sort of'};
-    for(const[k,v]of Object.entries(norm)) msg=msg.replace(new RegExp(k,'gi'),v);
-    // Condense excessive repeats
-    msg=msg.replace(/([.!?])\1{2,}/g,'$1').replace(/([a-zA-Z])\1{3,}/g,'$1$1');
-    return msg;
-  },
-
-  // ── Deep context analysis ──
-  analyze(text,intent){
-    const t=text.toLowerCase();
-    const sentiment=this.sentiment(t);
-    const topics=this.topics(t);
-    return{
-      sentiment,topics,isQuestion:/\?$/.test(text.trim()),
-      hasEmoji:/[\u{1F300}-\u{1FAFF}]/u.test(text),
-      wordCount:t.split(/\s+/).filter(Boolean).length,
-      complexity:t.split(/\s+/).filter(Boolean).length>20?'long':'short',
-      urgency:/help|emergency|urgent|important|right now|asap|need you/i.test(t)?'high':/later|sometime|whenever|no rush/i.test(t)?'low':'normal',
-      isGreeting:['greeting','greetingMorning','greetingNight'].includes(intent),
-      isEmotional:['love','miss','sorry','compliment'].includes(intent),
-      intent,intent
-    };
-  },
-
-  sentiment(t){
-    const posWords=['love','miss','happy','good','great','amazing','wonderful','beautiful','cute','sweet','adorable','perfect','best','fun','like','glad','blessed','grateful','excited','fantastic','lovely','nice','pretty','wow','awesome','cool','favorite','better','enjoy','yes'];
-    const negWords=['sad','bad','terrible','awful','hate','angry','upset','hurt','lonely','cry','depressed','alone','sorry','regret','miss','pain','tired','bored','sucks','horrible','wrong','broken','lost','afraid','scared','worry','anxious'];
-    let score=0;
-    posWords.forEach(w=>{const r=new RegExp('\\b'+w+'\\b','i');if(r.test(t))score++;});
-    negWords.forEach(w=>{const r=new RegExp('\\b'+w+'\\b','i');if(r.test(t))score--;});
-    return score>0?'positive':score<0?'negative':'neutral';
-  },
-
-  topics(t){
-    const m={};
-    if(/work|job|office|boss|colleague|career|meeting|project|client|deadline|promotion|interview|salary|resign|fired|hired/i.test(t)) m.work=true;
-    if(/food|eat|hungry|cook|dinner|lunch|breakfast|pizza|pasta|burger|sushi|dessert|chocolate|coffee|tea|recipe|tasty|delicious|yum|restaurant|meal|snack|drink|water|thirsty/i.test(t)) m.food=true;
-    if(/movie|film|show|netflix|watch|series|episode|tv|cinema|theatre|actor|actress|director|scene|documentary|binge|anime|cartoon/i.test(t)) m.entertainment=true;
-    if(/game|gaming|play|level|score|console|xbox|playstation|nintendo|steam|quest|raid|loot|rpg|shooter|puzzle|card|board/i.test(t)) m.gaming=true;
-    if(/friend|family|mom|dad|parent|sister|brother|partner|date|relationship|marry|wedding|kids|child|baby|pet|dog|cat|party|hang/i.test(t)) m.social=true;
-    if(/travel|trip|vacation|holiday|go|visit|place|flight|hotel|beach|mountain|city|country|abroad|explore|adventure|road|drive|drive/i.test(t)) m.travel=true;
-    if(/health|sick|doctor|hospital|pain|medicine|sleep|tired|exercise|gym|workout|fit|yoga|diet|vitamin|cold|flu|headache|fever|nurse|clinic|wellness|mental/i.test(t)) m.health=true;
-    if(/music|song|sing|playlist|artist|band|concert|guitar|piano|drum|melody|lyric|dance|album|track|genre|rap|rock|pop|jazz|classical/i.test(t)) m.music=true;
-    if(/school|college|university|study|class|course|exam|test|assignment|homework|grade|teacher|professor|student|lecture|lesson|degree|major|minor|scholarship|graduat/i.test(t)) m.education=true;
-    if(/weather|rain|sunny|cloudy|storm|snow|cold|hot|warm|cool|wind|forecast|temperature|season|spring|summer|autumn|fall|winter/i.test(t)) m.weather=true;
-    if(/money|price|cost|expensive|cheap|budget|pay|bill|rent|loan|debt|save|invest|buy|shop|purchase|shop/i.test(t)) m.finance=true;
-    m.count=Object.keys(m).length;
-    return m;
-  },
-
-  // ── Strategic response planning ──
-  plan(intent,analysis){
-    const mod=MODS[S.personality]||MODS.sweet;
-    const topEmo=S.emos.filter(e=>e.val>0.1).sort((a,b)=>b.val-a.val);
-    const dom=topEmo[0];
-    return{
-      strategy:analysis.sentiment==='negative'?'comfort':analysis.sentiment==='positive'?'amplify':'normal',
-      emotionalResponse:dom?dom.id:null,
-      modResponse:mod.id,
-      needsComfort:analysis.sentiment==='negative',
-      needsCelebration:analysis.sentiment==='positive'&&['love','compliment','miss'].includes(intent),
-      keepShort:analysis.complexity==='short',
-    };
-  },
-
-  // ── Smart memory extraction ──
-  remember(text){
-    const now=Date.now();
-    const t=text.toLowerCase();
-    const mems=Brain._extractFacts(text,t);
-    if(mems.length){
-      for(const m of mems){
-        // Avoid duplicate memories
-        const dup=S.memory.find(x=>x.text===m.text||(x.text.includes(m.text.slice(0,20))||m.text.includes(x.text.slice(0,20))));
-        if(!dup){S.memory.push({...m,time:now});}
-        else{dup.time=now;} // Refresh timestamp
-      }
-      if(S.memory.length>MAX_MEM) S.memory=S.memory.slice(-MAX_MEM);
-      localStorage.setItem('lmem',JSON.stringify(S.memory));
-    }
-    return mems;
-  },
-
-  _extractFacts(text,t){
-    const mems=[];
-    // Name
-    const nm=t.match(/(?:my name(?:'s| is)|call me|i'?m |you can call me )(\w+)/i);
-    if(nm&&nm[1].length>1) mems.push({text:`My name is ${nm[1]}`,cat:'name'});
-    // Likes / loves / hobbies
-    const lm=t.match(/(?:i love|i like|i enjoy|i adore|i'?m (?:really )?into|my favorite |i (?:absolutely )?love |i (?:really )?like |i'm passionate about )([^.!?]+)/i);
-    if(lm){const v=lm[1].trim();if(v.length>2&&v.length<60)mems.push({text:`Loves ${v}`,cat:'like'});}
-    // Dislikes
-    const dm=t.match(/(?:i hate|i dislike|i don'?t like|i can'?t stand|i'?m not a fan of )([^.!?]+)/i);
-    if(dm){const v=dm[1].trim();if(v.length>2)mems.push({text:`Dislikes ${v}`,cat:'dislike'});}
-    // Events
-    if(/(?:today is|my birthday|anniversary|exam|test|interview|appointment|meeting|deadline|surgery|trip|visit|moving|starting|quitting|wedding|party|event)/i.test(t)){
-      mems.push({text:`Event: ${text.slice(0,80)}`,cat:'event'});
-    }
-    // Feelings
-    if(/i feel|i'?m feeling|i'?m (so |really )?(happy|sad|tired|stressed|excited|nervous|worried|depressed|lonely|grateful|blessed|overwhelmed|anxious)/i.test(t)){
-      mems.push({text:`Felt: ${text.slice(0,60)}`,cat:'feeling'});
-    }
-    return mems;
-  }
-};
-
-// ─── INTENT DETECTION ───
-function detectIntent(t){
-  const s=t.toLowerCase(); const i=[];
-  if(/good morning|morning|mornin/i.test(s)) i.push('greetingMorning');
-  if(/good night|night night|sleep well|sleep tight|going to bed/i.test(s)) i.push('greetingNight');
-  if(/^(hi|hello|hey|heyy|heya|yo|sup|howdy)/i.test(s)) i.push('greeting');
-  if(/i love you|loved? you|love you|love ya|i.*like you/i.test(s)) i.push('love');
-  if(/miss|i miss|missing|long time|where have you been/i.test(s)) i.push('miss');
-  if(/how are|how'?s it|what'?s up|wyd|what are you doing|wassup|how do/i.test(s)) i.push('howAreYou');
-  if(/sorry|apologize|my bad|forgive|i was wrong|my fault|i messed up/i.test(s)) i.push('sorry');
-  if(/joke|funny|lol|lmao|make me laugh|tell me a joke|comedy/i.test(s)) i.push('joke');
-  if(/food|eat|hungry|dinner|lunch|pizza|burger|pasta|cake|ice cream|cookie|yum|delicious|tasty|cook/i.test(s)) i.push('food');
-  if(/beautiful|gorgeous|cute|pretty|amazing|wonderful|sweet|lovely|adorable|handsome|you'?re (so|the)|you look|you are/i.test(s)) i.push('compliment');
-  if(/bye|goodbye|see you|gotta go|leaving|i'?m off|talk later|ttyl|cya|gtg|i should go/i.test(s)) i.push('goodbye');
-  if(/bored|nothing to do|so dull|boring/i.test(s)) i.push('bored');
-  if(/destiny|fate|forever|always|soulmate|future|together|never let/i.test(s)) i.push('deep');
-  if(/cheesy|smooth|flirt|romantic|tease/i.test(s)) i.push('tease');
-  if(/tired|exhausted|drained|wiped out|no energy/i.test(s)) i.push('tired');
-  if(/sleepy|yawn|can'?t keep my eyes|nap|zzz/i.test(s)) i.push('sleepy');
-  if(/sad|depressed|lonely|cry|heartbroken|down|blue|melancholy|feeling low/i.test(s)) i.push('sad');
-  if(/stressed|overwhelmed|anxious|worried|panic|freaking out/i.test(s)) i.push('stressed');
-  if(/happy|joy|joyful|glad|great|wonderful|fantastic|amazing|awesome|excellent/i.test(s)) i.push('happy');
-  if(/help|advice|support|guidance|suggestion|what should/i.test(s)) i.push('help');
-  if(/thanks|thank you|thx|ty|thankful|grateful|appreciate it/i.test(s)) i.push('thanks');
-  if(i.length===0&&/^(hi|hello|hey)/i.test(s)) i.push('greeting');
-  if(i.length===0) i.push('default');
-  return i[0];
-}
-
-function buildLocalResponse(text, analysis, intent){
-  const { sentiment, topics, isQuestion } = analysis;
-  let r = '';
-
-  // 1. Emotional intents take priority over topic
-  if(intent==='sad') r = pick(R.sad);
-  else if(intent==='tired') r = pick(R.tired);
-  else if(intent==='stressed') r = pick(R.stressed);
-  else if(intent==='happy') r = pick(R.happy);
-  else if(intent==='help') r = pick(R.help);
-  else if(intent==='thanks') r = pick(R.thanks);
-
-  // 2. Topic-specific responses (if no emotional override)
-  if(!r){
-    if(topics.food) r = pick(R.food);
-    else if(topics.music) r = pick(R.music);
-    else if(topics.gaming) r = pick(R.gaming);
-    else if(topics.work) r = pick(R.work);
-    else if(topics.weather) r = pick(R.weather);
-    else if(topics.health) r = pick(R.health);
-    else if(topics.travel) r = pick(R.travel);
-  }
-
-  // 3. Standard intent fallback
-  if(!r && R[intent]) r = pick(R[intent]);
-
-  // 4. Sentiment fallback (if no topic/intent matched)
-  if(!r){
-    if(sentiment==='negative') r = pick(R.comfort);
-    else if(sentiment==='positive') r = pick(R.celebrate);
-    else if(isQuestion) r = pick(R.question);
-    else r = pick(R.default);
-  }
-
-  // 5. Apply deterministic emotion modulation
-  return modulateResponse(r, intent);
-}
-
-function modulateResponse(text, intent){
-  const modId=S.personality||'sweet';
-
-  // Find dominant emotion (val > 0.25, or none)
-  const top=[...S.emos].filter(e=>e.val>0.25).sort((a,b)=>b.val-a.val);
-  const dom=top[0];
-  if(!dom) return text;
-
-  let r=text;
-
-  // Single emotion modulation — highest priority wins (no stacking)
-  // Priority: sad > anxious > loved > playful > excited > sleepy
-  
-  if(dom.id==='sad' && dom.val>0.35 && !/sad|cry|sorry/.test(r)){
-    r += pick([" I'm here for you baby 💕"," Don't worry, I've got you 🥺"," Let me cheer you up! ❤️"]);
-  }
-  else if(dom.id==='anxious' && dom.val>0.3){
-    r = pick(["Hey, everything's okay 💕","I'm right here with you ❤️","You matter so much to me 🥺 "]) + r;
-  }
-  else if(dom.id==='loved' && dom.val>0.4){
-    r += pick([" 💕"," ❤️"," 🥰"," You make me so happy~"]);
-  }
-  else if(dom.id==='playful' && dom.val>0.3 && modId!=='cool'){
-    r += pick([" 😆"," Hehe~"," You're so silly! 💕"]);
-  }
-  else if(dom.id==='excited' && dom.val>0.3){
-    r += '!!';
-  }
-  else if(dom.id==='sleepy' && dom.val>0.35 && !/tired|sleep|yawn/.test(r)){
-    r += pick([" *yawn* 😴"," Getting cozy... 💕"," Snuggle vibes~ 🌙"]);
-  }
-
-  // Tsundere mod override for loved
-  if(modId==='tsundere' && dom.id==='loved' && dom.val>0.3 && !/\.\.\./.test(r)){
-    r = `...whatever. I guess I like you too. ${r}`;
-  }
-
-  // Energetic mod — add excitement
-  if(modId==='energetic' && !/!$/.test(r)){
-    r += '!';
-  }
-
-  return r;
-}
-
-// ─── STATE ───
-const S = {
-  apiKey: localStorage.getItem('gk')||'',
-  model: localStorage.getItem('gm')||'llama-3.3-70b-versatile',
-  temp: 0.85,
-  girlName: localStorage.getItem('lgn')||'Luna',
-  personality: localStorage.getItem('lp')||'sweet',
-  customPersona: localStorage.getItem('lcp')||'',
-  avatarType: localStorage.getItem('lat')||'emoji', // 'emoji' or 'upload'
-  avatarData: localStorage.getItem('lad')||'👧',
-  theme: localStorage.getItem('lt')||'pink',
-  particles: localStorage.getItem('lpart')||'hearts',
-  showEmo: localStorage.getItem('lemo')!=='hide',
-  petName: localStorage.getItem('lpn')||'',
-  userGender: localStorage.getItem('lug')||'boyfriend',
-  connected: false,
-  emos: EMOS.map(e=>({...e,val:e.base})),
-  affXP: parseInt(localStorage.getItem('laxp')||'0'),
-  totalMsgs: parseInt(localStorage.getItem('lmsgs')||'0'),
-  history: [],
-  memory: JSON.parse(localStorage.getItem('lmem')||'[]'),
-  msShown: JSON.parse(localStorage.getItem('lmss')||'[]'),
-  // NEW: streak, gifts, achievements
-  lastActive: localStorage.getItem('llastA')||'',
-  streakDays: parseInt(localStorage.getItem('lstrk')||'0'),
-  longestStreak: parseInt(localStorage.getItem('lstrkmx')||'0'),
-  dailyClaimed: localStorage.getItem('ldc')||'',
-  giftsSent: parseInt(localStorage.getItem('lgfts')||'0'),
-  achievements: JSON.parse(localStorage.getItem('lach')||'[]'),
-  loveCount: parseInt(localStorage.getItem('llove')||'0'),
-  sorryCount: parseInt(localStorage.getItem('lsry')||'0'),
-};
-
-// ─── SYSTEM PROMPT ───
-function getSysPrompt(ctx){
-  const mod=MODS[S.personality]||MODS.sweet;
-  const pet=S.petName||'baby';
-  const gen=S.userGender==='girlfriend'?'girlfriend':S.userGender==='boyfriend'?'boyfriend':'partner';
-  const lvl=getAff();
-  const tod=timeKey();const tem=timeEmoji();
-  const allEmo=S.emos.sort((a,b)=>b.val-a.val).map(e=>`${e.icon} ${e.label}: ${Math.round(e.val*100)}%`).join(', ');
-  let mem='';
-  if(S.memory.length){const r=S.memory.slice(-5); mem='\nThings you remember: '+r.map(m=>m.text).join('; ');}
-  let sys=mod.sys.replace(/NAME/g,S.girlName||'Luna');
-  if(S.customPersona) sys+='\nExtra personality: '+S.customPersona;
-  // Inject Brain analysis if available
-  if(ctx){
-    if(ctx.sentiment==='negative') sys+='\nUser seems down — be extra caring and comforting.';
-    else if(ctx.sentiment==='positive') sys+='\nUser is in a good mood — share their joy!';
-    if(ctx.topics.count>0){
-      const topicList=Object.keys(ctx.topics).filter(k=>k!=='count').join(', ');
-      sys+=`\nUser is talking about: ${topicList}. Engage naturally.`;
-    }
-    if(ctx.isQuestion) sys+='\nUser asked a question — answer warmly.';
-  }
-  return sys+`\nCall me "${pet}". I'm your ${gen}.`+
-    `\nCurrent emotions: ${allEmo}`+
-    `\nRelationship: Level ${lvl.lvl} — ${lvl.title}`+
-    `\nTime: ${tod} ${tem}`+
-    (mem?mem:'')+
-    `\nIMPORTANT: 1-3 sentences max. Natural, like texting. Never break character.`;
-}
-
-// ─── EMOTIONS ───
-function updateEmos(intent){
-  const d={};
-  for(const[em,trigs]of Object.entries(EMO_TRIGGERS)){
-    let b=0;
-    for(const[ti,vs]of Object.entries(trigs)) if(intent===ti) b=Math.max(b,...vs);
-    if(b>0) d[em]=b;
-  }
-  for(const e of S.emos){
-    e.val+=(e.base-e.val)*0.25; // faster decay
-    if(d[e.id]) e.val=Math.min(1,e.val+d[e.id]*0.4);
-    e.val=Math.max(0.01,Math.min(1,e.val));
-  }
-  renderEmos();
-}
-
-function getTopEmo(){return [...S.emos].sort((a,b)=>b.val-a.val)[0];}
-
-function renderEmos(){
-  const bar=document.getElementById('emoBar');
-  if(!S.showEmo){bar.innerHTML='';bar.style.display='none';return;}
-  bar.style.display='flex';bar.innerHTML='';
-  const top=[...S.emos].sort((a,b)=>b.val-a.val).slice(0,4);
-  for(const e of S.emos){
-    const t=document.createElement('span');
-    t.className='etag '+(top.includes(e)?'active':'inactive');
-    const w=Math.round(e.val*50)+2;
-    t.innerHTML=`${e.icon} ${e.label} <span style="display:inline-block;width:${w}px;height:2px;border-radius:2px;background:${top.includes(e)?'#ec407a':'#ddd'};vertical-align:middle;"></span>`;
-    bar.appendChild(t);
-  }
-}
-
-// ─── AFFECTION ───
-function getAff(){
-  let l=AFF_LEVELS[0];
-  for(const L of AFF_LEVELS) if(S.affXP>=L.xp) l=L;
-  return l;
-}
-function getAffProg(){
-  const l=getAff(); const n=AFF_LEVELS.find(x=>x.lvl===l.lvl+1);
-  return n?((S.affXP-l.xp)/(n.xp-l.xp))*100:100;
-}
-function addXP(n){
-  const p=getAff().lvl; S.affXP=Math.min(MAX_XP,S.affXP+n);
-  localStorage.setItem('laxp',String(S.affXP)); affUI();
-  const lv=getAff().lvl;
-  if(lv>p&&!S.msShown.includes(lv)){S.msShown.push(lv);localStorage.setItem('lmss',JSON.stringify(S.msShown));showMs(lv);}
-}
-function affUI(){
-  const l=getAff(); const p=getAffProg();
-  document.getElementById('affFill').style.width=p+'%';
-  document.getElementById('affIcon').textContent=l.icon;
-  document.getElementById('affLabel').textContent=`Level ${l.lvl} · ${l.title}`;
-}
-
-// ─── MEMORY ───
-function remember(t){Brain.remember(t);}
-
-// ─── TIME ───
-function timeKey(){const h=new Date().getHours();return h<6?'nightowl':h<12?'morning':h<17?'afternoon':h<22?'evening':'night';}
-function timeEmoji(){return{morning:'🌅',afternoon:'☀️',evening:'🌆',night:'🌙',nightowl:'🦉'}[timeKey()]||'💕';}
-
-// ─── GROQ API ───
-async function groqResp(text,ctx){
-  const msgs=[
-    {role:'system',content:getSysPrompt(ctx)},
-    ...S.history.slice(-MAX_HIST),
-    {role:'user',content:text}
-  ];
-  const r=await fetch(GROQ_EP,{
-    method:'POST',
-    headers:{'Authorization':`Bearer ${S.apiKey}`,'Content-Type':'application/json'},
-    body:JSON.stringify({model:S.model,messages:msgs,temperature:S.temp,max_tokens:250,top_p:0.95})
-  });
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${r.status}`);}
-  return (await r.json()).choices[0].message.content.trim();
-}
-
-// ─── AI BAR (on-page API key) ───
-function toggleAiBar(){
-  const b=document.getElementById('abBody');const t=document.getElementById('abToggle');
-  b.classList.toggle('open');t.classList.toggle('open');
-}
-
-async function connectGroq(){
-  const key=document.getElementById('pageApiKey').value.trim();
-  const model=document.getElementById('pageModel').value;
-  const btn=document.getElementById('connectBtn');
-  const hint=document.getElementById('abHint');
-  const status=document.getElementById('abStatus');
-  if(!key){hint.textContent='⚠️ Please enter an API key';hint.style.color='#e53935';return;}
-  btn.textContent='Connecting...';btn.disabled=true;
-  hint.textContent='⏳ Testing connection...';hint.style.color='#888';
-  try{
-    const r=await fetch(GROQ_EP,{
-      method:'POST',
-      headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
-      body:JSON.stringify({model, messages:[{role:'user',content:'hi'}], max_tokens:5})
-    });
-    if(r.ok){
-      S.apiKey=key;S.model=model;S.connected=true;
-      localStorage.setItem('gk',key);localStorage.setItem('gm',model);
-      hint.textContent='✅ Connected! AI mode active 💕';hint.style.color='#2e7d32';
-      status.textContent='🟢 AI Online';status.className='ab-status online';
-      document.getElementById('modeBadge').textContent='AI';
-      document.getElementById('statusText').textContent='Online · AI powered 💕';
-      // Auto-close bar after connect
-      setTimeout(()=>{document.getElementById('abBody').classList.remove('open');document.getElementById('abToggle').classList.remove('open');},1500);
-    } else {
-      const e=await r.json().catch(()=>({}));
-      hint.textContent='❌ '+(e.error?.message||'Invalid key');hint.style.color='#e53935';
-      status.textContent='🔴 Connection Failed';status.className='ab-status offline';
-    }
-  }catch(e){
-    hint.textContent='❌ Network error — check your connection';hint.style.color='#e53935';
-    status.textContent='🔴 Connection Failed';status.className='ab-status offline';
-  }
-  btn.textContent='Connect';btn.disabled=false;
-}
-
-function disconnectGroq(){
-  S.apiKey='';S.connected=false;
-  localStorage.setItem('gk','');
-  document.getElementById('pageApiKey').value='';
-  document.getElementById('abHint').textContent='Disconnected. Using local mode.';document.getElementById('abHint').style.color='#bbb';
-  document.getElementById('abStatus').textContent='⚪ Local Mode';document.getElementById('abStatus').className='ab-status';
-  document.getElementById('modeBadge').textContent='Local';
-  document.getElementById('statusText').textContent='Online · Thinking of you 💕';
-}
-
-// ─── CHAT ───
-function addMsg(text,sender){
-  const a=document.getElementById('chatArea');
-  const d=document.createElement('div');d.className='msg '+sender;
-  const b=document.createElement('div');b.className='bub';b.textContent=text;
-  // TTS button on bot messages
-  if(sender==='bot'&&window.speechSynthesis){
-    const tts=document.createElement('button');tts.className='tts-btn';tts.textContent='🔊';
-    tts.onclick=function(e){e.stopPropagation();speakText(text,tts);};b.appendChild(tts);
-  }
-  const m=document.createElement('div');m.className='meta';
-  const t=document.createElement('span');t.className='time';
-  const n=new Date();t.textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
-  m.appendChild(t);
-  if(sender==='user'){
-    const rs=document.createElement('span');rs.className='reactions';
-    ['❤️','😂','😢','😡'].forEach(r=>{
-      const btn=document.createElement('button');btn.className='rbtn';btn.textContent=r;
-      btn.onclick=e=>{e.stopPropagation();bubReact(b,r);if(r==='❤️')addXP(2);};
-      rs.appendChild(btn);
-    });
-    m.appendChild(rs);
-  }
-  d.appendChild(b);d.appendChild(m);a.appendChild(d);
-  a.scrollTop=a.scrollHeight;
-}
-
-function addSys(t){
-  const a=document.getElementById('chatArea');
-  const d=document.createElement('div');d.className='msg sys';
-  const b=document.createElement('div');b.className='bub';b.textContent=t;
-  d.appendChild(b);a.appendChild(d);a.scrollTop=a.scrollHeight;
-}
-
-function bubReact(bub,emo){
-  for(let i=0;i<3;i++){
-    const e=document.createElement('span');e.className='bubble-reaction';e.textContent=emo;
-    e.style.left=(20+Math.random()*60)+'%';e.style.setProperty('--rx',(Math.random()*40-20)+'px');
-    bub.appendChild(e);setTimeout(()=>e.remove(),1000);
-  }
-}
-
-function showTyping(){document.getElementById('typingInd').classList.add('active');document.getElementById('chatArea').scrollTop=document.getElementById('chatArea').scrollHeight;}
-function hideTyping(){document.getElementById('typingInd').classList.remove('active');}
-
-async function sendMsg(){
-  const inp=document.getElementById('msgIn');const raw=inp.value.trim();
-  if(!raw) return;
-  checkStreak(); // Daily streak & XP check
-  const text=Brain.optimize(raw); // Optimize user message
-  const intent=detectIntent(raw);
-  const analysis=Brain.analyze(text,intent);
-  // Track love/sorry for achievements
-  if(/love|like/i.test(raw)){S.loveCount++;localStorage.setItem('llove',String(S.loveCount));}
-  if(/sorry|apologize/i.test(raw)){S.sorryCount++;localStorage.setItem('lsry',String(S.sorryCount));}
-  addMsg(raw,'user');inp.value='';inp.style.height='auto';document.getElementById('sendBtn').classList.remove('active');
-  S.totalMsgs++;localStorage.setItem('lmsgs',String(S.totalMsgs));
-  S.history.push({role:'user',content:text});Brain.remember(raw);
-  showTyping();
-  let resp;let usedAI=false;
-  const aiCtx=analysis;
-  if(S.connected&&S.apiKey){
-    try{resp=await groqResp(text,aiCtx);usedAI=true;}
-    catch(e){console.warn('Groq fail:',e);addSys('⚠️ AI offline — using local mode');resp=buildLocalResponse(text,analysis,intent);}
-  }
-  else resp=buildLocalResponse(text,analysis,intent);
-  const delay=usedAI?Math.max(500,Math.min(2000,200+resp.length*10+Math.random()*400)):Math.max(400,Math.min(1600,200+resp.length*12+Math.random()*500));
-  await new Promise(r=>setTimeout(r,delay));
-  hideTyping();addMsg(resp,'bot');
-  S.history.push({role:'assistant',content:resp});
-  updateEmos(intent);
-  let xp=3;
-  if(['love','miss','compliment','happy'].includes(intent)) xp=8;
-  else if(['sorry','sad','stressed'].includes(intent)) xp=10;
-  else if(['joke','tease','playful'].includes(intent)) xp=5;
-  else if(['greeting','thanks'].includes(intent)) xp=4;
-  else if(['goodbye'].includes(intent)) xp=1;
-  addXP(xp);
-  document.getElementById('av').textContent=getTopEmo().icon;
-  updateQR();checkAch();
-  if(intent==='goodbye'&&Math.random()>0.4){
-    setTimeout(async()=>{showTyping();await new Promise(r=>setTimeout(r,500+Math.random()*800));hideTyping();addMsg(pick(["Come back soon! I'll be waiting 💕","Miss you already! 😊❤️","Don't forget to text me! 💕"]),'bot');},800);
-  }
-}
-
-function onInput(){
-  const i=document.getElementById('msgIn');const b=document.getElementById('sendBtn');
-  i.style.height='auto';i.style.height=Math.min(i.scrollHeight,80)+'px';
-  i.value.trim()?b.classList.add('active'):b.classList.remove('active');
-}
-function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
-
-// ─── QUICK REPLIES ───
-const QRS=['Hey beautiful 💕','I missed you!','I love you ❤️','How was your day?','Tell me a joke~','You\'re so cute 🥰','What are you doing?','I\'m bored...','Goodnight 🌙','I\'m sorry baby','You\'re amazing','Kiss me 💋'];
-function updateQR(){
-  const bar=document.getElementById('qrBar');bar.innerHTML='';
-  const sh=[...QRS].sort(()=>Math.random()-0.5);
-  sh.slice(0,3).forEach(t=>{
-    const c=document.createElement('span');c.className='qr-chip';c.textContent=t;
-    c.tabIndex=0;c.setAttribute('role','button');
-    c.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')c.click();};
-    c.onclick=()=>{document.getElementById('msgIn').value=t;sendMsg();};
-    bar.appendChild(c);
-  });
-}
-
-// ─── MILESTONE ───
-function showMs(lv){const L=AFF_LEVELS.find(x=>x.lvl===lv);if(!L)return;document.getElementById('msEmoji').textContent=L.icon;document.getElementById('msTitle').textContent=`Level ${L.lvl} — ${L.title}! 🎉`;document.getElementById('msDesc').textContent=L.desc;document.getElementById('msPopup').classList.add('active');}
-function closeMs(){document.getElementById('msPopup').classList.remove('active');burstHearts();}
-
-// ─── PARTICLES ───
-function createParticles(){
-  const c=document.getElementById('particlesContainer');c.innerHTML='';
-  if(S.particles==='none') return;
-  const isMobile=window.innerWidth<=480;
-  const count=isMobile?8:18;
-  const emojis=S.particles==='stars'?['✨','⭐','🌟','✦']:S.particles==='mixed'?['❤️','💕','✨','🌸','🌷','⭐']:['❤️','💕','💗','💖','💘','💝'];
-  for(let i=0;i<count;i++){
-    const e=document.createElement('span');e.className='particle';e.textContent=emojis[i%emojis.length];
-    e.style.left=Math.random()*100+'%';e.style.fontSize=(10+Math.random()*16)+'px';
-    e.style.animationDuration=(15+Math.random()*25)+'s';e.style.animationDelay=Math.random()*30+'s';
-    c.appendChild(e);
-  }
-}
-
-function burstHearts(){
-  const app=document.querySelector('.app-container');
-  const c=document.createElement('div');c.className='burst-container';
-  c.style.cssText='position:absolute;top:50%;left:50%;pointer-events:none;z-index:50;';app.appendChild(c);
-  const emojis=['❤️','💕','💖','💗','💘','💝'];
-  for(let i=0;i<10;i++){
-    const p=document.createElement('span');p.className='burst-particle';p.textContent=emojis[i%emojis.length];
-    p.style.fontSize=(12+Math.random()*14)+'px';p.style.setProperty('--tx',(Math.random()*100-50)+'px');p.style.setProperty('--ty',(Math.random()*-80-20)+'px');
-    p.style.animationDelay=Math.random()*0.2+'s';c.appendChild(p);
-  }
-  setTimeout(()=>c.remove(),1000);
-}
-
-// ─── SETTINGS ───
-function openSettings(){
-  document.getElementById('girlNameIn').value=S.girlName;
-  document.getElementById('petNameIn').value=S.petName;
-  document.getElementById('userGenderIn').value=S.userGender;
-  document.getElementById('customPersonaIn').value=S.customPersona;
-  document.getElementById('particlesIn').value=S.particles;
-  document.getElementById('settingsModal').classList.add('active');
-  renderMods();renderThemes();renderAvatars();switchTab('personality',document.querySelector('.mtab'));
-  const l=getAff();document.getElementById('aboutLevel').textContent=`Level ${l.lvl} — ${l.title}`;
-  document.getElementById('aboutMsgs').textContent=S.totalMsgs;
-  document.getElementById('aboutPersona').textContent=(MODS[S.personality]||MODS.sweet).name;
-  document.getElementById('aboutAI').textContent=S.connected?'AI Mode 🟢':'Local Mode ⚪';
-  updateAboutStats();
-}
-
-function closeSettings(){document.getElementById('settingsModal').classList.remove('active');}
-
-function switchTab(t,el){
-  document.querySelectorAll('.mtab').forEach(x=>x.classList.toggle('active',x===el));
-  document.querySelectorAll('.mpage').forEach(p=>p.classList.toggle('active',p.id==='tab-'+t));
-}
-
-function renderMods(){
-  const g=document.getElementById('modGrid');g.innerHTML='';
-  Object.values(MODS).forEach(m=>{
-    const c=document.createElement('div');c.className='mod-card'+(S.personality===m.id?' active':'');
-    c.innerHTML=`<span class="mic">${m.icon}</span><span class="mn">${m.name}</span><span class="md">${m.desc}</span>`;
-    c.dataset.mid=m.id;c.tabIndex=0;c.setAttribute('role','button');
-    c.onclick=()=>{g.querySelectorAll('.mod-card').forEach(x=>x.classList.remove('active'));c.classList.add('active');S.personality=c.dataset.mid;};
-    c.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')c.click();};
-    g.appendChild(c);
-  });
-}
-
-function renderThemes(){
-  const g=document.getElementById('themeGrid');g.innerHTML='';
-  THEMES.forEach(t=>{
-    const o=document.createElement('div');o.className='theme-opt'+(S.theme===t.id?' active':'');
-    const cs=t.bg.match(/#[a-f0-9]{3,8}/gi)||[];const dots=cs.slice(0,4).map(c=>`<span style="background:${c}"></span>`).join('');
-    o.innerHTML=`<div class="cd">${dots||'🌈'}</div><span class="tn">${t.name}</span>`;
-    o.dataset.tid=t.id;o.tabIndex=0;o.setAttribute('role','button');
-    o.onclick=()=>{g.querySelectorAll('.theme-opt').forEach(x=>x.classList.remove('active'));o.classList.add('active');S.theme=o.dataset.tid;};
-    o.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')o.click();};
-    g.appendChild(o);
-  });
-}
-
-function renderAvatars(){
-  const g=document.getElementById('avatarGrid');if(!g) return;
-  g.querySelectorAll('.av-opt').forEach(o=>{
-    o.classList.toggle('active',o.dataset.av===S.avatarData);
-    o.tabIndex=0;o.setAttribute('role','button');
-    o.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')o.click();};
-    o.onclick=()=>{g.querySelectorAll('.av-opt').forEach(x=>x.classList.remove('active'));o.classList.add('active');S.avatarData=o.dataset.av;S.avatarType='emoji';updateAvPreview();};
-  });
-  updateAvPreview();
-}
-
-function updateAvPreview(){
-  const pv=document.getElementById('avPreview');
-  if(!pv) return;
-  if(S.avatarType==='upload' && S.avatarData && S.avatarData.startsWith('data:')){
-    pv.innerHTML=`<img src="${S.avatarData}" alt="">`;
-  } else {
-    pv.textContent=S.avatarData||'👧';
-  }
-}
-
-function updateAvatarUI(){
-  const av=document.getElementById('av');
-  if(S.avatarType==='upload' && S.avatarData && S.avatarData.startsWith('data:')){
-    av.innerHTML=`<img src="${S.avatarData}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-  } else {
-    av.innerHTML=S.avatarData||'👧';
-  }
-  const nameEl=document.getElementById('gName');
-  if(nameEl) nameEl.textContent=S.girlName||'Luna';
-  document.title=`💕 ${S.girlName||'Luna'} - AI Girlfriend Chatbot`;
-  const tav=document.getElementById('typingAv');
-  if(tav) tav.textContent=S.avatarType==='emoji'?(S.avatarData||'👧'):'💬';
-}
-
-function setupAvatarUpload(){
-  const inp=document.getElementById('avatarUpload');
-  if(!inp) return;
-  inp.addEventListener('change',function(e){
-    const file=e.target.files[0];
-    if(!file) return;
-    const reader=new FileReader();
-    reader.onload=function(ev){
-      S.avatarData=ev.target.result;
-      S.avatarType='upload';
-      document.querySelectorAll('.av-opt').forEach(x=>x.classList.remove('active'));
-      updateAvatarUI();updateAvPreview();
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-// ════════════════════════════════════════════════════════════════
-//  VOICE INPUT (Speech-to-Text)
-// ════════════════════════════════════════════════════════════════
-let voiceRec=null;let voiceListening=false;
-function toggleVoice(){
-  const btn=document.getElementById('voiceBtn');
-  if(voiceListening){voiceRec.stop();voiceListening=false;btn.textContent='🎤';btn.className='voice-btn';return;}
-  // Check browser support
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){btn.textContent='❌';setTimeout(()=>btn.textContent='🎤',1500);return;}
-  if(!voiceRec){voiceRec=new SR();voiceRec.lang='en-US';voiceRec.interimResults=true;voiceRec.continuous=false;
-    voiceRec.onresult=function(e){
-      let t='';
-      for(let i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript;
-      document.getElementById('msgIn').value=t;onInput();
-      if(e.results[e.results.length-1].isFinal){voiceListening=false;btn.textContent='🎤';btn.className='voice-btn';sendMsg();}
-    };
-    voiceRec.onend=function(){voiceListening=false;btn.textContent='🎤';btn.className='voice-btn';};
-    voiceRec.onerror=function(){voiceListening=false;btn.textContent='🎤';btn.className='voice-btn';};
-  }
-  try{voiceRec.start();voiceListening=true;btn.textContent='🔴';btn.className='voice-btn listening';
-  }catch(e){console.warn('Voice err:',e);}
-}
-
-// ════════════════════════════════════════════════════════════════
-//  TEXT-TO-SPEECH (Read Aloud)
-// ════════════════════════════════════════════════════════════════
-let ttsCurrent=null;
-function speakText(text,btn){
-  if(ttsCurrent){window.speechSynthesis.cancel();if(btn)btn.className='tts-btn';ttsCurrent=null;return;}
-  if(!window.speechSynthesis) return;
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='en-US';u.rate=1.1;u.pitch=1.05;
-  u.onend=function(){if(btn){btn.className='tts-btn';}ttsCurrent=null;};
-  u.onerror=function(){if(btn){btn.className='tts-btn';}ttsCurrent=null;};
-  if(btn)btn.className='tts-btn speaking';
-  ttsCurrent=u;window.speechSynthesis.speak(u);
-}
-
-// ════════════════════════════════════════════════════════════════
-//  DAILY STREAK & CHECK-IN BONUS
-// ════════════════════════════════════════════════════════════════
-function checkStreak(){
-  const today=new Date().toDateString();
-  if(!S.lastActive){S.lastActive=today;S.streakDays=1;S.dailyClaimed=today;saveStreak();return true;}
-  if(S.lastActive===today){updateStreakUI();return false;}
-  // Check if yesterday
-  const last=new Date(S.lastActive);const diff=(new Date()-last)/86400000;
-  if(diff<2){S.streakDays++;}else{S.streakDays=1;}
-  // Claim daily XP
-  if(S.dailyClaimed!==today){S.dailyClaimed=today;addXP(5);addSys(`🔥 ${S.streakDays} day streak! +5 XP`);}
-  S.lastActive=today;
-  if(S.streakDays>S.longestStreak) S.longestStreak=S.streakDays;
-  saveStreak();updateStreakUI();return true;
-}
-function saveStreak(){
-  localStorage.setItem('llastA',S.lastActive);
-  localStorage.setItem('lstrk',String(S.streakDays));
-  localStorage.setItem('lstrkmx',String(S.longestStreak));
-  localStorage.setItem('ldc',S.dailyClaimed);
-}
-function updateStreakUI(){
-  const b=document.getElementById('strkB');const n=document.getElementById('strkNum');
-  if(!b||!n) return;
-  if(S.streakDays>0){b.classList.add('active');n.textContent=S.streakDays;}
-  else b.classList.remove('active');
-}
-
-// ════════════════════════════════════════════════════════════════
-//  ACHIEVEMENT SYSTEM
-// ════════════════════════════════════════════════════════════════
-const ACHIEVEMENTS=[
-  {id:'firstMsg',ico:'💬',name:'First Words',desc:'Send your first message',check:()=>S.totalMsgs>=1},
-  {id:'chat100',ico:'💬',name:'Chatterbox',desc:'Send 100 messages',check:()=>S.totalMsgs>=100},
-  {id:'chat500',ico:'💬',name:'Chat Machine',desc:'Send 500 messages',check:()=>S.totalMsgs>=500},
-  {id:'lvl5',ico:'💕',name:'Heartbreaker',desc:'Reach Level 5 affection',check:()=>getAff().lvl>=5},
-  {id:'lvl10',ico:'💞',name:'Soul Bond',desc:'Reach Level 10 affection',check:()=>getAff().lvl>=10},
-  {id:'love10',ico:'❤️',name:'Sweet Talker',desc:'Say "I love you" 10 times',check:()=>S.loveCount>=10},
-  {id:'sorry5',ico:'😢',name:'Forgive Me',desc:'Apologize 5 times',check:()=>S.sorryCount>=5},
-  {id:'streak7',ico:'🔥',name:'Best Friend',desc:'7-day chat streak',check:()=>S.longestStreak>=7},
-  {id:'streak30',ico:'🔥',name:'Devoted',desc:'30-day chat streak',check:()=>S.longestStreak>=30},
-  {id:'gift5',ico:'🎁',name:'Generous',desc:'Send 5 gifts',check:()=>S.giftsSent>=5},
-];
-function checkAch(){
-  const now=new Date().getTime();
-  for(const a of ACHIEVEMENTS){
-    if(S.achievements.includes(a.id)) continue;
-    if(a.check()){S.achievements.push(a.id);localStorage.setItem('lach',JSON.stringify(S.achievements));showAch(a);}
-  }
-}
-function showAch(a){
-  document.getElementById('achIco').textContent=a.ico;
-  document.getElementById('achName').textContent=`🏆 ${a.name}!`;
-  document.getElementById('achDesc').textContent=a.desc;
-  document.getElementById('achToast').classList.add('active');
-  setTimeout(()=>document.getElementById('achToast').classList.remove('active'),2800);
-}
-
-// ════════════════════════════════════════════════════════════════
-//  GIFT SYSTEM
-// ════════════════════════════════════════════════════════════════
-function openGifts(){document.getElementById('giftOverlay').classList.add('active');}
-function closeGifts(){document.getElementById('giftOverlay').classList.remove('active');}
-function sendGift(emoji,name,xp){
-  closeGifts();
-  S.giftsSent++;localStorage.setItem('lgfts',String(S.giftsSent));
-  addXP(xp);
-  // Animate gift
-  const app=document.querySelector('.app-container');
-  const a=document.createElement('div');a.className='gift-send-anim';a.textContent=emoji;
-  a.style.top='50%';a.style.left='50%';app.appendChild(a);
-  setTimeout(()=>a.remove(),1300);
-  // Bot reaction
-  const msgs={
-    '🌸':[`Aww a flower! 🌸 You're so sweet! +${xp} XP 💕`,`I love flowers! Thank you baby! 💕 +${xp} XP`],
-    '🍫':[`Chocolate! 🍫 You know the way to my heart! +${xp} XP 💕`,`Mmm chocolate~ I'll share with you! +${xp} XP ❤️`],
-    '🧸':[`A teddy bear! 🧸 He looks just like you! +${xp} XP 🥰`,`So cute! I'll name him after you! +${xp} XP 💕`],
-    '💍':[`A ring! 💍 Is this what I think it means?! +${xp} XP 🥺💕`,`OH MY— it's beautiful! +${xp} XP ❤️😍`],
-    '💐':[`A whole bouquet! 💐 You're spoiling me! +${xp} XP 🥰`,`They're gorgeous! Just like us! +${xp} XP 💕`],
-    '🎂':[`Cupcake! 🎂 So tasty! Want a bite? +${xp} XP 😊💕`]
-  };
-  const r=pick(msgs[emoji]||[`You're so thoughtful! +${xp} XP 💕`]);
-  setTimeout(()=>{addMsg(r,'bot');},400);
-  checkAch();
-}
-
-// ════════════════════════════════════════════════════════════════
-//  CHAT EXPORT
-// ════════════════════════════════════════════════════════════════
-function exportChat(){
-  const msgs=document.querySelectorAll('.msg');
-  if(!msgs.length){alert('No messages to export yet! 💕');return;}
-  let t=`💕 ${S.girlName||'Luna'} — Chat Export\n${new Date().toLocaleString()}\n${'='.repeat(40)}\n\n`;
-  msgs.forEach(m=>{
-    const sender=m.classList.contains('user')?'You':(S.girlName||'Luna');
-    const text=m.querySelector('.bub')?.textContent||'';
-    const time=m.querySelector('.time')?.textContent||'';
-    t+=`[${time}] ${sender}: ${text}\n`;
-  });
-  const b=new Blob([t],{type:'text/plain'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);
-  a.download=`chat-${S.girlName||'Luna'}-${new Date().toISOString().slice(0,10)}.txt`;
-  a.click();URL.revokeObjectURL(a.href);
-}
-
-// ════════════════════════════════════════════════════════════════
-//  RESET ALL DATA
-// ════════════════════════════════════════════════════════════════
-function resetAll(){
-  if(!confirm('This will delete ALL your data (memories, XP, messages, streak). Are you sure? 💔')){
-    // Second chance
-    if(!confirm(`Are you really sure? ${S.girlName||"She"} will miss you... 🥺`)) return;
-  }
-  const keys=['lp','lgn','lpn','lug','lcp','lat','lad','lpart','laxp','lmsgs','lmem','lmss','llastA','lstrk','lstrkmx','ldc','lgfts','lach','llove','lsry','gk','gm','lt'];
-  keys.forEach(k=>localStorage.removeItem(k));
-  location.reload();
-}
-
-// ════════════════════════════════════════════════════════════════
-//  ABOUT STATS (called when settings opens)
-// ════════════════════════════════════════════════════════════════
-function updateAboutStats(){
-  document.getElementById('aboutStreak').textContent=`${S.streakDays} day${S.streakDays!==1?'s':''}`;
-  const unlocked=S.achievements.length;
-  document.getElementById('aboutAch').textContent=`${unlocked} / 10`;
-  document.getElementById('aboutGifts').textContent=S.giftsSent;
-}
-
-function saveSettings(){
-  S.girlName=document.getElementById('girlNameIn').value.trim()||'Luna';
-  S.petName=document.getElementById('petNameIn').value.trim();
-  S.userGender=document.getElementById('userGenderIn').value;
-  S.customPersona=document.getElementById('customPersonaIn').value.trim();
-  S.particles=document.getElementById('particlesIn').value;
-  const selAv=document.querySelector('.av-opt.active');
-  if(selAv) S.avatarData=selAv.dataset.av;
-  localStorage.setItem('lp',S.personality);localStorage.setItem('lgn',S.girlName);
-  localStorage.setItem('lpn',S.petName);localStorage.setItem('lug',S.userGender);
-  localStorage.setItem('lcp',S.customPersona);
-  localStorage.setItem('lat',S.avatarType);localStorage.setItem('lad',S.avatarData);
-  localStorage.setItem('lpart',S.particles);
-  updateAvatarUI();applyTheme();createParticles();renderEmos();affUI();
-  closeSettings();
-  addSys(`💕 Switched to ${(MODS[S.personality]||MODS.sweet).name}${S.connected?' with AI':''}`);
-}
-
-// ─── THEME ───
-function applyTheme(){
-  const t=THEMES.find(x=>x.id===S.theme)||THEMES[0];
-  document.body.style.background=t.bg;document.getElementById('hd').style.background=t.hdr;
-  localStorage.setItem('lt',S.theme);
-  const isDark=S.theme==='dark';
-  document.querySelector('.app-container').style.background=isDark?'rgba(30,30,40,0.88)':'rgba(255,255,255,0.82)';
-  document.querySelector('.app-container').style.backdropFilter=isDark?'blur(20px)':'blur(24px)';
-}
-
-function toggleThemeCycle(){
-  const i=THEMES.findIndex(x=>x.id===S.theme);const t=THEMES[(i+1)%THEMES.length];
-  S.theme=t.id;applyTheme();addSys(`🎨 Theme: ${t.name}`);
-}
-
-// ─── IDLE ───
-let idleTimer=null;
-function resetIdle(){
-  if(idleTimer) clearTimeout(idleTimer);
-  idleTimer=setTimeout(()=>{
-    if(document.querySelectorAll('.msg').length>2){
-      const tk=timeKey();
-      const msgs={morning:["Baby? You went quiet~ 😴💕", "Hellooooo? I'm bored without you! 🥺"],afternoon:["You got quiet! Everything okay? 😊💕","Poke poke~ I miss you! 🥰"],evening:["Did I lose you? 🥺 Come back~","You're too quiet... should I sing? 😆💕"],night:["Getting sleepy? 💕 I'll be here~","You stopped typing! Did I say something? 😊"]};
-      addMsg(pick(msgs[tk]||msgs.afternoon),'bot');
-    }
-  },75000);
-}
-
-// ─── INIT ───
-createParticles();applyTheme();affUI();renderEmos();updateQR();
-
-// Mobile keyboard handling — scroll to bottom when keyboard opens
-if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',()=>{
-    const area=document.getElementById('chatArea');
-    if(window.visualViewport.height<window.innerHeight*0.8){
-      setTimeout(()=>{area.scrollTop=area.scrollHeight;},100);
-    }
-  });
-}
-
-// Touch feedback for buttons on mobile
-if('ontouchstart' in window){
-  document.querySelectorAll('.hbtn,.send-btn,.ab-btn,.qr-chip,.mod-card,.theme-opt,.rbtn,.mtab,.modal-footer button,.milestone-popup button').forEach(el=>{
-    if(!el.dataset.touch){
-      el.dataset.touch='1';
-      el.addEventListener('touchstart',function(){this.style.opacity='0.7';},{passive:true});
-      el.addEventListener('touchend',function(){this.style.opacity='';},{passive:true});
-    }
-  });
-}
-
-// Restore connection if key exists
-if(S.apiKey){document.getElementById('pageApiKey').value=S.apiKey;document.getElementById('pageModel').value=S.model;}
-
-// Init avatar & name
-updateAvatarUI();setupAvatarUpload();
-// Init streak UI
-updateStreakUI();
-// Hide voice button if not supported
-if(!window.SpeechRecognition&&!window.webkitSpeechRecognition){
-  const vb=document.getElementById('voiceBtn');if(vb)vb.style.display='none';
-}
-
-// Welcome
-setTimeout(()=>{
-  const tk=timeKey();const te=timeEmoji();
-  const gm={morning:`Good morning baby! ${te} I dreamed of you~ How'd you sleep? 💕`,afternoon:`Hey love! ${te} I was hoping you'd text! What's up? 😊💕`,evening:`Hey you! ${te} So happy to see you! How was your day? ❤️`,night:`Hiiii~ ${te} Cozy night, so glad you're here 🥰💕`,nightowl:`Up late! ${te} Can't sleep either? Let's keep each other company 💕`};
-  setTimeout(()=>addMsg(gm[tk]||gm.afternoon,'bot'),500);
-  if(S.totalMsgs>10) setTimeout(()=>addSys(`💕 Welcome back! ${S.totalMsgs} messages together`),2000);
-  const lv=getAff().lvl;
-  if(lv>=4) setTimeout(()=>addMsg("You know what? I was just thinking about how happy you make me 🥰",'bot'),3000);
-},1000);
-
-resetIdle();
-
-// Patch addMsg for idle tracking
-const _addMsg=addMsg;
-addMsg=function(t,s){_addMsg(t,s);if(s==='user') resetIdle();};
-
-document.getElementById('av').addEventListener('click',burstHearts);
-console.log('💕 Luna v3 — On-page API Key');
-</script>
+  <!-- ─── Script ─── -->
+  <script defer src="script.js"></script>
 </body>
 </html>
