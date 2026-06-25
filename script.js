@@ -221,21 +221,82 @@ const achievementNames = {
   level_10: "🌟 Level 10"
 };
 
-// ─── Custom Waveform Component ─────────────────────────────────────
-const WaveformMessage = ({ isPlaying, onTogglePlay, duration, sender = 'ai' }) => {
+// ─── Stateful Waveform Component ──────────────────────────────────
+const WaveformMessage = ({ duration, sender = 'ai' }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
   const barsCount = 28;
+  
+  // Waveform bars height cached once
   const bars = useMemo(() => {
     return Array.from({ length: barsCount }).map(() => Math.floor(Math.random() * 85) + 15);
   }, []);
 
+  const seconds = useMemo(() => {
+    const parts = duration.split(':');
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  }, [duration]);
+
+  // Audio tone synthesizer using Web Audio API (cross-platform, zero dependency)
+  const synthChime = (isPlayingState) => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      if (isPlayingState) {
+        // High soft chime
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } else {
+        // Low closing tone
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(330, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+      }
+    } catch (e) {
+      console.warn("Synth failed or blocked by audio policy", e);
+    }
+  };
+
+  useEffect(() => {
+    let playTimer;
+    if (isPlaying) {
+      playTimer = setTimeout(() => {
+        setIsPlaying(false);
+        synthChime(false);
+      }, seconds * 1000);
+    }
+    return () => clearTimeout(playTimer);
+  }, [isPlaying, seconds]);
+
+  const handleTogglePlay = () => {
+    const nextState = !isPlaying;
+    setIsPlaying(nextState);
+    synthChime(nextState);
+  };
+
   return (
-    <div className={`flex items-center gap-3 py-2 px-3 rounded-lg bg-black/5 dark:bg-white/10 max-w-[280px]`}>
+    <div className="flex items-center gap-3 py-2 px-3 rounded-lg bg-black/5 dark:bg-white/10 max-w-[280px]">
       <button 
-        onClick={onTogglePlay} 
+        onClick={handleTogglePlay} 
         className={`w-9 h-9 rounded-full flex items-center justify-center transition-all shadow-sm ${
           sender === 'ai' 
-            ? 'bg-pastelPink-400 text-white dark:bg-plum-500' 
-            : 'bg-white text-pastelPink-500 dark:bg-plum-950 dark:text-plum-300'
+            ? 'bg-pastelPink-400 text-white dark:bg-plum-500 hover:scale-105 active:scale-95' 
+            : 'bg-white text-pastelPink-500 dark:bg-plum-950 dark:text-plum-300 hover:scale-105 active:scale-95'
         }`}
       >
         <Icon name={isPlaying ? 'pause' : 'play'} className="w-4 h-4 fill-current" />
@@ -277,21 +338,27 @@ const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [uptime, setUptime] = useState('00:00:00');
   
-  // Call Overlay
+  // Call State
   const [activeCall, setActiveCall] = useState(null); // 'voice' | 'video' | null
   const [callStatus, setCallStatus] = useState('Calling...');
   const [callTime, setCallTime] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
-  const [showCallToast, setShowCallToast] = useState(null);
 
-  // Settings
+  // Settings master hooks
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [backendUrl, setBackendUrl] = useState(() => localStorage.getItem('backendUrl') || 'http://localhost:8000');
   const [groqKey, setGroqKey] = useState(() => localStorage.getItem('groqKey') || '');
   const [groqModel, setGroqModel] = useState(() => localStorage.getItem('groqModel') || 'mixtral-8x7b-32768');
 
-  // Memories Snapshot State
+  // Settings buffers (resolves configuration cancel bugs)
+  const [tempBackendUrl, setTempBackendUrl] = useState(backendUrl);
+  const [tempGroqKey, setTempGroqKey] = useState(groqKey);
+  const [tempGroqModel, setTempGroqModel] = useState(groqModel);
+  const [tempMode, setTempMode] = useState(mode);
+  const [tempTheme, setTempTheme] = useState(theme);
+
+  // Memories log state
   const [memories, setMemories] = useState([
     "Hates Cilantro",
     "Birthday: Oct 14",
@@ -308,31 +375,47 @@ const App = () => {
 
   // Mood Slider State (0: Content, 1: Flirty, 2: Excited, 3: Tired)
   const [moodVal, setMoodVal] = useState(0);
-
-  // Audio Play State for waveforms
-  const [playingAudioId, setPlayingAudioId] = useState(null);
   
   // Selfie Lightbox Modal
   const [activeLightboxImage, setActiveLightboxImage] = useState(null);
 
-  // API Uptime counter & State Sync Metrics
-  const [localState, setLocalState] = useState({
-    affection: 0,
-    level: 1,
-    xp: 0,
-    streak: 1,
-    messagesCount: 0,
-    achievements: []
+  // API Uptime counter & State Sync Metrics (reloads instantly from storage)
+  const [localState, setLocalState] = useState(() => {
+    const savedLocal = localStorage.getItem('localState');
+    if (savedLocal) {
+      try {
+        return JSON.parse(savedLocal);
+      } catch (e) {
+        console.warn("Failed to parse localState", e);
+      }
+    }
+    return {
+      affection: 0,
+      level: 1,
+      xp: 0,
+      streak: 1,
+      messagesCount: 0,
+      achievements: []
+    };
   });
 
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
+  const ringtoneInterval = useRef(null);
+  const activeIntervalRef = useRef(null);
 
   const moodStates = [
     { label: 'Content', emoji: '😊', subline: '✨ Feeling content' },
     { label: 'Flirty', emoji: '😏', subline: '💕 Thinking of you' },
     { label: 'Excited', emoji: '🤩', subline: '🌟 Super excited!' },
     { label: 'Tired', emoji: '😴', subline: '💤 A bit sleepy' }
+  ];
+
+  const suggestedPrompts = [
+    { title: "Ask for a sweet joke", text: "What's your name, and tell me a sweet joke! 🌸" },
+    { title: "Tease your companion", text: "Hmph, why do you always keep me waiting? Baka! 😤" },
+    { title: "Get wise advice", text: "Can you give me some guidance on a tough decision? 📚" },
+    { title: "Share deep thoughts", text: "What are your deepest thoughts about connection? 🌧️" }
   ];
 
   // ─── Theme toggle hook ───
@@ -346,21 +429,72 @@ const App = () => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // ─── Local State Persistence ───
-  useEffect(() => {
-    const savedLocal = localStorage.getItem('localState');
-    if (savedLocal) {
-      try {
-        setLocalState(JSON.parse(savedLocal));
-      } catch (e) {
-        console.warn("Failed to load local metrics", e);
-      }
-    }
-  }, []);
-
+  // Save metrics
   useEffect(() => {
     localStorage.setItem('localState', JSON.stringify(localState));
   }, [localState]);
+
+  // Buffer synchronization when opening configurations modal
+  useEffect(() => {
+    if (showSettingsModal) {
+      setTempBackendUrl(backendUrl);
+      setTempGroqKey(groqKey);
+      setTempGroqModel(groqModel);
+      setTempMode(mode);
+      setTempTheme(theme);
+    }
+  }, [showSettingsModal, backendUrl, groqKey, groqModel, mode, theme]);
+
+  // ─── Call Synthetic Ringtone loop ───
+  useEffect(() => {
+    if (activeCall && callStatus === 'Calling...') {
+      const playChimePattern = () => {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          const ctx = new AudioCtx();
+          
+          // Note 1
+          const osc1 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          osc1.connect(gain1);
+          gain1.connect(ctx.destination);
+          osc1.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+          gain1.gain.setValueAtTime(0.04, ctx.currentTime);
+          gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+          osc1.start();
+          osc1.stop(ctx.currentTime + 0.4);
+          
+          // Note 2
+          setTimeout(() => {
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
+            gain2.gain.setValueAtTime(0.04, ctx.currentTime);
+            gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+            osc2.start();
+            osc2.stop(ctx.currentTime + 0.4);
+          }, 150);
+        } catch (e) {}
+      };
+      
+      playChimePattern();
+      ringtoneInterval.current = setInterval(playChimePattern, 1800);
+    } else {
+      if (ringtoneInterval.current) {
+        clearInterval(ringtoneInterval.current);
+        ringtoneInterval.current = null;
+      }
+    }
+    
+    return () => {
+      if (ringtoneInterval.current) {
+        clearInterval(ringtoneInterval.current);
+      }
+    };
+  }, [activeCall, callStatus]);
 
   // ─── Backend state fetcher on init ───
   const fetchBackendState = useCallback(async (url) => {
@@ -456,21 +590,44 @@ const App = () => {
     }
   }, [inputValue]);
 
-  // ─── Typewriter Effect simulation ───
+  // ─── Typewriter Effect simulation with memory safety ───
   const simulateTypewriter = (text, msgId) => {
     let index = 0;
     let typedText = "";
     
-    const interval = setInterval(() => {
-      if (index < text.length) {
-        typedText += text[index];
-        setMessages(prev => prev.map(m => m.id === msgId ? { ...m, text: typedText } : m));
-        index++;
-      } else {
-        clearInterval(interval);
-      }
+    if (activeIntervalRef.current) {
+      clearInterval(activeIntervalRef.current);
+    }
+
+    activeIntervalRef.current = setInterval(() => {
+      setMessages(prev => {
+        const msgExists = prev.some(m => m.id === msgId);
+        if (!msgExists) {
+          clearInterval(activeIntervalRef.current);
+          return prev;
+        }
+
+        if (index < text.length) {
+          typedText += text[index];
+          const newMsgs = prev.map(m => m.id === msgId ? { ...m, text: typedText } : m);
+          index++;
+          return newMsgs;
+        } else {
+          clearInterval(activeIntervalRef.current);
+          return prev;
+        }
+      });
     }, 15);
   };
+
+  // Cleanup intervals on unmount
+  useEffect(() => {
+    return () => {
+      if (activeIntervalRef.current) {
+        clearInterval(activeIntervalRef.current);
+      }
+    };
+  }, []);
 
   // ─── Intent detection for Local mode ───
   const detectLocalIntent = (text) => {
@@ -620,15 +777,31 @@ const App = () => {
               const data = await res.json();
               responseText = data.response;
               
-              // Sync backend parameters
-              setLocalState({
-                affection: data.affection,
-                level: data.level,
-                xp: data.xp % 100,
-                streak: data.streak || 1,
-                messagesCount: data.messagesCount || localState.messagesCount + 1,
-                achievements: data.achievements
-              });
+              // Call API State to fetch accurate streak/message count logs
+              try {
+                const stateRes = await fetch(`${backendUrl}/state`);
+                if (stateRes.ok) {
+                  const stateData = await stateRes.json();
+                  setLocalState({
+                    affection: stateData.affection,
+                    level: stateData.level,
+                    xp: stateData.xp % 100,
+                    streak: stateData.streak,
+                    messagesCount: stateData.messages_count,
+                    achievements: stateData.achievements
+                  });
+                }
+              } catch (se) {
+                // fallback if state failed
+                setLocalState(prev => ({
+                  ...prev,
+                  affection: data.affection,
+                  level: data.level,
+                  xp: data.xp % 100,
+                  achievements: data.achievements,
+                  messagesCount: prev.messagesCount + 1
+                }));
+              }
             } else {
               throw new Error("Backend response error status");
             }
@@ -646,7 +819,7 @@ const App = () => {
         }
       }
 
-      // Small chance for companion to send a sweet selfie back (only on normal chat mod triggers)
+      // Small chance for companion to send a sweet selfie back (only on normal chat triggers)
       if (customType === 'text' && (currentMod === 'dere' || currentMod === 'friendly') && Math.random() < 0.15) {
         companionType = 'image';
         companionMedia = '/xiaowei_avatar.jpg';
@@ -694,12 +867,10 @@ const App = () => {
 
   // ─── Action attachment simulators ────────────────────────────────
   const triggerSelfieUpload = () => {
-    // Simulated upload
     handleSendMessage("Sends a photo 📸", "image", "/xiaowei_avatar.jpg");
   };
 
   const triggerVoiceRecord = () => {
-    // Simulated voice message
     handleSendMessage("Sent a voice message 🎙️", "voice", "#");
   };
 
@@ -730,24 +901,31 @@ const App = () => {
 
   // ─── Settings Modal configuration sync ─────────────────────────────
   const saveSettings = async () => {
-    localStorage.setItem('backendUrl', backendUrl);
-    localStorage.setItem('groqKey', groqKey);
-    localStorage.setItem('groqModel', groqModel);
-    localStorage.setItem('mode', mode);
+    setBackendUrl(tempBackendUrl);
+    setGroqKey(tempGroqKey);
+    setGroqModel(tempGroqModel);
+    setMode(tempMode);
+    setTheme(tempTheme);
 
-    if (mode === 'backend') {
+    localStorage.setItem('backendUrl', tempBackendUrl);
+    localStorage.setItem('groqKey', tempGroqKey);
+    localStorage.setItem('groqModel', tempGroqModel);
+    localStorage.setItem('mode', tempMode);
+    localStorage.setItem('theme', tempTheme);
+
+    if (tempMode === 'backend') {
       try {
-        await fetch(`${backendUrl}/settings`, {
+        await fetch(`${tempBackendUrl}/settings`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             mod: currentMod,
-            groq_key: groqKey,
-            groq_model: groqModel,
+            groq_key: tempGroqKey,
+            groq_model: tempGroqModel,
             gender_mode: currentGenderMode
           })
         });
-        await fetchBackendState(backendUrl);
+        await fetchBackendState(tempBackendUrl);
       } catch (e) {
         console.warn("Failed to push settings parameters to backend server", e);
       }
@@ -775,8 +953,6 @@ const App = () => {
       };
       setLocalState(defaultStateObj);
       localStorage.setItem('localState', JSON.stringify(defaultStateObj));
-
-      // Reload window to start clean welcome message
       window.location.reload();
     }
   };
@@ -1131,7 +1307,6 @@ const App = () => {
               <div className="w-10 h-10 rounded-full overflow-hidden border border-pastelPink-300 dark:border-purple-600">
                 <img src="/xiaowei_avatar.jpg" alt="Xiao Wei" className="w-full h-full object-cover" />
               </div>
-              {/* Pulsing online status indicator dot */}
               <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white dark:border-plum-950 ring-pulse"></div>
             </div>
 
@@ -1248,8 +1423,6 @@ const App = () => {
                     {msg.type === 'voice' && (
                       <div className="space-y-1.5">
                         <WaveformMessage 
-                          isPlaying={playingAudioId === msg.id}
-                          onTogglePlay={() => setPlayingAudioId(playingAudioId === msg.id ? null : msg.id)}
                           duration={msg.duration || '0:05'}
                           sender={msg.role}
                         />
@@ -1269,6 +1442,25 @@ const App = () => {
               </div>
             );
           })}
+
+          {/* Suggested Quick Prompts Grid */}
+          {messages.length <= 1 && (
+            <div className="mt-6 max-w-lg mx-auto space-y-4 p-4 rounded-3xl border border-pastelPink-100/40 dark:border-plum-800 glass-panel">
+              <p className="text-xs text-center font-semibold text-pastelPink-400 dark:text-purple-300 uppercase tracking-widest">Start with an idea</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {suggestedPrompts.map((p, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSendMessage(p.text)}
+                    className="text-left p-3 rounded-2xl border border-pastelPink-100/30 dark:border-plum-800 hover:border-pastelPink-300 dark:hover:border-purple-600 bg-white/60 dark:bg-plum-900/30 hover:bg-white dark:hover:bg-plum-900 transition-all duration-300 group shadow-sm"
+                  >
+                    <p className="text-xs font-semibold text-pastelPink-500 dark:text-purple-400 group-hover:text-pastelPink-600 transition-colors mb-0.5">{p.title}</p>
+                    <p className="text-[11px] opacity-75 line-clamp-2 font-light">"{p.text}"</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Active typing animation bounce ellipsis */}
           {isTyping && (
@@ -1353,7 +1545,7 @@ const App = () => {
 
       {/* ─── CALL LAYOUT MODAL OVERLAY ─── */}
       {activeCall && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md text-white p-6">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/85 backdrop-blur-md text-white p-6 animate-fade-in">
           <div className="flex flex-col items-center max-w-sm w-full text-center space-y-6">
             
             {/* Avatar & Pulse rings */}
@@ -1421,7 +1613,7 @@ const App = () => {
       {/* ─── SELFIE LIGHTBOX OVERLAY ─── */}
       {activeLightboxImage && (
         <div 
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 p-4"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 p-4 animate-fade-in"
           onClick={() => setActiveLightboxImage(null)}
         >
           <div className="relative max-w-md w-full bg-white dark:bg-plum-900 rounded-2xl overflow-hidden shadow-2xl p-4 space-y-3">
@@ -1444,7 +1636,7 @@ const App = () => {
 
       {/* ─── CONFIGURATION & API SETTINGS DIALOG MODAL ─── */}
       {showSettingsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div className="glass-panel w-full max-w-md rounded-3xl p-6 relative flex flex-col space-y-4">
             
             <div className="flex items-center justify-between border-b pb-3 border-pastelPink-100/30">
@@ -1464,9 +1656,9 @@ const App = () => {
                 <label className="text-xs font-semibold text-pastelPink-400 uppercase tracking-wider block mb-1.5">Theme Settings</label>
                 <div className="grid grid-cols-2 gap-2 bg-pastelPink-100/50 dark:bg-plum-900/50 p-1 rounded-xl">
                   <button 
-                    onClick={() => setTheme('light')}
+                    onClick={() => setTempTheme('light')}
                     className={`py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                      theme === 'light' 
+                      tempTheme === 'light' 
                         ? 'bg-white dark:bg-purple-600 text-pastelPink-500 dark:text-white shadow-sm' 
                         : 'text-pastelPink-400'
                     }`}
@@ -1474,9 +1666,9 @@ const App = () => {
                     <Icon name="sun" className="w-4 h-4" /> Light Mode
                   </button>
                   <button 
-                    onClick={() => setTheme('dark')}
+                    onClick={() => setTempTheme('dark')}
                     className={`py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                      theme === 'dark' 
+                      tempTheme === 'dark' 
                         ? 'bg-white dark:bg-purple-600 text-pastelPink-500 dark:text-white shadow-sm' 
                         : 'text-pastelPink-400'
                     }`}
@@ -1515,9 +1707,9 @@ const App = () => {
                 <label className="text-xs font-semibold text-pastelPink-400 uppercase tracking-wider block mb-1.5">Processing Engine</label>
                 <div className="grid grid-cols-2 gap-2 bg-pastelPink-100/50 dark:bg-plum-900/50 p-1 rounded-xl">
                   <button 
-                    onClick={() => setMode('local')}
+                    onClick={() => setTempMode('local')}
                     className={`py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                      mode === 'local' 
+                      tempMode === 'local' 
                         ? 'bg-white dark:bg-purple-600 text-pastelPink-500 dark:text-white shadow-sm' 
                         : 'text-pastelPink-400'
                     }`}
@@ -1525,9 +1717,9 @@ const App = () => {
                     Local Engine
                   </button>
                   <button 
-                    onClick={() => setMode('backend')}
+                    onClick={() => setTempMode('backend')}
                     className={`py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                      mode === 'backend' 
+                      tempMode === 'backend' 
                         ? 'bg-white dark:bg-purple-600 text-pastelPink-500 dark:text-white shadow-sm' 
                         : 'text-pastelPink-400'
                     }`}
@@ -1537,14 +1729,14 @@ const App = () => {
                 </div>
               </div>
 
-              {mode === 'backend' && (
+              {tempMode === 'backend' && (
                 <div className="space-y-3.5 p-3 rounded-2xl bg-pastelPink-100/30 dark:bg-plum-900/30 border border-pastelPink-200/40 dark:border-plum-800">
                   <div className="space-y-1">
                     <label className="text-[11px] font-semibold text-pastelPink-400 dark:text-purple-300 block">Backend Server URL</label>
                     <input 
                       type="text" 
-                      value={backendUrl}
-                      onChange={(e) => setBackendUrl(e.target.value)}
+                      value={tempBackendUrl}
+                      onChange={(e) => setTempBackendUrl(e.target.value)}
                       className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-pastelPink-200 dark:border-plum-800 bg-white/80 dark:bg-plum-950 focus:border-pastelPink-400 outline-none" 
                     />
                   </div>
@@ -1552,8 +1744,8 @@ const App = () => {
                     <label className="text-[11px] font-semibold text-pastelPink-400 dark:text-purple-300 block">Groq API Key</label>
                     <input 
                       type="password" 
-                      value={groqKey}
-                      onChange={(e) => setGroqKey(e.target.value)}
+                      value={tempGroqKey}
+                      onChange={(e) => setTempGroqKey(e.target.value)}
                       placeholder="gsk_..."
                       className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-pastelPink-200 dark:border-plum-800 bg-white/80 dark:bg-plum-950 focus:border-pastelPink-400 outline-none" 
                     />
@@ -1561,8 +1753,8 @@ const App = () => {
                   <div className="space-y-1">
                     <label className="text-[11px] font-semibold text-pastelPink-400 dark:text-purple-300 block">Language Model</label>
                     <select
-                      value={groqModel}
-                      onChange={(e) => setGroqModel(e.target.value)}
+                      value={tempGroqModel}
+                      onChange={(e) => setTempGroqModel(e.target.value)}
                       className="w-full text-xs px-2 py-1.5 rounded-lg border border-pastelPink-200 dark:border-plum-800 bg-white/80 dark:bg-plum-950 focus:border-pastelPink-400 outline-none"
                     >
                       <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
