@@ -25,6 +25,10 @@ Thumbs.db
 *.log
 .env
 
+# Node
+node_modules/
+package-lock.json
+
 # Understand-anything temp / trash
 .understand-anything/.trash-*/
 .understand-anything/tmp/

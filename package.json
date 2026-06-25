@@ -4,6 +4,12 @@
   "description": "AI Companion Xiao Wei Chat Bot",
   "scripts": {
     "test": "python3 -m py_compile brain.py app.py",
-    "lint": "python3 -m py_compile brain.py app.py"
+    "lint": "python3 -m py_compile brain.py app.py",
+    "build": "babel script.jsx --out-file script.js --presets=@babel/preset-react"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.29.7",
+    "@babel/core": "^7.29.7",
+    "@babel/preset-react": "^7.29.7"
   }
 }
