@@ -402,7 +402,7 @@ const App = () => {
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
   const ringtoneInterval = useRef(null);
-  const activeIntervalRef = useRef(null);
+  const typingIntervals = useRef({});
 
   const moodStates = [
     { label: 'Content', emoji: '😊', subline: '✨ Feeling content' },
@@ -595,15 +595,16 @@ const App = () => {
     let index = 0;
     let typedText = "";
     
-    if (activeIntervalRef.current) {
-      clearInterval(activeIntervalRef.current);
+    if (typingIntervals.current[msgId]) {
+      clearInterval(typingIntervals.current[msgId]);
     }
 
-    activeIntervalRef.current = setInterval(() => {
+    typingIntervals.current[msgId] = setInterval(() => {
       setMessages(prev => {
         const msgExists = prev.some(m => m.id === msgId);
         if (!msgExists) {
-          clearInterval(activeIntervalRef.current);
+          clearInterval(typingIntervals.current[msgId]);
+          delete typingIntervals.current[msgId];
           return prev;
         }
 
@@ -613,7 +614,8 @@ const App = () => {
           index++;
           return newMsgs;
         } else {
-          clearInterval(activeIntervalRef.current);
+          clearInterval(typingIntervals.current[msgId]);
+          delete typingIntervals.current[msgId];
           return prev;
         }
       });
@@ -623,9 +625,7 @@ const App = () => {
   // Cleanup intervals on unmount
   useEffect(() => {
     return () => {
-      if (activeIntervalRef.current) {
-        clearInterval(activeIntervalRef.current);
-      }
+      Object.values(typingIntervals.current).forEach(clearInterval);
     };
   }, []);
 
