@@ -104,6 +104,10 @@ async def read_script():
 async def read_avatar():
     return FileResponse("xiaowei_avatar.jpg", media_type="image/jpeg")
 
+@app.get("/favicon.ico", status_code=204)
+async def read_favicon():
+    return None
+
 
 # ─── API Endpoints ─────────────────────────────────────────────
 
