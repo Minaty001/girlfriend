@@ -24,3 +24,9 @@ Thumbs.db
 # Runtime
 *.log
 .env
+
+# Understand-anything temp / trash
+.understand-anything/.trash-*/
+.understand-anything/tmp/
+.understand-anything/intermediate/
+.understand-anything/fingerprints.json
