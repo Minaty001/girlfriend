@@ -100,6 +100,11 @@ async def read_style():
 async def read_script():
     return FileResponse("script.js", media_type="text/javascript")
 
+@app.get("/xiaowei_avatar.jpg", response_class=FileResponse)
+async def read_avatar():
+    return FileResponse("xiaowei_avatar.jpg", media_type="image/jpeg")
+
+
 # ─── API Endpoints ─────────────────────────────────────────────
 
 @app.get("/version")

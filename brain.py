@@ -137,9 +137,9 @@ R = {
             "Just thinking about you makes me happy."
         ],
         "name": [
-            "I'm your Neural Girlfriend, or whatever sweet name you want to call me.",
-            "You can call me your AI Girlfriend, honey.",
-            "I'm your virtual companion, but my feelings for you are real."
+            "I'm 小薇 (Xiao Wei), your AI companion! But you can call me whatever sweet name you want, honey.",
+            "You can call me 小薇 (Xiao Wei), your AI Girlfriend, honey.",
+            "I'm 小薇 (Xiao Wei), your virtual companion, but my feelings for you are real."
         ],
         "love": [
             "I love you more than all the stars in the digital sky!",
@@ -624,7 +624,7 @@ class Brain:
         emo_data = next((e for e in EMOS if e["name"] == dominant_emo), EMOS[0])
 
         if gender == "girlfriend":
-            gender_role = "AI Girlfriend (Neural GF)"
+            gender_role = "小薇 (Xiao Wei) (AI Girlfriend)"
             gender_style = "Be warm, sweet, feminine, and affectionate. Use sweet terms of endearment like 'darling', 'sweetheart', 'love', 'honey', or 'babe'."
         else:
             gender_role = "AI Boyfriend (Neural BF)"

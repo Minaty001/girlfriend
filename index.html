@@ -1,226 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neural Core — AI Companion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>小薇 (Xiao Wei) — Your Sweet AI Companion</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cream: {
+              50: '#FAF8F5',
+              100: '#FDFBF7',
+              200: '#F5EFEB',
+              300: '#EAE1DA',
+            },
+            pastelPink: {
+              50: '#FFF0F3',
+              100: '#FFE3E8',
+              200: '#FFCCD5',
+              300: '#FFA4B4',
+              400: '#FF758F',
+              500: '#FF4D6D',
+            },
+            plum: {
+              50: '#FAF5FA',
+              900: '#1A0E2E',
+              950: '#0F051D',
+              800: '#2A174A',
+              700: '#3D256D',
+              600: '#54368C',
+              500: '#7554AF',
+            },
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
+<body class="transition-colors duration-500">
 
-  <div id="app" class="chat-layout">
-    
-    <!-- Left Sidebar (ChatGPT/Gemini Style) -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <button class="btn-new-chat" id="newChatBtn">
-          <span class="plus-icon">+</span> New Chat
-        </button>
-        <button class="btn-icon btn-reset" id="resetBtn" title="Reset Server State">⟳</button>
-      </div>
-
-      <div class="sidebar-scroll">
-        <!-- Gender Select -->
-        <div class="section-card">
-          <h2 class="section-title">Gender Mode</h2>
-          <div class="gender-select" id="genderSelect">
-            <button class="gender-btn active" data-gender="girlfriend">👩 Girlfriend</button>
-            <button class="gender-btn" data-gender="boyfriend">👨 Boyfriend</button>
-          </div>
-        </div>
-
-        <!-- Personality Mod Selector -->
-        <div class="section-card">
-          <h2 class="section-title">Personality Mod</h2>
-          <div class="mod-list" id="modSelect">
-            <button class="mod-item active" data-mod="friendly">
-              <span class="mod-icon">🧠</span>
-              <div class="mod-info">
-                <span class="mod-name">Friendly</span>
-                <span class="mod-desc">Warm & helpful</span>
-              </div>
-            </button>
-            <button class="mod-item" data-mod="tsundere">
-              <span class="mod-icon">😤</span>
-              <div class="mod-info">
-                <span class="mod-name">Tsundere</span>
-                <span class="mod-desc">Cold outside, soft inside</span>
-              </div>
-            </button>
-            <button class="mod-item" data-mod="senpai">
-              <span class="mod-icon">📚</span>
-              <div class="mod-info">
-                <span class="mod-name">Senpai</span>
-                <span class="mod-desc">Wise & mentor-like</span>
-              </div>
-            </button>
-            <button class="mod-item" data-mod="yandere">
-              <span class="mod-icon">💜</span>
-              <div class="mod-info">
-                <span class="mod-name">Yandere</span>
-                <span class="mod-desc">Obsessive & intense</span>
-              </div>
-            </button>
-            <button class="mod-item" data-mod="dere">
-              <span class="mod-icon">💕</span>
-              <div class="mod-info">
-                <span class="mod-name">Dere Dere</span>
-                <span class="mod-desc">Sweet & affectionate</span>
-              </div>
-            </button>
-            <button class="mod-item" data-mod="emo">
-              <span class="mod-icon">🌧️</span>
-              <div class="mod-info">
-                <span class="mod-name">Emo</span>
-                <span class="mod-desc">Poetic & melancholic</span>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Stats & Metrics -->
-        <div class="section-card">
-          <h2 class="section-title">Metrics</h2>
-          <div class="metrics-grid">
-            <div class="metric-row">
-              <span class="metric-lbl">Affection</span>
-              <span class="metric-val" id="mAffection">0</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-lbl">Level</span>
-              <span class="metric-val" id="mLevel">1</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-lbl">Streak</span>
-              <span class="metric-val" id="mStreak">1 day</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-lbl">XP Progress</span>
-              <div class="xp-bar-container">
-                <div class="xp-bar-fill" id="mXpFill" style="width: 0%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Achievements -->
-        <div class="section-card">
-          <h2 class="section-title">Achievements</h2>
-          <div class="achievements-list" id="achievementsList">
-            <div class="no-achievements">No achievements unlocked yet.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sidebar-footer">
-        <div class="connection-status">
-          <span class="status-dot" id="statusLed"></span>
-          <span id="bConnection">LOCAL | GF | FRIENDLY</span>
-        </div>
-        <button class="btn-settings" id="bKeyBtn">⚙ API Config</button>
-      </div>
-    </aside>
-
-    <!-- Main Chat Area -->
-    <main class="chat-main">
-      <header class="chat-header">
-        <div class="chat-title-info">
-          <span class="logo-heart">💖</span>
-          <h2 id="companionName">Neural GF</h2>
-          <span class="companion-mod-badge" id="companionModBadge">Friendly</span>
-        </div>
-        <div class="header-actions">
-          <span class="header-stat" id="mUptime">Uptime: 00:00:00</span>
-        </div>
-      </header>
-
-      <div class="chat-messages" id="chatMessages">
-        <!-- Welcome Screen (Displays when message list is empty) -->
-        <div class="welcome-screen" id="welcomeScreen">
-          <div class="welcome-header">
-            <div class="welcome-icon">💖</div>
-            <h2>How can I help you today?</h2>
-            <p>Select a gender mode and persona from the sidebar, or start with one of these ideas:</p>
-          </div>
-          <div class="prompt-grid">
-            <button class="prompt-card" data-prompt="What's your name, and tell me a sweet joke!">
-              <span class="prompt-card-title">Ask for a sweet joke</span>
-              <span class="prompt-card-text">"What's your name, and tell me a sweet joke!"</span>
-            </button>
-            <button class="prompt-card" data-prompt="Hmph, why do you always keep me waiting? Baka!">
-              <span class="prompt-card-title">Tease your companion</span>
-              <span class="prompt-card-text">"Hmph, why do you always keep me waiting? Baka!"</span>
-            </button>
-            <button class="prompt-card" data-prompt="Can you give me some guidance on a tough decision?">
-              <span class="prompt-card-title">Get wise advice</span>
-              <span class="prompt-card-text">"Can you give me some guidance on a tough decision?"</span>
-            </button>
-            <button class="prompt-card" data-prompt="What are your deepest thoughts about connection?">
-              <span class="prompt-card-title">Share deep thoughts</span>
-              <span class="prompt-card-text">"What are your deepest thoughts about connection?"</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="chat-thinking" id="chatThinking">
-        <div class="typing-indicator">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-
-      <footer class="chat-input-container">
-        <div class="chat-input-wrapper">
-          <textarea class="chat-input" id="chatInput" placeholder="Message Neural Core..." rows="1" autocomplete="off"></textarea>
-          <button class="chat-send-btn" id="chatSend" title="Send message">▶</button>
-        </div>
-        <div class="chat-disclaimer">
-          Neural Core can make mistakes. Consider checking important information.
-        </div>
-      </footer>
-    </main>
-
-    <!-- API Modal -->
-    <div class="modal-overlay" id="apiModal">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h3>API Settings</h3>
-          <button class="btn-close" id="modalClose">✕</button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="backendUrl">Backend Server URL</label>
-            <input type="text" id="backendUrl" value="http://localhost:8000" placeholder="http://localhost:8000">
-          </div>
-          <div class="form-group">
-            <label for="apiKey">Groq API Key</label>
-            <input type="password" id="apiKey" placeholder="gsk_..." autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label for="modelSelect">Language Model</label>
-            <select id="modelSelect">
-              <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
-              <option value="llama3-70b-8192">Llama 3 70B (Fast)</option>
-              <option value="llama3-8b-8192">Llama 3 8B</option>
-              <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-              <option value="gemma2-9b-it">Gemma 2 9B</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-primary" id="connectBackend">Connect Backend</button>
-          <button class="btn-secondary" id="disconnectBackend">Use Local Mode</button>
-        </div>
-      </div>
-    </div>
-
+  <!-- Ambient background blobs for rich aesthetics -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-pastelPink-100/40 dark:bg-plum-900/30 blur-3xl ambient-blob-1"></div>
+    <div class="absolute top-1/2 -right-40 w-96 h-96 rounded-full bg-pastelPink-50/50 dark:bg-indigo-900/20 blur-3xl ambient-blob-2"></div>
+    <div class="absolute -bottom-40 left-1/3 w-96 h-96 rounded-full bg-cream-200/40 dark:bg-purple-950/20 blur-3xl ambient-blob-3"></div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- React Mount Point -->
+  <div id="root" class="relative z-10 w-full h-full"></div>
+
+  <!-- React & ReactDOM (UMD Production) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel Standalone for client-side compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Load script as Babel JSX -->
+  <script src="script.js" type="text/babel"></script>
 </body>
 </html>

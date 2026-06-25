@@ -1,0 +1,9 @@
+{
+  "name": "girlfriend-bot",
+  "version": "1.0.0",
+  "description": "AI Companion Xiao Wei Chat Bot",
+  "scripts": {
+    "test": "python3 -m py_compile brain.py app.py",
+    "lint": "python3 -m py_compile brain.py app.py"
+  }
+}
