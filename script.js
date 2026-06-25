@@ -347,7 +347,7 @@ const App = () => {
 
   // Settings master hooks
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [backendUrl, setBackendUrl] = useState(() => localStorage.getItem('backendUrl') || 'http://localhost:8000');
+  const [backendUrl, setBackendUrl] = useState(() => localStorage.getItem('backendUrl') || window.location.origin);
   const [groqKey, setGroqKey] = useState(() => localStorage.getItem('groqKey') || '');
   const [groqModel, setGroqModel] = useState(() => localStorage.getItem('groqModel') || 'mixtral-8x7b-32768');
 
