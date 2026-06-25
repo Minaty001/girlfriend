@@ -13,14 +13,13 @@
 
   <div id="app" class="chat-layout">
     
-    <!-- Left Sidebar -->
+    <!-- Left Sidebar (ChatGPT/Gemini Style) -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="app-logo">
-          <span class="logo-icon">💖</span>
-          <h1>Neural Core</h1>
-        </div>
-        <button class="btn-icon btn-reset" id="resetBtn" title="Reset Session">⟳</button>
+        <button class="btn-new-chat" id="newChatBtn">
+          <span class="plus-icon">+</span> New Chat
+        </button>
+        <button class="btn-icon btn-reset" id="resetBtn" title="Reset Server State">⟳</button>
       </div>
 
       <div class="sidebar-scroll">
@@ -33,7 +32,7 @@
           </div>
         </div>
 
-        <!-- Mod Select -->
+        <!-- Personality Mod Selector -->
         <div class="section-card">
           <h2 class="section-title">Personality Mod</h2>
           <div class="mod-list" id="modSelect">
@@ -84,7 +83,7 @@
 
         <!-- Stats & Metrics -->
         <div class="section-card">
-          <h2 class="section-title">Companion Metrics</h2>
+          <h2 class="section-title">Metrics</h2>
           <div class="metrics-grid">
             <div class="metric-row">
               <span class="metric-lbl">Affection</span>
@@ -96,7 +95,7 @@
             </div>
             <div class="metric-row">
               <span class="metric-lbl">Streak</span>
-              <span class="metric-val" id="mStreak">0 days</span>
+              <span class="metric-val" id="mStreak">1 day</span>
             </div>
             <div class="metric-row">
               <span class="metric-lbl">XP Progress</span>
@@ -129,6 +128,7 @@
     <main class="chat-main">
       <header class="chat-header">
         <div class="chat-title-info">
+          <span class="logo-heart">💖</span>
           <h2 id="companionName">Neural GF</h2>
           <span class="companion-mod-badge" id="companionModBadge">Friendly</span>
         </div>
@@ -138,7 +138,32 @@
       </header>
 
       <div class="chat-messages" id="chatMessages">
-        <!-- Messages will be injected here -->
+        <!-- Welcome Screen (Displays when message list is empty) -->
+        <div class="welcome-screen" id="welcomeScreen">
+          <div class="welcome-header">
+            <div class="welcome-icon">💖</div>
+            <h2>How can I help you today?</h2>
+            <p>Select a gender mode and persona from the sidebar, or start with one of these ideas:</p>
+          </div>
+          <div class="prompt-grid">
+            <button class="prompt-card" data-prompt="What's your name, and tell me a sweet joke!">
+              <span class="prompt-card-title">Ask for a sweet joke</span>
+              <span class="prompt-card-text">"What's your name, and tell me a sweet joke!"</span>
+            </button>
+            <button class="prompt-card" data-prompt="Hmph, why do you always keep me waiting? Baka!">
+              <span class="prompt-card-title">Tease your companion</span>
+              <span class="prompt-card-text">"Hmph, why do you always keep me waiting? Baka!"</span>
+            </button>
+            <button class="prompt-card" data-prompt="Can you give me some guidance on a tough decision?">
+              <span class="prompt-card-title">Get wise advice</span>
+              <span class="prompt-card-text">"Can you give me some guidance on a tough decision?"</span>
+            </button>
+            <button class="prompt-card" data-prompt="What are your deepest thoughts about connection?">
+              <span class="prompt-card-title">Share deep thoughts</span>
+              <span class="prompt-card-text">"What are your deepest thoughts about connection?"</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="chat-thinking" id="chatThinking">
@@ -151,8 +176,11 @@
 
       <footer class="chat-input-container">
         <div class="chat-input-wrapper">
-          <textarea class="chat-input" id="chatInput" placeholder="Send a message..." rows="1" autocomplete="off"></textarea>
+          <textarea class="chat-input" id="chatInput" placeholder="Message Neural Core..." rows="1" autocomplete="off"></textarea>
           <button class="chat-send-btn" id="chatSend" title="Send message">▶</button>
+        </div>
+        <div class="chat-disclaimer">
+          Neural Core can make mistakes. Consider checking important information.
         </div>
       </footer>
     </main>

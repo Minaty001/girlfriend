@@ -1,6 +1,6 @@
 /* ═════════════════════════════════════════════════════════════════════
    NEURAL CORE — AI Chat Interface
-   Chat Controller & Local Engine
+   Chat Controller & Local Engine (ChatGPT/Gemini Layout)
    ═════════════════════════════════════════════════════════════════════ */
 
 (function () {
@@ -12,6 +12,7 @@
   const chatSend = document.getElementById('chatSend');
   const chatThinking = document.getElementById('chatThinking');
   const resetBtn = document.getElementById('resetBtn');
+  const newChatBtn = document.getElementById('newChatBtn');
   const bKeyBtn = document.getElementById('bKeyBtn');
   const apiModal = document.getElementById('apiModal');
   const modalClose = document.getElementById('modalClose');
@@ -20,6 +21,7 @@
   const backendUrl = document.getElementById('backendUrl');
   const apiKey = document.getElementById('apiKey');
   const modelSelect = document.getElementById('modelSelect');
+  const welcomeScreen = document.getElementById('welcomeScreen');
 
   // Sidebar elements
   const mAffection = document.getElementById('mAffection');
@@ -52,12 +54,12 @@
   // ─── Local responses pool ───
   const Brain = {
     mods: {
-      friendly: { name: 'Friendly', emoji: '🧠', desc: 'Warm and helpful' },
+      friendly: { name: 'Friendly', emoji: '🧠', desc: 'Warm & helpful' },
       tsundere: { name: 'Tsundere', emoji: '😤', desc: 'Rough exterior, soft inside' },
-      senpai: { name: 'Senpai', emoji: '📚', desc: 'Wise and mentor-like' },
-      yandere: { name: 'Yandere', emoji: '💜', desc: 'Intense and obsessive' },
-      dere: { name: 'Dere Dere', emoji: '💕', desc: 'Sweet and affectionate' },
-      emo: { name: 'Emo', emoji: '🌧️', desc: 'Melancholic and dramatic' }
+      senpai: { name: 'Senpai', emoji: '📚', desc: 'Wise & mentor-like' },
+      yandere: { name: 'Yandere', emoji: '💜', desc: 'Intense & obsessive' },
+      dere: { name: 'Dere Dere', emoji: '💕', desc: 'Sweet & affectionate' },
+      emo: { name: 'Emo', emoji: '🌧️', desc: 'Melancholic & dramatic' }
     },
     
     responses: {
@@ -123,7 +125,7 @@
         },
         senpai: {
           greeting: ["Welcome back. Let's work on our studies/goals.", "Glad you made it. Ready to learn?", "Ah. Sit down, let's talk."],
-          howareyou: ["I am doing well. Focused and ready.", "Calm and focused, as always."],
+          howareyou: ["I am well. Focused and ready.", "Calm and focused, as always."],
           thanks: ["Of course. Glad to assist. Keep up the good work.", "Helping you is my pleasure."],
           love: ["You've grown so much. I value our path together.", "Affection is a strong driver. I am glad we have it."],
           default: ["Consider this step carefully.", "There is wisdom in taking it slow.", "Good observation.", "Let me reflect on that."]
@@ -223,6 +225,70 @@
       });
       
       resetBtn.addEventListener('click', () => this.reset());
+      newChatBtn.addEventListener('click', () => this.newChat());
+
+      // Suggested prompts handlers
+      document.querySelectorAll('.prompt-card').forEach(card => {
+        card.addEventListener('click', () => {
+          if (this.isProcessing) return;
+          const promptText = card.dataset.prompt;
+          chatInput.value = promptText;
+          chatInput.style.height = 'auto';
+          chatInput.style.height = `${chatInput.scrollHeight}px`;
+          this.send();
+        });
+      });
+    },
+
+    newChat() {
+      if (this.isProcessing) return;
+      // Clear messages but keep stats
+      chatMessages.innerHTML = '';
+      
+      // Re-create welcomeScreen
+      const welcome = document.createElement('div');
+      welcome.className = 'welcome-screen';
+      welcome.id = 'welcomeScreen';
+      welcome.innerHTML = `
+        <div class="welcome-header">
+          <div class="welcome-icon">💖</div>
+          <h2>How can I help you today?</h2>
+          <p>Select a gender mode and persona from the sidebar, or start with one of these ideas:</p>
+        </div>
+        <div class="prompt-grid">
+          <button class="prompt-card" data-prompt="What's your name, and tell me a sweet joke!">
+            <span class="prompt-card-title">Ask for a sweet joke</span>
+            <span class="prompt-card-text">"What's your name, and tell me a sweet joke!"</span>
+          </button>
+          <button class="prompt-card" data-prompt="Hmph, why do you always keep me waiting? Baka!">
+            <span class="prompt-card-title">Tease your companion</span>
+            <span class="prompt-card-text">"Hmph, why do you always keep me waiting? Baka!"</span>
+          </button>
+          <button class="prompt-card" data-prompt="Can you give me some guidance on a tough decision?">
+            <span class="prompt-card-title">Get wise advice</span>
+            <span class="prompt-card-text">"Can you give me some guidance on a tough decision?"</span>
+          </button>
+          <button class="prompt-card" data-prompt="What are your deepest thoughts about connection?">
+            <span class="prompt-card-title">Share deep thoughts</span>
+            <span class="prompt-card-text">"What are your deepest thoughts about connection?"</span>
+          </button>
+        </div>
+      `;
+      chatMessages.appendChild(welcome);
+      messages = [];
+      
+      // Re-bind click event to new prompt cards
+      welcome.querySelectorAll('.prompt-card').forEach(card => {
+        card.addEventListener('click', () => {
+          if (this.isProcessing) return;
+          chatInput.value = card.dataset.prompt;
+          chatInput.style.height = 'auto';
+          chatInput.style.height = `${chatInput.scrollHeight}px`;
+          this.send();
+        });
+      });
+
+      scrollChat();
     },
 
     async send() {
@@ -234,6 +300,12 @@
       chatInput.style.height = 'auto';
       
       this.isProcessing = true;
+
+      // Hide welcome screen on first message
+      const welcome = document.getElementById('welcomeScreen');
+      if (welcome) {
+        welcome.remove();
+      }
 
       // Add user message
       this.addMessage(text, 'user');
@@ -359,9 +431,7 @@
     },
 
     async reset() {
-      chatMessages.innerHTML = '';
-      messages = [];
-      
+      // Full reset clears sidebar metrics & server state
       if (mode === 'backend') {
         try {
           const url = backendUrl.value.trim() || 'http://localhost:8000';
@@ -387,9 +457,7 @@
         renderMetricsUI();
       }
 
-      const greeting = Brain.getGreeting(currentGenderMode, currentMod);
-      this.addMessage(greeting, 'ai', false);
-      scrollChat();
+      this.newChat();
     }
   };
 
@@ -606,11 +674,6 @@
   async function init() {
     setupUI();
     Chat.init();
-    
-    // Set initial greeting
-    chatMessages.innerHTML = '';
-    const greeting = Brain.getGreeting(currentGenderMode, currentMod);
-    Chat.addMessage(greeting, 'ai', false);
     
     // Initial UI status render
     updateConnectionLabel();
